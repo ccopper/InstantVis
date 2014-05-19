@@ -1,0 +1,50 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+</script>
+<style>
+
+#bTest
+{
+	width: 25%;
+	
+	margin-left:auto;
+	margin-right:auto;
+	
+	border: solid;
+	
+	text-align: center;
+	
+	background: light-grey;
+}
+
+.hover
+{
+	background: grey;
+}
+
+
+
+</style>
+<script>
+	$(document).ready(function(){
+	$("#bTest").hover(function()
+	{
+		$(this).addClass("hover");
+    },  function()
+	{	
+		$(this).removeClass("hover");
+	}); 
+	
+	$("#bTest").click(function()
+	{
+		$(this).text("I was Clicked");
+	});
+});
+</script>
+
+
+<div id="bTest">Button</div>
+
+
+</html>
