@@ -1,6 +1,6 @@
 
 
-function tableType() {
+function TableData() {
 	this._rows = 0;
 	this._cols = 0;
 	this._data = [];
@@ -29,15 +29,15 @@ function tableType() {
 		this._rows = this._data.length;
 		var maxRowLengthFound = 0;
 		for (row in this._data) {
-			if (row.length > maxLengthRowFound) {
-				maxLengthRowFound = row.length;
+			if (row.length > maxRowLengthFound) {
+				maxRowLengthFound = row.length;
 			}
 		}
 	}
 
 }
 
-function tableDataElementType() {
+function TableDataElement() {
 	this._data = null;
 	this._attributes = null;
 
@@ -58,7 +58,7 @@ function tableDataElementType() {
 	}
 }
 
-function allTableData() {
+function AllTableData() {
 	this._tables = [];
 
 	this.addTable = function(table) {
@@ -72,53 +72,33 @@ function allTableData() {
 	this.getTable = function(index) {
 		return this._tables[index];
 	}
+
+	this.getTables = function() {
+		return this._tables;
+	}
 }
 
 function getTableData() {
-	var tableDataRowType = [];
+	var allTableData = new AllTableData();
 
-	var tableDataElementType = {
-		attributes : null,
-		payload : null
-	}
-
-	var tableDataType = {
-		rows : 0,
-		cols : 0,
-		data : []
-	}
-
-	var allTableDataType = {
-		metaData : null,
-		table : []
-	}
-
-
-	var allTableData = Object.create(allTableDataType);
 
 	$( 'table' ).each( function(currentTableIndex, currentTable) {
-
-		var currentTableData = Object.create(tableDataType);
-		var maxLengthRowFound = 0;
+		var tableData = new TableData();
 
 		$( $( currentTable ).find( 'tr' ) ).each( function(currentRowIndex, currentRow) {
-
-			var currentTableRowData = Object.create(tableDataRowType);
-
+			var currentRow = [];
+			
 			$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) {
-				var tableDataElement = Object.create(tableDataElementType);
-				tableDataElement.payload = $( currentData ).text();
-				currentTableRowData.push(tableDataElement);
+				var tableDataElement = new TableDataElement();
+				tableDataElement.setData( $( currentData ).text());
+				currentRow.push(tableDataElement);
 			});
 
-			if (maxLengthRowFound < currentTableRowData.length) {
-				maxLengthRowFound = currentTableRowData.length;
-			}
-
-			currentTableData.data[currentRowIndex] = currentTableRowData;
+			tableData.addDataRow(currentRow);
 
 		});
-		allTableData.table[currentTableIndex] = currentTableData;
+		tableData.calcDimentions();
+		allTableData.addTable(tableData);
 	});
 
 	return allTableData;
@@ -127,6 +107,6 @@ function getTableData() {
 
 var allTableData = getTableData();
 
-//console.log(allTableData.table[1].data[2][1]);
+// console.log(allTableData.getTable(1).getDataRow(4));
 
 
