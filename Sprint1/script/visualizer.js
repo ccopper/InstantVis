@@ -96,11 +96,12 @@ function visualize(dataPackage, parentId) {
 	var height = 250;
 	var dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
                             11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-	var bar = new Bar(dataSet, width, height);
+
+	var bar = new Bar(dataSet, 600, 250);
 	var barId = 'bar';
 
 	console.log("A");
-	createDiv(parentId,barId);
+	createDiv(parentId,barId,600,250);
 
 	console.log("B");
 	bar.draw(barId);
@@ -126,6 +127,8 @@ function createDiv(parentId, newDivId, width, height) {
 	var newDiv = document.createElement('div');
 	newDiv.setAttribute('id',newDivId);
 	newDiv.setAttribute('class','visualization');
+	newDiv.style.width= width+"px";
+	newDiv.style.height= height+"px";
 	parentDiv.appendChild(newDiv);
 	return true;
 }
