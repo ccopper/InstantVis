@@ -5,6 +5,12 @@ function TableData() {
 	this._cols = 0;
 	this._data = [];
 
+	this._checkDimensions = function() {
+		if (this._data.length > this._rows) {
+			console.log("Table dimensions do not make sense, number of rows and columns might be wrong!");
+		}
+	}
+
 	this.addDataRow = function(dataRow) {
 		this._data.push(dataRow);
 	}
@@ -13,7 +19,11 @@ function TableData() {
 		return this._data[rowNumber];
 	}
 
-	this.getData = function(row, col) {
+	this.getAllRows = function() {
+		return this._data;
+	}
+
+	this.getDataAt = function(row, col) {
 		return this._data[row][col];
 	}
 
@@ -24,15 +34,27 @@ function TableData() {
 	this.setCols = function(cols) {
 		this._cols = cols;
 	}
+	
+	this.getRows = function() {
+		this._checkDimensions();
+		return this._rows;
+	}
 
-	this.calcDimentions = function() {
+	this.getCols = function() {
+		this._checkDimensions();
+		return this._cols;
+	}
+
+	this.calcDimensions = function() {
 		this._rows = this._data.length;
 		var maxRowLengthFound = 0;
-		for (row in this._data) {
-			if (row.length > maxRowLengthFound) {
-				maxRowLengthFound = row.length;
+
+		for (var row = 0; row < this._rows; row++) {
+			if (this._data[row].length > maxRowLengthFound) {
+				maxRowLengthFound = this._data[row].length;
 			}
 		}
+		this._cols = maxRowLengthFound;
 	}
 
 }
@@ -86,18 +108,18 @@ function getTableData() {
 		var tableData = new TableData();
 
 		$( $( currentTable ).find( 'tr' ) ).each( function(currentRowIndex, currentRow) {
-			var currentRow = [];
+			var currentRowData = [];
 			
 			$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) {
 				var tableDataElement = new TableDataElement();
 				tableDataElement.setData( $( currentData ).text());
-				currentRow.push(tableDataElement);
+				currentRowData.push(tableDataElement);
 			});
 
-			tableData.addDataRow(currentRow);
+			tableData.addDataRow(currentRowData);
 
 		});
-		tableData.calcDimentions();
+		tableData.calcDimensions();
 		allTableData.addTable(tableData);
 	});
 
@@ -105,8 +127,19 @@ function getTableData() {
 }
 
 
-var allTableData = getTableData();
+var allTables = getTableData();
 
-// console.log(allTableData.getTable(1).getDataRow(4));
+for (table in allTables.getTables()) {
+	var rows = allTables.getTable(table).getRows();
+	var cols = allTables.getTable(table).getCols();
+
+	console.log('Table ' + table + ' (' + rows + ' rows by ' + 
+				cols + ' cols) :');
+	for (var row = 0; row < rows; row++) {
+		for (var col = 0; col < cols; col++) {
+			console.log('(' + row + ',' + col + ') = ' + allTables.getTable(table).getDataAt(row, col).getData());
+		}
+	}
+}
 
 
