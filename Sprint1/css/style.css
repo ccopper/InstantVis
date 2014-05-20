@@ -37,6 +37,9 @@
 input[type="text"]{
 	width: 400px;
 	height: 40px;
+	background: rgb(230, 230, 230);
+	border-color: black;
+	font-size: 20px;
 }
 
 .hover
@@ -55,4 +58,18 @@ input[type="text"]{
 	background: black;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+#instructions
+{
+	text-align: center;
+	font-family: "Helvetica";
+	font-size: 20px;
+}
+
+#disclaimer
+{
+	text-align: center;
+	font-family:  "Helvetica";
+	font-size: 15px;
 }
