@@ -24,6 +24,15 @@ function extractVisualizations(dataPackage) {
 	
 }
 
-function createDiv(parentId, divId) {
-
+function createDiv(parentId, newDivId) {
+	//Find parent and append new div with id specified by newDivId
+	var parentDiv = document.getElementById(parentId);
+	if(!parentDiv){
+		console.log("Could not find parent "+parentId+". No child added.")
+		return false;
+	}
+	var newDiv = document.createElement('div');
+	newDiv.setAtrribute('id',newDivId);
+	parentDiv.appendChild(newDiv);
+	return true;
 }
