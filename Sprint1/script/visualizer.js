@@ -1,5 +1,5 @@
 //This is our code for the visualizer. 
-function Line(dataSet) {
+function Line(dataSet, width, height) {
 	this.dataSet = dataSet;
 }
 
@@ -109,9 +109,50 @@ function visualize(dataPackage, parentId) {
 
 function extractVisualizations(dataPackage) {
 
+	var height = 600;
+	var width = 250;
+
+	var visList = [];
+	var data = [];
+
 	var d = dataPackage;
+	var type = "";
+	var numValues;
+
+	var columns = [];
 
 	var numVisualizations = d.Visualizations.length;
+
+	for (var i = 0; i < numVisualizations; i++ ) {
+		type = d.Visualizations[i];
+
+		numValues = d.Data.Values.length;
+		columns = d.Visualizations.DataColumns;
+		numColumns = columns.length;
+
+		switch(type) {
+			case "Line":
+				// v = new Line(XXXXXXXXXX, width, height);
+				visList.push(v);
+				break;
+			case "Bar":
+
+				var row = [];
+
+				for (var j = 0; j < numValues; j++) {
+					for (var k = 0; k < numColumns; k++) {
+						row[k] = d.Data.Values[columns[k]];
+					}
+					data[j] = row; 
+				}
+
+				v = new Bar(data, width, height);
+				visList.push(v);
+				break;
+			default:
+				console.log("ERROR: Could not match visualization type with definition in visualizer.");
+		}
+	}
 
 
 	console.log("come on man");
@@ -121,7 +162,7 @@ function createDiv(parentId, newDivId, width, height) {
 	//Find parent and append new div with id specified by newDivId
 	var parentDiv = document.getElementById(parentId);
 	if(!parentDiv){
-		console.log("Could not find parent " + parentId + ". No child added.")
+		console.log("ERROR: Could not find parent " + parentId + ". No child added.")
 		return false;
 	}
 	var newDiv = document.createElement('div');
