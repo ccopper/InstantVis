@@ -73,6 +73,8 @@ Bar.prototype.draw = function(divId) {
         .attr("font-size", "11px")
         .attr("fill", "white");
 
+
+
 };
 
 
@@ -89,9 +91,12 @@ function visualize(dataPackage, parentId) {
 	// }
 	console.log("visualize called")
 
+
+	var width = 600;
+	var height = 250;
 	var dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
                             11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-	var bar = new Bar(dataSet, width);
+	var bar = new Bar(dataSet, width, height);
 	var barId = 'bar';
 
 	console.log("A");
@@ -102,6 +107,12 @@ function visualize(dataPackage, parentId) {
 }
 
 function extractVisualizations(dataPackage) {
+
+	var d = dataPackage;
+
+	var numVisualizations = d.Visualizations.length;
+
+
 	console.log("come on man");
 }
 
