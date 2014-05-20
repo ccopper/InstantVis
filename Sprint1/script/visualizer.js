@@ -19,7 +19,6 @@ Bar.prototype.draw = function(divId) {
 	//Width and height
     var w = this.width;
     var h = this.height;
-    var maxValue = 100;
 
     var xScale = d3.scale.ordinal()
                             .domain(d3.range(this.dataSet.length))
@@ -80,10 +79,13 @@ function visualize(dataPackage, parentId) {
 
 	var obj = '{		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		}';
 
+
 	dataPackage = JSON.parse(obj);
 
+	// Get a list of visualization objects based on the provided data.
 	var visualizations = extractVisualizations(dataPackage);
 
+	// For each visualization object, create a new <div> element to contain it, then draw the visualization.
 	var numVisualizations = visualizations.length;
 	for (var i = 0; i < numVisualizations; i++) {
 		divId = "vis" + i;
@@ -102,10 +104,12 @@ function visualize(dataPackage, parentId) {
 	// bar.draw(barId);
 }
 
+// Search through the provided data object to instantiate a list
+// containing each of the specified visualizations.
 function extractVisualizations(dataPackage) {
 
-	var height = 600;
-	var width = 250;
+	var height = 250;
+	var width = 600;
 
 	var visList = [];
 	var data = [];
@@ -116,8 +120,10 @@ function extractVisualizations(dataPackage) {
 
 	var columns = [];
 
+	// Determine the total number of visualizations.
 	var numVisualizations = d.Visualizations.length;
 
+	// Iterate over each visualization.
 	for (var i = 0; i < numVisualizations; i++ ) {
 		type = d.Visualizations[i].Type;
 
@@ -129,6 +135,7 @@ function extractVisualizations(dataPackage) {
 		columns = d.Visualizations[i].DataColumns;
 		numColumns = columns.length;
 
+		// Instantiate a visualization of the appropriate type.
 		switch(type) {
 			case "Line":
 				// v = new Line(XXXXXXXXXX, width, height);
@@ -151,6 +158,7 @@ function extractVisualizations(dataPackage) {
 				visList.push(v);
 				break;
 			default:
+				// The type extracted from the data object did not match any of the defined visualization types.
 				console.log("ERROR: Could not match visualization type with definition in visualizer.");
 		}
 	}
@@ -160,6 +168,8 @@ function extractVisualizations(dataPackage) {
 	console.log("come on man");
 }
 
+// Insert a new <div> tag into the DOM as a child of the element
+// with id parentId and give it an id of newDivId, a width and a height.
 function createDiv(parentId, newDivId, width, height) {
 	//Find parent and append new div with id specified by newDivId
 	var parentDiv = document.getElementById(parentId);
