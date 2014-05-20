@@ -4,17 +4,15 @@ function Line(dataSet) {
 }
 
 Line.prototype.draw = function () {
-	//d3.js code here
-}
+	console.log('InstantLog!');
+};
 
-function Bar(dataSet) {
+function Bar (dataSet) {
 	this.dataSet = dataSet;
 }
 
 Bar.prototype.draw = function(divId) {
-	this.dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-                            11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-
+	console.log('Drawing!')
 
 	//Width and height
     var w = 600;
@@ -22,11 +20,11 @@ Bar.prototype.draw = function(divId) {
     var maxValue = 100;
 
     var xScale = d3.scale.ordinal()
-                            .domain(d3.range(dataset.length))
+                            .domain(d3.range(this.dataSet.length))
                             .rangeRoundBands([0, w], 0.05);
 
     var yScale = d3.scale.linear()
-                    .domain([0, d3.max(dataset)])
+                    .domain([0, d3.max(this.dataSet)])
                     .range([0, h]);
  
     //Create SVG element
@@ -37,7 +35,7 @@ Bar.prototype.draw = function(divId) {
 
 	//Create bars
     svg.selectAll("rect")
-    	.data(dataset)
+    	.data(this.dataSet)
         .enter()
         .append("rect")
         .attr("x", function(d, i) {
@@ -56,7 +54,7 @@ Bar.prototype.draw = function(divId) {
 
     //Create labels
     svg.selectAll("text")
-        .data(dataset)
+        .data(this.dataSet)
         .enter()
         .append("text")
         .text(function(d) {
@@ -73,24 +71,32 @@ Bar.prototype.draw = function(divId) {
         .attr("font-size", "11px")
         .attr("fill", "white");
 
-}
+};
 
 
 function visualize(dataPackage, parentId) {
-	var visualizations = extractVisualizations(dataPackage);
+	// var visualizations = extractVisualizations(dataPackage);
 
-	var divId = "vis";
+	// var divId = "vis";
 
-	var numVisualizations = visualizations.length;
-	for (var i = 0; i < numVisualizations; i++) {
-		divId = divId + "i";
-		createDiv(parentId, divId);
-		visualizations[i].draw(divId);
-	}
+	// var numVisualizations = visualizations.length;
+	// for (var i = 0; i < numVisualizations; i++) {
+	// 	divId = divId + "i";
+	// 	createDiv(parentId, divId);
+	// 	visualizations[i].draw(divId);
+	// }
+	console.log("visualize called")
+
+	var dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+                            11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+	var bar = new Bar(dataSet);
+	var barId = 'bar';
+	createDiv(parentId,barId)
+	bar.draw(barId);
 }
 
 function extractVisualizations(dataPackage) {
-
+	console.log("come on man");
 }
 
 function createDiv(parentId, newDivId) {
@@ -101,7 +107,8 @@ function createDiv(parentId, newDivId) {
 		return false;
 	}
 	var newDiv = document.createElement('div');
-	newDiv.setAtrribute('id',newDivId);
+	newDiv.setAttribute('id',newDivId);
+	newDiv.addClass('visualization');
 	parentDiv.appendChild(newDiv);
 	return true;
 }

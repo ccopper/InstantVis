@@ -10,7 +10,9 @@ $(document).ready(function(){
 	});
 	$("#submitButton").click(function()
 	{
-		//$(this).text("I was Clicked");
+		var parentId = $(this).parent().parent().parent().attr('id');
+		console.log('Parent Id is: ' + parentId);
+		visualize(0,parentId);
 	});
 });
 
