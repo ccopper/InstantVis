@@ -6,12 +6,12 @@ $(document).ready(function(){
 	$("#submitButton").mouseup(function()
 	{
 		$(this).css("border-style", "groove");
-		//document.getElementById('submitButton').style.border= "groove";
 	});
 	$("#submitButton").click(function()
 	{
 		var parentId = $(this).parent().parent().parent().attr('id');
 		console.log('Parent Id is: ' + parentId);
+		$("#form").css('display','none');
 		visualize(0,parentId);
 	});
 });
