@@ -77,25 +77,29 @@ Bar.prototype.draw = function(divId) {
 
 
 function visualize(dataPackage, parentId) {
-	// var visualizations = extractVisualizations(dataPackage);
 
-	// var numVisualizations = visualizations.length;
-	// for (var i = 0; i < numVisualizations; i++) {
-	// 	divId = "vis" + i;
-	// 	createDiv(parentId, divId);
-	// 	visualizations[i].draw(divId);
-	// }
+	var obj = '{		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		}';
 
-	var width = 600;
-	var height = 250;
-	var dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
-                            11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+	dataPackage = JSON.parse(obj);
 
-	var bar = new Bar(dataSet, width, height);
-	var barId = 'bar';
+	var visualizations = extractVisualizations(dataPackage);
 
-	createDiv(parentId,barId,bar.width,bar.height);
-	bar.draw(barId);
+	var numVisualizations = visualizations.length;
+	for (var i = 0; i < numVisualizations; i++) {
+		divId = "vis" + i;
+		createDiv(parentId, divId, visualizations[i].width, visualizations[i].height);
+		visualizations[i].draw(divId);
+	}
+
+	
+	// var dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+ //                            11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+
+	// var bar = new Bar(dataSet, width, height);
+	// var barId = 'bar';
+
+	// createDiv(parentId,barId,bar.width,bar.height);
+	// bar.draw(barId);
 }
 
 function extractVisualizations(dataPackage) {
@@ -115,10 +119,14 @@ function extractVisualizations(dataPackage) {
 	var numVisualizations = d.Visualizations.length;
 
 	for (var i = 0; i < numVisualizations; i++ ) {
-		type = d.Visualizations[i];
+		type = d.Visualizations[i].Type;
 
 		numValues = d.Data.Values.length;
-		columns = d.Visualizations.DataColumns;
+
+		console.log("columns: " + d.Visualizations.DataColumns);
+		console.log("columns (type): " + typeof(d.Visualizations.DataColumns));
+
+		columns = d.Visualizations[i].DataColumns;
 		numColumns = columns.length;
 
 		switch(type) {
@@ -132,10 +140,12 @@ function extractVisualizations(dataPackage) {
 
 				for (var j = 0; j < numValues; j++) {
 					for (var k = 0; k < numColumns; k++) {
-						row[k] = d.Data.Values[columns[k]];
+						row[k] = d.Data.Values[j][columns[k]];
 					}
 					data[j] = row; 
 				}
+
+				console.log(data.toString());
 
 				v = new Bar(data, width, height);
 				visList.push(v);
@@ -145,6 +155,7 @@ function extractVisualizations(dataPackage) {
 		}
 	}
 
+	return visList;
 
 	console.log("come on man");
 }
