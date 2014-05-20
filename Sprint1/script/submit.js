@@ -11,7 +11,7 @@ $(document).ready(function(){
 	{
 		var parentId = $(this).parent().parent().parent().attr('id');
 		console.log('Parent Id is: ' + parentId);
-		$("#form").css('display','none');
+		$("#form").hide(1000);
 		visualize(0,parentId);
 	});
 });
