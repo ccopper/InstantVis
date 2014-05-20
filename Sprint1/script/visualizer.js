@@ -105,7 +105,7 @@ function extractVisualizations(dataPackage) {
 	console.log("come on man");
 }
 
-function createDiv(parentId, newDivId) {
+function createDiv(parentId, newDivId, width, height) {
 	//Find parent and append new div with id specified by newDivId
 	var parentDiv = document.getElementById(parentId);
 	if(!parentDiv){
@@ -114,7 +114,7 @@ function createDiv(parentId, newDivId) {
 	}
 	var newDiv = document.createElement('div');
 	newDiv.setAttribute('id',newDivId);
-	newDiv.setAttribute('class', 'visualization');
+	newDiv.setAttribute('class','visualization');
 	parentDiv.appendChild(newDiv);
 	return true;
 }
