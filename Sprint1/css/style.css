@@ -44,6 +44,12 @@ input[type="text"]{
 	width: 400px;
 }
 
+#graphArea{
+	margin-left: auto;
+	margin-right: auto;
+	color: black;
+}
+
 .visualization
 {
 
