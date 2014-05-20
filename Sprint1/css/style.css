@@ -52,7 +52,7 @@ input[type="text"]{
 
 .visualization
 {
-	width: 600px;
+	background: black;
 	margin-left: auto;
 	margin-right: auto;
 }
