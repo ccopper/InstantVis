@@ -7,16 +7,18 @@ Line.prototype.draw = function () {
 	console.log('InstantLog!');
 };
 
-function Bar (dataSet) {
+function Bar (dataSet, width, height) {
 	this.dataSet = dataSet;
+	this.width = width;
+	this.height = height;
 }
 
 Bar.prototype.draw = function(divId) {
 	console.log('Drawing!')
 
 	//Width and height
-    var w = 600;
-    var h = 250;
+    var w = this.width;
+    var h = this.height;
     var maxValue = 100;
 
     var xScale = d3.scale.ordinal()
@@ -89,9 +91,13 @@ function visualize(dataPackage, parentId) {
 
 	var dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
                             11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-	var bar = new Bar(dataSet);
+	var bar = new Bar(dataSet, width);
 	var barId = 'bar';
-	createDiv(parentId,barId)
+
+	console.log("A");
+	createDiv(parentId,barId);
+
+	console.log("B");
 	bar.draw(barId);
 }
 
@@ -108,7 +114,7 @@ function createDiv(parentId, newDivId) {
 	}
 	var newDiv = document.createElement('div');
 	newDiv.setAttribute('id',newDivId);
-	newDiv.addClass('visualization');
+	newDiv.setAttribute('class', 'visualization');
 	parentDiv.appendChild(newDiv);
 	return true;
 }
