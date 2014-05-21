@@ -11,6 +11,8 @@ $(document).ready(function(){
 	{
 		var url = document.getElementById("urlTextbox").value;
 
+		$("#reprintUrl").text(url);
+
 		$("#form").fadeOut(0);
 		$("#loadingContent").show();//style.display = "inline";
 
