@@ -74,6 +74,14 @@ input[type="text"]{
 	font-size: 20px;
 }
 
+#loadingContent
+{
+	display: none;
+	text-align: center;
+	margin-right: auto;
+	margin-left: auto;
+}
+
 #disclaimer
 {
 	text-align: center;

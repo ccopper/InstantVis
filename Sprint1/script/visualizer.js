@@ -14,7 +14,7 @@ function Bar (dataSet, width, height) {
 }
 
 Bar.prototype.draw = function(divId) {
-	console.log('Drawing!')
+	// console.log('Drawing!')
 
 	xValues = [];
 	yValues = [];
@@ -54,10 +54,10 @@ Bar.prototype.draw = function(divId) {
  					.orient("left")
  					.ticks(5);
 
-    console.log("xScale(0): " + xScale(0));
-    console.log("xScale(1): " + xScale(1));
-    console.log("xScale(2): " + xScale(2));
-    console.log("xScale(3): " + xScale(3));
+    // console.log("xScale(0): " + xScale(0));
+    // console.log("xScale(1): " + xScale(1));
+    // console.log("xScale(2): " + xScale(2));
+    // console.log("xScale(3): " + xScale(3));
 
     //Create SVG element
     var svg = d3.select("#" + divId)
@@ -119,7 +119,7 @@ Bar.prototype.draw = function(divId) {
     	})
     	.call(yAxis);
 
-    console.log("Done Drawing!");
+    // console.log("Done Drawing!");
 
 };
 
@@ -180,14 +180,14 @@ function extractVisualizations(dataPackage) {
 
 		numValues = d.Data.Values.length;
 
-		console.log("columns: " + d.Visualizations.DataColumns);
-		console.log("columns (type): " + typeof(d.Visualizations.DataColumns));
+		// console.log("columns: " + d.Visualizations.DataColumns);
+		// console.log("columns (type): " + typeof(d.Visualizations.DataColumns));
 
 		columns = d.Visualizations[i].DataColumns;
 		numColumns = columns.length;
 
-		console.log("numValues: " + numValues);
-		console.log("numColumns: " + numColumns);
+		// console.log("numValues: " + numValues);
+		// console.log("numColumns: " + numColumns);
 
 		// Instantiate a visualization of the appropriate type.
 		switch(type) {
@@ -203,9 +203,9 @@ function extractVisualizations(dataPackage) {
 					for (var k = 0; k < numColumns; k++) {
 						row[k] = d.Data.Values[j][columns[k]];
 					}
-					console.log("Row: " + row.toString());
+					// console.log("Row: " + row.toString());
 					data.push(row);
-					console.log(data.toString()); 
+					// console.log(data.toString()); 
 				}
 
 				
@@ -239,7 +239,7 @@ function createDiv(parentId, newDivId, width, height) {
 	newDiv.style.width= width+"px";
 	newDiv.style.height= height+"px";
 	newDiv.style.display = "none";
-	document.getElementById("visArea").appendChild(newDiv);
-	// parentDiv.appendChild(newDiv);
+	//document.getElementById("visArea").appendChild(newDiv);
+	parentDiv.appendChild(newDiv);
 	return true;
 }
