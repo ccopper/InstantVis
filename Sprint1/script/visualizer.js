@@ -1,10 +1,76 @@
 //This is our code for the visualizer. 
 function Line(dataSet, width, height) {
 	this.dataSet = dataSet;
+	this.width = width;
+	this.height = height;
 }
 
-Line.prototype.draw = function () {
+Line.prototype.draw = function (divId) {
 	console.log('InstantLog!');
+
+
+	// TODO: Make the number of ticks on an axis somehow dynamic.
+
+    var w = this.width;
+    var h = this.height;
+    var padding = 20;
+
+    var xScale = d3.scale.linear()
+                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .range([padding, w - padding*2]);
+
+    var yScale = d3.scale.linear()
+                        .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
+                        .range([h - padding, padding]);
+
+    var rScale = d3.scale.linear()
+                        .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
+                        .range([2, 5]);
+
+    var xAxis = d3.svg.axis()
+                    .scale(xScale)
+                    .orient("bottom")
+                    .ticks(5);
+
+    var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient("left")
+                    .ticks(5);
+
+
+    console.log("A");
+
+    var svg = d3.select("#" + divId)
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+    svg.selectAll("circle")
+        .data(this.dataSet)
+        .enter()
+        .append("circle")
+        .attr({
+            cx: function(d) { return xScale(d[0]); },
+            cy: function(d) { return yScale(d[1]); },
+            r: 3//function(d) { return rScale(d[1]); }
+            //fill: function(d) { return "rgb(0,0," + (d*10) + ")"; }
+        });
+
+	console.log("B");
+
+    svg.append("g")
+        .attr({
+            class: "axis",
+            transform: "translate(0," + (h-padding) + ")"
+            })
+        .call(xAxis);
+
+    svg.append("g")
+        .attr({
+            class: "y-axis",
+            transform: "translate(" + padding + ",0)"
+            })
+        .call(yAxis);    
 };
 
 function Bar (dataSet, width, height) {
@@ -126,7 +192,7 @@ Bar.prototype.draw = function(divId) {
 
 function visualize(dataPackage, parentId) {
 
-	var obj = '{		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		},{			"Type": "Bar",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		}';
+	var obj = '{		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		},{			"Type": "Line",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		}';
 
 
 	dataPackage = JSON.parse(obj);
@@ -186,30 +252,38 @@ function extractVisualizations(dataPackage) {
 		columns = d.Visualizations[i].DataColumns;
 		numColumns = columns.length;
 
-		// console.log("numValues: " + numValues);
-		// console.log("numColumns: " + numColumns);
 
 		// Instantiate a visualization of the appropriate type.
 		switch(type) {
 			case "Line":
-				// v = new Line(XXXXXXXXXX, width, height);
-				visList.push(v);
-				break;
-			case "Bar":
 
+				// Pull out visualization specific data according to AI instructions.
 				var row = [];
 				for (var j = 0; j < numValues; j++) {
 					row = [];
 					for (var k = 0; k < numColumns; k++) {
 						row[k] = d.Data.Values[j][columns[k]];
 					}
-					// console.log("Row: " + row.toString());
 					data.push(row);
-					// console.log(data.toString()); 
 				}
 
-				
+				// Create new Line object and append it to the list of visualizations.
+				v = new Line(data, width, height);
+				visList.push(v);
+				break;
+			case "Bar":
 
+				// Pull out visualization specific data according to AI instructions.
+				var row = [];
+				for (var j = 0; j < numValues; j++) {
+					row = [];
+					for (var k = 0; k < numColumns; k++) {
+						row[k] = d.Data.Values[j][columns[k]];
+					}
+					data.push(row);
+				}
+
+				// Create new Bar object and append it to the list of visualizations.
 				v = new Bar(data, width, height);
 				visList.push(v);
 				break;
