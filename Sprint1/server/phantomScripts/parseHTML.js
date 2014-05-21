@@ -1,7 +1,7 @@
 /**
 *	Phantom JS HTML Parsing/Scraping
 *	
-*	@module
+*	@module parseHTML.js
 */
 
 /*=========================================================

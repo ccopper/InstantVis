@@ -12,7 +12,8 @@
   */
 var InstantVisAPI_Config = 
 { 
-	"Host": "http://localhost:3000/"
+	"Host": "",
+	"APIDir": "server",
 }
 
 /**
@@ -25,9 +26,12 @@ var InstantVisAPI_Config =
  */
 function parseHTML(URL, APICallback)
 {
+	//Encode the URL properly to handle slashed and special chars
+	var cleanURI = encodeURI(URL);
+	//Make an ajax request for the data
 	$.ajax({
 		type: 'GET',
-        url: InstantVisAPI_Config.Host + "parseHTML/" + URL,
+        url: InstantVisAPI_Config.Host + InstantVisAPI_Config.APIDir + "/parseHTML/" + cleanURI,
         dataType: "json", 
 		success: function(data, textStatus, jqXHR)
 		{

@@ -28,9 +28,15 @@
  
 	$app->run();
 	
-	
+	/**
+	*	
+	*/
 	function parseHTML($URL)
 	{
+		//URLs are unsanitized we a way to saftly pass these as a command arg
+		//$encURL = base64_encode($url);
+	
 		echo exec("phantomjs phantomScripts/parseHTML.js \"$URL\"");
+		
 	}	
 ?>
