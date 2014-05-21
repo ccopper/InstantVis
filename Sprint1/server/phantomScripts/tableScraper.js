@@ -126,13 +126,15 @@ function AllTableData() {
 function getTableData() {
 	var allTableData = new AllTableData();
 
-
+	// iterate over each <table> in the document
 	$( 'table' ).each( function(currentTableIndex, currentTable) {
 		var tableData = new TableData();
-
+		
+		// iterate over each <tr> table row
 		$( $( currentTable ).find( 'tr' ) ).each( function(currentRowIndex, currentRow) {
 			var currentRowData = [];
-			
+		
+			// pick out each <td> table data element and make a new TableDataElement for that data	
 			$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) {
 				var tableDataElement = new TableDataElement();
 				tableDataElement.setData( $( currentData ).text());
@@ -158,7 +160,8 @@ function getTableData() {
  */
 
 function tableScraper() {
-	var allTables = getTableData();
+	var allTables = getTableData(); 	// do the actual table scraping, the allTables var will contain all 
+												// tables and associated data
 	var exportableData = [];
 
 	/* for each table, get all associated data from all rows and cols */
