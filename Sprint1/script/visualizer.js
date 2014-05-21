@@ -40,6 +40,14 @@ Line.prototype.draw = function (divId) {
 
     console.log("A");
 
+    var line = d3.svg.line()
+    				.x(function(d) {
+    					return xScale(d[0]);
+    				})
+    				.y(function(d) {
+    					return yScale(d[1]);
+    				});
+
     var svg = d3.select("#" + divId)
             .append("svg")
             .attr("width", w)
@@ -70,7 +78,15 @@ Line.prototype.draw = function (divId) {
             class: "y-axis",
             transform: "translate(" + padding + ",0)"
             })
-        .call(yAxis);    
+        .call(yAxis); 
+
+    console.log("C");
+
+    svg.append("path")
+    	.attr("class", "line")
+    	.attr("d", line(this.dataSet));  
+
+    console.log("D");
 };
 
 function Bar (dataSet, width, height) {
@@ -192,10 +208,7 @@ Bar.prototype.draw = function(divId) {
 
 function visualize(dataPackage, parentId) {
 
-	var obj = '{		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		},{			"Type": "Line",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		}';
-
-
-	dataPackage = JSON.parse(obj);
+	var dataPackage = {		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		},{			"Type": "Line",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		};
 
 	// Get a list of visualization objects based on the provided data.
 	var visualizations = extractVisualizations(dataPackage);

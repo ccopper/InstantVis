@@ -1,3 +1,9 @@
+/*
+ * tableScraper() and associated functions that tableScraper() uses to scrape html tabular data.
+ * Call tableScraper() from within the html document in question.
+ *
+ */
+
 
 /*
  * Data contained within one table
@@ -120,13 +126,15 @@ function AllTableData() {
 function getTableData() {
 	var allTableData = new AllTableData();
 
-
+	// iterate over each <table> in the document
 	$( 'table' ).each( function(currentTableIndex, currentTable) {
 		var tableData = new TableData();
-
+		
+		// iterate over each <tr> table row
 		$( $( currentTable ).find( 'tr' ) ).each( function(currentRowIndex, currentRow) {
 			var currentRowData = [];
-			
+		
+			// pick out each <td> table data element and make a new TableDataElement for that data	
 			$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) {
 				var tableDataElement = new TableDataElement();
 				tableDataElement.setData( $( currentData ).text());
@@ -147,12 +155,16 @@ function getTableData() {
 /**
  * Wrapper function to be called from the outside, all the other functions in this file are unused outside
  * this file.
+ *
+ * @returns	Data : [] portion of parser to AI js object as documented in the wiki and in the function
  */
 
 function tableScraper() {
-	var allTables = getTableData();
+	var allTables = getTableData(); 	// do the actual table scraping, the allTables var will contain all 
+												// tables and associated data
 	var exportableData = [];
 
+	/* for each table, get all associated data from all rows and cols */
 	for (table in allTables.getTables()) {
 
 		var rows = allTables.getTable(table).getRows();
@@ -167,13 +179,17 @@ function tableScraper() {
 			for (var col = 0; col < cols; col++) {
 
 				// put the data minus any attributes into the exportableData structure
-				exportableDataSingleSetDataRow.push(
-					allTables.getTable(table).getDataAt(row, col).getData());
+				// if the data is undefined, insert 'Number.NaN' into that element
+				var element = allTables.getTable(table).getDataAt(row, col).getData();
+				if (element == undefined) {
+					element = Number.NaN;
+				}
+				exportableDataSingleSetDataRow.push(element);
 
 				console.log('(' + row + ',' + col + ') = ' + 
 					allTables.getTable(table).getDataAt(row, col).getData());
 			}
-			console.log('pushing row ' + row);
+
 			exportableDataSingleSetValues.push(exportableDataSingleSetDataRow);
 
 		}
@@ -186,6 +202,18 @@ function tableScraper() {
 				}
 		);
 	}
+	
+	/*
+	 * returns this object:
+	 *
+	 * {
+	 * 	Data : [
+	 * 		Rows : (integer),
+	 * 		Cols : (integer),
+	 * 		Values : [Rows][Cols]
+	 * 	]
+	 * }
+	 */
 
 	return (
 		{
@@ -193,8 +221,5 @@ function tableScraper() {
 		}
 	);
 }
-
-//console.log(JSON.stringify(tableScraper()));
-//console.log(tableScraper().Data[0].Values[2][1]);;
 
 

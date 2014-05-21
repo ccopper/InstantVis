@@ -37,9 +37,13 @@ function parseComplete(data)
 {
 	//var cleanData = doWork(data); // Call AI
 
-	//visualize(cleanData, "visArea"); // Send to Visualizer
+	// numDataSets = cleanData.length;
 
-	visualize(0,"visArea");
+	// for (var i = 0; i < numDataSets; i++) {
+	// 	visualize(cleanData[i],"visArea");
+	// }
+
+	visualize(0, "visArea");
 
 	showResults();
 
