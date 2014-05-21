@@ -151,6 +151,7 @@ function visualize(dataPackage, parentId) {
 
 	// createDiv(parentId,barId,bar.width,bar.height);
 	// bar.draw(barId);
+	return;
 }
 
 // Search through the provided data object to instantiate a list
@@ -237,6 +238,8 @@ function createDiv(parentId, newDivId, width, height) {
 	newDiv.setAttribute('class','visualization');
 	newDiv.style.width= width+"px";
 	newDiv.style.height= height+"px";
-	parentDiv.appendChild(newDiv);
+	newDiv.style.display = "none";
+	document.getElementById("visArea").appendChild(newDiv);
+	// parentDiv.appendChild(newDiv);
 	return true;
 }

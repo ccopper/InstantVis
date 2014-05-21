@@ -66,6 +66,14 @@ input[type="text"]{
 	font-size: 20px;
 }
 
+#resultsMessage
+{
+	display: none;
+	text-align: center;
+	font-family: "Helvetica";
+	font-size: 20px;
+}
+
 #disclaimer
 {
 	text-align: center;
