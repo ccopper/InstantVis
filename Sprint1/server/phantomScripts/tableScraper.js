@@ -1,9 +1,14 @@
 
+/*
+ * Data contained within one table
+ */
 
 function TableData() {
 	this._rows = 0;
 	this._cols = 0;
-	this._data = [];
+	this._data = [];	// an array of array of TableDataElement
+							// each row is made of an array of TableDataElement
+							// this._data is an array of rows
 
 	this._checkDimensions = function() {
 		if (this._data.length > this._rows) {
@@ -59,6 +64,10 @@ function TableData() {
 
 }
 
+/* 
+ * Data contained in one table element (a single row/col location)
+ */
+
 function TableDataElement() {
 	this._data = null;
 	this._attributes = null;
@@ -80,6 +89,10 @@ function TableDataElement() {
 	}
 }
 
+/*
+ * Holds date for all the tables
+ */
+
 function AllTableData() {
 	this._tables = [];
 
@@ -99,6 +112,10 @@ function AllTableData() {
 		return this._tables;
 	}
 }
+
+/*
+ * Do the table scraping
+ */
 
 function getTableData() {
 	var allTableData = new AllTableData();
@@ -127,19 +144,57 @@ function getTableData() {
 }
 
 
-var allTables = getTableData();
+/**
+ * Wrapper function to be called from the outside, all the other functions in this file are unused outside
+ * this file.
+ */
 
-for (table in allTables.getTables()) {
-	var rows = allTables.getTable(table).getRows();
-	var cols = allTables.getTable(table).getCols();
+function tableScraper() {
+	var allTables = getTableData();
+	var exportableData = [];
 
-	console.log('Table ' + table + ' (' + rows + ' rows by ' + 
-				cols + ' cols) :');
-	for (var row = 0; row < rows; row++) {
-		for (var col = 0; col < cols; col++) {
-			console.log('(' + row + ',' + col + ') = ' + allTables.getTable(table).getDataAt(row, col).getData());
+	for (table in allTables.getTables()) {
+
+		var rows = allTables.getTable(table).getRows();
+		var cols = allTables.getTable(table).getCols();
+		var exportableDataSingleSetValues = [];
+
+		console.log('Table ' + table + ' (' + rows + ' rows by ' + 
+					cols + ' cols) :');
+
+		for (var row = 0; row < rows; row++) {
+			var exportableDataSingleSetDataRow = [];
+			for (var col = 0; col < cols; col++) {
+
+				// put the data minus any attributes into the exportableData structure
+				exportableDataSingleSetDataRow.push(
+					allTables.getTable(table).getDataAt(row, col).getData());
+
+				console.log('(' + row + ',' + col + ') = ' + 
+					allTables.getTable(table).getDataAt(row, col).getData());
+			}
+			console.log('pushing row ' + row);
+			exportableDataSingleSetValues.push(exportableDataSingleSetDataRow);
+
 		}
+
+		exportableData.push(
+				{
+					Rows : rows,
+					Cols : cols,
+					Values : exportableDataSingleSetValues
+				}
+		);
 	}
+
+	return (
+		{
+			Data : exportableData
+		}
+	);
 }
+
+//console.log(JSON.stringify(tableScraper()));
+//console.log(tableScraper().Data[0].Values[2][1]);;
 
 
