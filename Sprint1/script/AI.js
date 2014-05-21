@@ -68,7 +68,7 @@ function AI(parserData) {
 
 
 
-function AItest() {
+function AIdemo() {
 	var parserData = {
 			"Status": 0,      
 			"Data": [ 
