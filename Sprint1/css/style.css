@@ -118,3 +118,10 @@ input[type="text"]{
 	font-family: sans-serif;
 	font-size: 11px;
 }
+
+.line 
+{
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
