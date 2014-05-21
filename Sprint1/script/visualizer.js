@@ -28,10 +28,13 @@ Bar.prototype.draw = function(divId) {
 	//Width and height
     var w = this.width;
     var h = this.height;
+    var padding = 20;
+    var barPadding = 5;
+    var barWidth = ((w - 2*padding) / numBars) - barPadding;
 
     var xScale = d3.scale.linear()
     				.domain([0, d3.max(xValues)])
-    				.range([0, w]);
+    				.range([padding + barPadding, w - (padding + barPadding + barWidth)]);
 
     					// ordinal()
          //                    .domain(d3.range(this.dataSet.length))
@@ -39,8 +42,17 @@ Bar.prototype.draw = function(divId) {
 
     var yScale = d3.scale.linear()
                     .domain([0, d3.max(yValues)])
-                    .range([0, h]);
+                    .range([h - padding, padding]);
  
+ 	var xAxis = d3.svg.axis()
+ 					.scale(xScale)
+ 					.orient("bottom")
+ 					.ticks(numBars);
+
+ 	var yAxis = d3.svg.axis()
+ 					.scale(yScale)
+ 					.orient("left")
+ 					.ticks(5);
 
     console.log("xScale(0): " + xScale(0));
     console.log("xScale(1): " + xScale(1));
@@ -62,11 +74,11 @@ Bar.prototype.draw = function(divId) {
 	        return xScale(d[0]);
 	    })
 	    .attr("y", function(d) {
-	        return h - yScale(d[1]);
+	        return (yScale(d[1]));
 	    })
-	    .attr("width", (w / numBars))//xScale.rangeBand())
+	    .attr("width", barWidth)//xScale.rangeBand())
 	    .attr("height", function(d) {
-	        return yScale(d[1]);
+	        return h - yScale(d[1]) - padding;
 	    })
 	    .attr("fill", function(d) {
 	        return "rgb(0, 0, " + (d[1] * 10) + ")";
@@ -82,23 +94,39 @@ Bar.prototype.draw = function(divId) {
         })
         .attr("text-anchor", "middle")
         .attr("x", function(d, i) {
-            return xScale(d[0]) + (w / numBars) / 2;
+            return xScale(d[0]) + (w / numBars - barPadding) / 2;
         })
         .attr("y", function(d) {
-            return h - yScale(d[1]) + 14;
+            return yScale(d[1]) + 14;
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
         .attr("fill", "white");
 
-        console.log("Done Drawing!");
+    // Create x-axis
+    svg.append("g")
+    	.attr({
+    		class: "x-axis",
+    		"transform": "translate(" + (barWidth/2) + "," + (h - padding) + ")"
+    	})
+    	.call(xAxis);
+
+   	// Create y-axis
+    svg.append("g")
+    	.attr({
+    		class: "y-axis",
+    		"transform": "translate(" + padding + ",0)"
+    	})
+    	.call(yAxis);
+
+    console.log("Done Drawing!");
 
 };
 
 
 function visualize(dataPackage, parentId) {
 
-	var obj = '{		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		}';
+	var obj = '{		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		},{			"Type": "Bar",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		}';
 
 
 	dataPackage = JSON.parse(obj);

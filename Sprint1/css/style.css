@@ -72,3 +72,26 @@ input[type="text"]{
 	font-family:  "Helvetica";
 	font-size: 15px;
 }
+
+.x-axis path
+{
+	fill: none;
+	stroke: none;
+	shape-rendering: crispEdges;
+}
+
+.y-axis path,
+.y-axis line,
+.x-axis line 
+{
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.x-axis text, 
+.y-axis text
+{
+	font-family: sans-serif;
+	font-size: 11px;
+}
