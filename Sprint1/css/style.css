@@ -94,6 +94,15 @@ input[type="text"]{
 	font-size: 15px;
 }
 
+#submissionNotification
+{
+	height: 17px;
+	text-align: center;
+	font-family: "Helvetica";
+	font-size: 15px;
+	color: red;
+}
+
 .x-axis path
 {
 	fill: none;
