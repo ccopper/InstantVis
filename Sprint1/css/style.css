@@ -112,6 +112,7 @@ input[type="text"]{
 	shape-rendering: crispEdges;
 }
 
+.axis text,
 .x-axis text, 
 .y-axis text
 {
