@@ -20,7 +20,7 @@
 				<div id="disclaimer"> Note: No data from the data source will be saved on our server. </div>
 				<br>
 				<form>
-					<input type="text" name="url">
+					<input id="urlTextbox" type="text" name="url">
 					<br>
 					<div id="submitButton">
 						<h2>Visualize</h2>
@@ -28,6 +28,7 @@
 				</form>
 				<br>
 			</div>
+
 			<div id="resultsMessage">
 				Below are visualizations generated based on the data found at:
 				<br>
@@ -35,7 +36,12 @@
 				[Insert URL]
 				<br>
 			</div>
+
 			<div id="visArea">
+			</div>
+
+			<div id="loadingContent">
+				<img src="images/Loading.gif" alt="Loading...">
 			</div>
 		</div>
 	</body>
