@@ -7,9 +7,14 @@ $(document).ready(function(){
 	{
 		$(this).css("border-style", "groove");
 	});
-	$("#submitButton").click(function(d)
+	$("#submitButton").click(function()
 	{
 		var url = document.getElementById("urlTextbox").value;
+
+		if (url == "") {
+			$("#submissionNotification").text("Please enter a valid URL.");
+			return;
+		}
 
 		$("#reprintUrl").text(url);
 
