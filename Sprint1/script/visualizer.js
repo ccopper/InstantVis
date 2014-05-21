@@ -16,18 +16,37 @@ function Bar (dataSet, width, height) {
 Bar.prototype.draw = function(divId) {
 	console.log('Drawing!')
 
+	xValues = [];
+	yValues = [];
+
+	numBars = this.dataSet.length;
+	for(var i = 0; i < numBars; i++) {
+		xValues[i] = this.dataSet[i][0];
+		yValues[i] = this.dataSet[i][1];		
+	}
+
 	//Width and height
     var w = this.width;
     var h = this.height;
 
-    var xScale = d3.scale.ordinal()
-                            .domain(d3.range(this.dataSet.length))
-                            .rangeRoundBands([0, w], 0.05);
+    var xScale = d3.scale.linear()
+    				.domain([0, d3.max(xValues)])
+    				.range([0, w]);
+
+    					// ordinal()
+         //                    .domain(d3.range(this.dataSet.length))
+         //                    .rangeRoundBands([0, w], 0.05);
 
     var yScale = d3.scale.linear()
-                    .domain([0, d3.max(this.dataSet)])
+                    .domain([0, d3.max(yValues)])
                     .range([0, h]);
  
+
+    console.log("xScale(0): " + xScale(0));
+    console.log("xScale(1): " + xScale(1));
+    console.log("xScale(2): " + xScale(2));
+    console.log("xScale(3): " + xScale(3));
+
     //Create SVG element
     var svg = d3.select("#" + divId)
                 .append("svg")
@@ -39,18 +58,18 @@ Bar.prototype.draw = function(divId) {
     	.data(this.dataSet)
         .enter()
         .append("rect")
-        .attr("x", function(d, i) {
-	        return xScale(i);
+        .attr("x", function(d) {
+	        return xScale(d[0]);
 	    })
 	    .attr("y", function(d) {
-	        return h - yScale(d);
+	        return h - yScale(d[1]);
 	    })
-	    .attr("width", xScale.rangeBand())
+	    .attr("width", (w / numBars))//xScale.rangeBand())
 	    .attr("height", function(d) {
-	        return yScale(d);
+	        return yScale(d[1]);
 	    })
 	    .attr("fill", function(d) {
-	        return "rgb(0, 0, " + (d * 10) + ")";
+	        return "rgb(0, 0, " + (d[1] * 10) + ")";
 	    });
 
     //Create labels
@@ -59,18 +78,20 @@ Bar.prototype.draw = function(divId) {
         .enter()
         .append("text")
         .text(function(d) {
-            return d;
+            return d[1];
         })
         .attr("text-anchor", "middle")
         .attr("x", function(d, i) {
-            return xScale(i) + xScale.rangeBand() / 2;
+            return xScale(d[0]) + (w / numBars) / 2;
         })
         .attr("y", function(d) {
-            return h - yScale(d) + 14;
+            return h - yScale(d[1]) + 14;
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
         .attr("fill", "white");
+
+        console.log("Done Drawing!");
 
 };
 
@@ -125,6 +146,7 @@ function extractVisualizations(dataPackage) {
 
 	// Iterate over each visualization.
 	for (var i = 0; i < numVisualizations; i++ ) {
+		data = [];
 		type = d.Visualizations[i].Type;
 
 		numValues = d.Data.Values.length;
@@ -135,6 +157,9 @@ function extractVisualizations(dataPackage) {
 		columns = d.Visualizations[i].DataColumns;
 		numColumns = columns.length;
 
+		console.log("numValues: " + numValues);
+		console.log("numColumns: " + numColumns);
+
 		// Instantiate a visualization of the appropriate type.
 		switch(type) {
 			case "Line":
@@ -144,15 +169,17 @@ function extractVisualizations(dataPackage) {
 			case "Bar":
 
 				var row = [];
-
 				for (var j = 0; j < numValues; j++) {
+					row = [];
 					for (var k = 0; k < numColumns; k++) {
 						row[k] = d.Data.Values[j][columns[k]];
 					}
-					data[j] = row; 
+					console.log("Row: " + row.toString());
+					data.push(row);
+					console.log(data.toString()); 
 				}
 
-				console.log(data.toString());
+				
 
 				v = new Bar(data, width, height);
 				visList.push(v);
