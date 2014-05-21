@@ -1,3 +1,9 @@
+/*
+ * tableScraper() and associated functions that tableScraper() uses to scrape html tabular data.
+ * Call tableScraper() from within the html document in question.
+ *
+ */
+
 
 /*
  * Data contained within one table
@@ -147,12 +153,15 @@ function getTableData() {
 /**
  * Wrapper function to be called from the outside, all the other functions in this file are unused outside
  * this file.
+ *
+ * @returns	Data : [] portion of parser to AI js object as documented in the wiki and in the function
  */
 
 function tableScraper() {
 	var allTables = getTableData();
 	var exportableData = [];
 
+	/* for each table, get all associated data from all rows and cols */
 	for (table in allTables.getTables()) {
 
 		var rows = allTables.getTable(table).getRows();
@@ -167,13 +176,17 @@ function tableScraper() {
 			for (var col = 0; col < cols; col++) {
 
 				// put the data minus any attributes into the exportableData structure
-				exportableDataSingleSetDataRow.push(
-					allTables.getTable(table).getDataAt(row, col).getData());
+				// if the data is undefined, insert 'Number.NaN' into that element
+				var element = allTables.getTable(table).getDataAt(row, col).getData();
+				if (element == undefined) {
+					element = Number.NaN;
+				}
+				exportableDataSingleSetDataRow.push(element);
 
 				console.log('(' + row + ',' + col + ') = ' + 
 					allTables.getTable(table).getDataAt(row, col).getData());
 			}
-			console.log('pushing row ' + row);
+
 			exportableDataSingleSetValues.push(exportableDataSingleSetDataRow);
 
 		}
@@ -186,6 +199,18 @@ function tableScraper() {
 				}
 		);
 	}
+	
+	/*
+	 * returns this object:
+	 *
+	 * {
+	 * 	Data : [
+	 * 		Rows : (integer),
+	 * 		Cols : (integer),
+	 * 		Values : [Rows][Cols]
+	 * 	]
+	 * }
+	 */
 
 	return (
 		{
@@ -193,8 +218,5 @@ function tableScraper() {
 		}
 	);
 }
-
-//console.log(JSON.stringify(tableScraper()));
-//console.log(tableScraper().Data[0].Values[2][1]);;
 
 
