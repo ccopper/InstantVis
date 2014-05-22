@@ -136,6 +136,16 @@ Bar.prototype.draw = function(divId) {
  					.orient("left")
  					.ticks(5);
 
+ 	var xAxisLineCoords = [[padding,h-padding],[w-padding,h-padding]]
+
+ 	var xAxisLine = d3.svg.line(xAxisLineCoords);
+    				// .x(function(d) {
+    				// 	return xAxisLineCoords[0];
+    				// })
+    				// .y(function(d) {
+    				// 	return yScale(d[1]);
+    				// });				
+
     // console.log("xScale(0): " + xScale(0));
     // console.log("xScale(1): " + xScale(1));
     // console.log("xScale(2): " + xScale(2));
@@ -201,6 +211,10 @@ Bar.prototype.draw = function(divId) {
     	})
     	.call(yAxis);
 
+	svg.append("path")
+    	.attr("class", "line")
+    	.attr("d", xAxisLine(xAxisLineCoords)); 
+
     // console.log("Done Drawing!");
 
 };
@@ -208,7 +222,32 @@ Bar.prototype.draw = function(divId) {
 
 function visualize(dataPackage, parentId) {
 
-	var dataPackage = {		"Visualizations":		[{			"Type": "Bar",			"DataColumns": [0, 1]		},{			"Type": "Line",			"DataColumns": [0, 1]		}],		"Data":		{			"ColumnLabel": ["X", "Y"],			"ColumnType": ["Integer", "Integer"],			"Values":				[[0, 0],					[1,	1],				[2,	4],				[3,	9],				[4,	16],				[5,	25],				[6,	36],				[7,	49],				[8,	64],				[9,	81]]		}		};
+	var dataPackage = {		
+		"Visualizations":		
+			[{			
+				"Type": "Bar",			
+				"DataColumns": [0, 1]		
+			},{			
+				"Type": "Line",			
+				"DataColumns": [0, 1]		
+			}],		
+		"Data":		
+			{			
+				"ColumnLabel": ["X", "Y"],			
+				"ColumnType": ["Integer", "Integer"],			
+				"Values":				
+					[[0, 0],					
+					[1,	1],				
+					[2,	4],				
+					[3,	9],				
+					[4,	16],				
+					[5,	25],				
+					[6,	15],				
+					[7,	21],				
+					[8,	23],				
+					[9,	15]]		
+			}		
+		};
 
 	// Get a list of visualization objects based on the provided data.
 	var visualizations = extractVisualizations(dataPackage);
