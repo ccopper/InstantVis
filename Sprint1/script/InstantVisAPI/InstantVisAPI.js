@@ -16,6 +16,17 @@ var InstantVisAPI_Config =
 	"APIDir": "server",
 }
 
+ /**
+  *	Callback for a failed API call.
+  *
+  * @callback InstantVisAPI_Config
+  * @param {string} errorThrown		Error Message that was thrown
+  */
+var errorCallBack = function(errorThrown)
+{
+	return
+}
+
 /**
  *	Requests that the provided URL be scraped for tables.
  *

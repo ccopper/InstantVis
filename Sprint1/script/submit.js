@@ -55,7 +55,16 @@ function submitForm()
 
 function parseComplete(data)
 {
+	//Check if the request failed
+	if(data.Status == 0)
+	{
+		$("#resultsMessage").html("<h3>No Usable Tables Found</h3>");
+		$("#loadingContent").hide();
+		$("#resultsMessage").fadeIn(500);
 
+		return
+	}
+	
 	// var cleanData = AI(data); // Call AI
 
 

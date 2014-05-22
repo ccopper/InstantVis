@@ -19,7 +19,7 @@
 	//Set the not found handler
 	$app->notFound(function () use ($app)
 	{
-		echo "{ \"Status\": 1 }";
+		echo "{ \"Status\": 0 }";
 	});
 
 	
@@ -32,13 +32,16 @@
 	$app->run();
 	
 	/**
+	*	Parses the HTML contained at URL.	
 	*	
+	*	@method parseHTML
+	*	@param	app		Instance of the Slim App
+	*	@ 
 	*/
 	function parseHTML($app)
 	{
-		//URLs are unsanitized we a way to saftly pass these as a command arg
-		//$encURL = base64_encode($url);
-		
+		//URLs are possibly unsanitized data.
+		//Can arbitrary commands be executed
 		$URL = $app->request->post('URL');
 
 		chdir(dirname(__FILE__));
