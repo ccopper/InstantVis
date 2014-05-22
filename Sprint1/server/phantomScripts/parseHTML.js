@@ -9,6 +9,8 @@
  *=========================================================*/
 //Import the system module
 var system = require('system');
+var webpage = require('webpage');
+
 
  /**
   *	JSON For the defaults of the output 
@@ -18,15 +20,9 @@ var system = require('system');
   */
 var outputData = 
 {
-     "Status": 1,      
-     "HTTPCode": 0,
-	 "URL":	"",
-     "Data": 
-     {
-          "Values": []
-     }
+     "Status": 0,      
+     "Data": []
 }
-
 /**
  *	Outputs the result to stdout and exits
  *
@@ -42,18 +38,48 @@ function writeQuit(data)
 /*=========================================================
  *	Main code block below
  *=========================================================*/
-
-
+//Verify that we were passed a url
 if (system.args.length != 2) 
 {
 	writeQuit(outputData);
 }
 
-outputData.Status = 0;
-outputData.HTTPCode = 200;
-outputData.URL = system.args[1];
+//URL of page to parse
+var URL = system.args[1];
 
+//Create a webpage
+var page = webpage.create();
 
-writeQuit(outputData);
-//Exit just incase writeQuite doesn't get called
-phantom.exit();
+page.onError = function(msg, trace) 
+{
+	outputData.Status = 0;
+	outputData.Data = [];
+	writeQuit(outputData);
+};
+//Request the page
+page.open(URL, function(status)
+{
+	
+	//If we failed to retrieve the page
+	if(status == "fail")
+	{
+		writeQuit(outputData);
+	}
+	
+	//Inject jquery and the table parsing script
+	page.includeJs("http://localhost/Sprint1/server/phantomScripts/jquery-2.1.1.min.js", function()
+	{
+		page.includeJs("http://localhost/Sprint1/server/phantomScripts/tableScraper.js", function()
+		{
+			var table = page.evaluate(function()
+			{
+				return tableScraper();
+			});
+			
+			outputData.Status = 1;
+			outputData.Data = table.Data;
+			writeQuit(outputData);		
+		});
+	});	
+});	
+

@@ -180,14 +180,21 @@ function tableScraper() {
 
 				// put the data minus any attributes into the exportableData structure
 				// if the data is undefined, insert 'Number.NaN' into that element
-				var element = allTables.getTable(table).getDataAt(row, col).getData();
-				if (element == undefined) {
+				var element = allTables.getTable(table);
+				element = element.getDataAt(row, col);
+				if(element == undefined)
+				{
 					element = Number.NaN;
+				} else {
+					element = element.getData();
+				
+					if (element == undefined) {
+						element = Number.NaN;
+					}
 				}
 				exportableDataSingleSetDataRow.push(element);
 
-				console.log('(' + row + ',' + col + ') = ' + 
-					allTables.getTable(table).getDataAt(row, col).getData());
+				console.log('(' + row + ',' + col + ') = ' + element);
 			}
 
 			exportableDataSingleSetValues.push(exportableDataSingleSetDataRow);

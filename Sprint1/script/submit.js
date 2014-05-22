@@ -9,14 +9,14 @@ $(document).ready(function(){
 	});
 	$("#submitButton").click(function(d)
 	{
-		var url = document.getElementById("urlTextbox").value;
+		var url = $("#urlTextbox").value();
 
 		$("#form").fadeOut(0);
 		$("#loadingContent").show();//style.display = "inline";
 
-		//parseHTML(url, parseComplete);
+		parseHTML(url, parseComplete);
 
-		parseComplete("kldhdjkshg");
+		//parseComplete("kldhdjkshg");
 
 		console.log("url: " + url);
 
@@ -35,6 +35,7 @@ $(document).ready(function(){
 
 function parseComplete(data) 
 {
+	alert(data);
 	//var cleanData = doWork(data); // Call AI
 
 	// numDataSets = cleanData.length;

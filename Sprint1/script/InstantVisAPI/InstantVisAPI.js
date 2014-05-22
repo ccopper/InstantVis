@@ -26,16 +26,25 @@ var InstantVisAPI_Config =
  */
 function parseHTML(URL, APICallback)
 {
+	var start = URL.trim().substr(0,6);
+	start = start.toLowerCase();	
+	
+	if(start != "http://")
+	{
+		URL = "http://" + URL
+	}	
+	
 	//Encode the URL properly to handle slashed and special chars
 	var cleanURI = encodeURI(URL);
 	//Make an ajax request for the data
 	$.ajax({
-		type: 'GET',
-        url: InstantVisAPI_Config.Host + InstantVisAPI_Config.APIDir + "/parseHTML/" + cleanURI,
+		type: 'POST',
+        url: InstantVisAPI_Config.Host + InstantVisAPI_Config.APIDir + "/parseHTML,
+		data: { "URL": cleanURI },
         dataType: "json", 
 		success: function(data, textStatus, jqXHR)
 		{
-			APICallback(data);
+			APICallback(JSON.parse(data));
 		},
 		error: InstantVisAPI_Error
 		

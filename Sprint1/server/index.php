@@ -19,12 +19,12 @@
 	//Set the not found handler
 	$app->notFound(function () use ($app)
 	{
-		echo "{ Status: 1 }";
+		echo "{ "Status": 1 }";
 	});
 	
 	
 	//Register the REST API Calls
-	$app->get('/parseHTML/:URL', parseHTML);
+	$app->post('/parseHTML', parseHTML);
  
 	$app->run();
 	
@@ -35,8 +35,11 @@
 	{
 		//URLs are unsanitized we a way to saftly pass these as a command arg
 		//$encURL = base64_encode($url);
-	
-		echo exec("phantomjs phantomScripts/parseHTML.js \"$URL\"");
+		
+		$request = Slim::getInstance()->request();
+		$URL = json_decode($request->getBody());
+		
+		echo exec("phantomjs phantomScripts/parseHTML.js \"" + $URL["URL"] "\"");
 		
 	}	
 ?>
