@@ -9,41 +9,49 @@ $(document).ready(function(){
 	});
 	$("#submitButton").click(function()
 	{
-		var url = $("#urlTextbox").val();
 
-		url = url.trim();
-
-		if (url == "")
-		{
-			$("#submissionNotification").text("Please enter a valid URL.");
-			return;
+		submitForm();
+	});
+	$(document).keypress(function(e) {
+		if(e.which == 13) {
+			submitForm();
 		}
-
-		$("#reprintUrl").text(url);
-
-		$("#form").fadeOut(0);
-		$("#loadingContent").show();//style.display = "inline";
-
-
-		parseHTML(url, parseComplete);
-
-
-		//parseComplete("kldhdjkshg");
-
-		console.log("url: " + url);
-
-		// var parentId = $(this).parent().parent().parent().attr('id');
-		// console.log('Parent Id is: ' + parentId);
-		//$("#form").hide(1000);
-
-
-		// $("#visArea").fadeIn(500);
+	});
 });
 
+function submitForm()
+{
+
+	var url = $("#urlTextbox").val();
+
+	url = url.trim();
+
+	if (url == "")
+	{
+		$("#submissionNotification").text("Please enter a valid URL.");
+		return;
+	}
+
+	$("#reprintUrl").text(url);
+
+	$("#form").fadeOut(0);
+	$("#loadingContent").show();//style.display = "inline";
 
 
-});
+	parseHTML(url, parseComplete);
 
+
+	//parseComplete("kldhdjkshg");
+
+	console.log("url: " + url);
+
+	// var parentId = $(this).parent().parent().parent().attr('id');
+	// console.log('Parent Id is: ' + parentId);
+	//$("#form").hide(1000);
+
+
+	// $("#visArea").fadeIn(500);
+}
 
 function parseComplete(data)
 {
