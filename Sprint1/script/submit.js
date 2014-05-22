@@ -21,7 +21,7 @@ $(document).ready(function(){
 		$("#form").fadeOut(0);
 		$("#loadingContent").show();//style.display = "inline";
 
-		//parseHTML(url, parseComplete);
+		// parseHTML(url, parseComplete);
 
 		parseComplete("kldhdjkshg");
 
@@ -42,7 +42,7 @@ $(document).ready(function(){
 
 function parseComplete(data) 
 {
-	//var cleanData = doWork(data); // Call AI
+	// var cleanData = AI(data); // Call AI
 
 	// numDataSets = cleanData.length;
 
