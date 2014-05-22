@@ -78,9 +78,9 @@ page.open(URL, function(status)
 	}
 	
 	//Inject jquery and the table parsing script
-	page.includeJs("http://localhost/repo/Sprint1/server/phantomScripts/jquery-2.1.1.min.js", function()
+	page.includeJs("http://localhost/repo/Sprint2/server/phantomScripts/jquery-2.1.1.min.js", function()
 	{
-		page.includeJs("http://localhost/repo/Sprint1/server/phantomScripts/tableScraper.js", function()
+		page.includeJs("http://localhost/repo/Sprint2/server/phantomScripts/tableScraper.js", function()
 		{
 			var table = page.evaluate(function()
 			{
