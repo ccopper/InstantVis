@@ -52,6 +52,10 @@ function AI(parserData) {
 				{
 					"Type" : "Bar",
 					"DataColumns" : dataColumns
+				},
+				{
+					"Type" : "Scatter",
+					"DataColumns" : dataColumns
 				}
 			],
 			"Data" : {
