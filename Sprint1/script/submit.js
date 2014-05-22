@@ -9,9 +9,12 @@ $(document).ready(function(){
 	});
 	$("#submitButton").click(function()
 	{
-		var url = $("#urlTextbox").value();
-
-		if (url == "") {
+		var url = $("#urlTextbox").val();
+		
+		url = url.trim();
+		
+		if (url == "") 
+		{
 			$("#submissionNotification").text("Please enter a valid URL.");
 			return;
 		}
@@ -43,9 +46,11 @@ $(document).ready(function(){
 
 function parseComplete(data) 
 {
-	alert(data);
 	//var cleanData = doWork(data); // Call AI
 	// var cleanData = AI(data); // Call AI
+	
+	// var cleanData = AI(data); // Call AI
+
 
 	// numDataSets = cleanData.length;
 

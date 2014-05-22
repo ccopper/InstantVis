@@ -39,12 +39,12 @@ function parseHTML(URL, APICallback)
 	//Make an ajax request for the data
 	$.ajax({
 		type: 'POST',
-        url: InstantVisAPI_Config.Host + InstantVisAPI_Config.APIDir + "/parseHTML,
+        url: InstantVisAPI_Config.Host + InstantVisAPI_Config.APIDir + "/parseHTML",
 		data: { "URL": cleanURI },
         dataType: "json", 
 		success: function(data, textStatus, jqXHR)
 		{
-			APICallback(JSON.parse(data));
+			APICallback(data);
 		},
 		error: InstantVisAPI_Error
 		

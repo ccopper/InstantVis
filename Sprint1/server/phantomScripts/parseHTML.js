@@ -49,6 +49,7 @@ var URL = system.args[1];
 
 //Create a webpage
 var page = webpage.create();
+//Page error handler
 
 page.onError = function(msg, trace) 
 {
@@ -56,6 +57,7 @@ page.onError = function(msg, trace)
 	outputData.Data = [];
 	writeQuit(outputData);
 };
+
 //Request the page
 page.open(URL, function(status)
 {
