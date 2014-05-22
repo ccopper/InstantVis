@@ -21,11 +21,8 @@ $(document).ready(function(){
 		$("#form").fadeOut(0);
 		$("#loadingContent").show();//style.display = "inline";
 
-<<<<<<< HEAD
 		parseHTML(url, parseComplete);
-=======
 		// parseHTML(url, parseComplete);
->>>>>>> 6a74b4fcd474b6a05832055d7c0096ba72946ea4
 
 		//parseComplete("kldhdjkshg");
 
@@ -46,12 +43,9 @@ $(document).ready(function(){
 
 function parseComplete(data) 
 {
-<<<<<<< HEAD
 	alert(data);
 	//var cleanData = doWork(data); // Call AI
-=======
 	// var cleanData = AI(data); // Call AI
->>>>>>> 6a74b4fcd474b6a05832055d7c0096ba72946ea4
 
 	// numDataSets = cleanData.length;
 
