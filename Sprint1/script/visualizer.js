@@ -292,35 +292,35 @@ Bar.prototype.draw = function(divId) {
 
 function visualize(dataPackage, parentId) {
 
-	var dataPackage = {		
-		"Visualizations":		
-			[{			
-				"Type": "Bar",			
-				"DataColumns": [0, 1]		
-			},{			
-				"Type": "Line",			
-				"DataColumns": [0, 1]		
-			},{			
-				"Type": "Scatter",			
-				"DataColumns": [0, 1]		
-			}],		
-		"Data":		
-			{			
-				"ColumnLabel": ["X", "Y"],			
-				"ColumnType": ["Integer", "Integer"],			
-				"Values":				
-					[[0, 0],					
-					[1,	1],				
-					[2,	4],				
-					[3,	9],				
-					[4,	16],				
-					[5,	25],				
-					[6,	15],				
-					[7,	21],				
-					[8,	23],				
-					[9,	15]]		
-			}		
-		};
+	// var dataPackage = {		
+	// 	"Visualizations":		
+	// 		[{			
+	// 			"Type": "Bar",			
+	// 			"DataColumns": [0, 1]		
+	// 		},{			
+	// 			"Type": "Line",			
+	// 			"DataColumns": [0, 1]		
+	// 		},{			
+	// 			"Type": "Scatter",			
+	// 			"DataColumns": [0, 1]		
+	// 		}],		
+	// 	"Data":		
+	// 		{			
+	// 			"ColumnLabel": ["X", "Y"],			
+	// 			"ColumnType": ["Integer", "Integer"],			
+	// 			"Values":				
+	// 				[[0, 0],					
+	// 				[1,	1],				
+	// 				[2,	4],				
+	// 				[3,	9],				
+	// 				[4,	16],				
+	// 				[5,	25],				
+	// 				[6,	15],				
+	// 				[7,	21],				
+	// 				[8,	23],				
+	// 				[9,	15]]		
+	// 		}		
+	// 	};
 
 	// Get a list of visualization objects based on the provided data.
 	var visualizations = extractVisualizations(dataPackage);
