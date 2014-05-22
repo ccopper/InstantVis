@@ -1,4 +1,74 @@
 //This is our code for the visualizer. 
+function Scatter(dataSet, width, height) {
+	this.dataSet = dataSet;
+	this.width = width;
+	this.height = height;
+}
+
+Scatter.prototype.draw = function(divId) 
+{
+console.log('InstantLog!');
+
+
+	// TODO: Make the number of ticks on an axis somehow dynamic.
+
+    var w = this.width;
+    var h = this.height;
+    var padding = 20;
+
+    var xScale = d3.scale.linear()
+                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .range([padding, w - padding*2]);
+
+    var yScale = d3.scale.linear()
+                        .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
+                        .range([h - padding, padding]);
+
+    var rScale = d3.scale.linear()
+                        .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
+                        .range([2, 5]);
+
+    var xAxis = d3.svg.axis()
+                    .scale(xScale)
+                    .orient("bottom")
+                    .ticks(5);
+
+    var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient("left")
+                    .ticks(5);
+
+    var svg = d3.select("#" + divId)
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+    svg.selectAll("circle")
+        .data(this.dataSet)
+        .enter()
+        .append("circle")
+        .attr({
+            cx: function(d) { return xScale(d[0]); },
+            cy: function(d) { return yScale(d[1]); },
+            r: 3//function(d) { return rScale(d[1]); }
+            //fill: function(d) { return "rgb(0,0," + (d*10) + ")"; }
+        });
+
+    svg.append("g")
+        .attr({
+            class: "axis",
+            transform: "translate(0," + (h-padding) + ")"
+            })
+        .call(xAxis);
+
+    svg.append("g")
+        .attr({
+            class: "y-axis",
+            transform: "translate(" + padding + ",0)"
+            })
+        .call(yAxis); 
+}
+
 function Line(dataSet, width, height) {
 	this.dataSet = dataSet;
 	this.width = width;
@@ -230,6 +300,9 @@ function visualize(dataPackage, parentId) {
 			},{			
 				"Type": "Line",			
 				"DataColumns": [0, 1]		
+			},{			
+				"Type": "Scatter",			
+				"DataColumns": [0, 1]		
 			}],		
 		"Data":		
 			{			
@@ -339,6 +412,22 @@ function extractVisualizations(dataPackage) {
 				v = new Bar(data, width, height);
 				visList.push(v);
 				break;
+			case "Scatter":
+
+				// Pull out visualization specific data according to AI instructions.
+				var row = [];
+				for (var j = 0; j < numValues; j++) {
+					row = [];
+					for (var k = 0; k < numColumns; k++) {
+						row[k] = d.Data.Values[j][columns[k]];
+					}
+					data.push(row);
+				}
+
+				// Create new Bar object and append it to the list of visualizations.
+				v = new Scatter(data, width, height);
+				visList.push(v);
+				break;	
 			default:
 				// The type extracted from the data object did not match any of the defined visualization types.
 				console.log("ERROR: Could not match visualization type with definition in visualizer.");
