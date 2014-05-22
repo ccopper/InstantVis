@@ -65,16 +65,16 @@ function parseComplete(data)
 		return
 	}
 	
-	// var cleanData = AI(data); // Call AI
+	var cleanData = AI(data); // Call AI
 
 
-	// numDataSets = cleanData.length;
+	numDataSets = cleanData.length;
 
-	// for (var i = 0; i < numDataSets; i++) {
-	// visualize(cleanData[i],"visArea");
-	// }
+	for (var i = 0; i < numDataSets; i++) {
+	visualize(cleanData[i],"visArea");
+	}
 
-	visualize(0, "visArea");
+	// visualize(0, "visArea");
 
 	showResults();
 
