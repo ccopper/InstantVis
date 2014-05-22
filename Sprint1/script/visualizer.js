@@ -439,8 +439,19 @@ function extractVisualizations(dataPackage) {
 	console.log("come on man");
 }
 
-// Insert a new <div> tag into the DOM as a child of the element
-// with id parentId and give it an id of newDivId, a width and a height.
+
+
+/**
+ *  Insert a new <div> tag into the DOM as a child of the element
+ *  with id parentId and give it an id of newDivId, a width and a height.
+ *
+ *  @method parseHTML
+ *  @param {string} parentId        The id of the element into which to insert the new <div>
+ *  @param {string} newDivId        The id of the new <div>
+ *  @param {int}                    The width of the new <div>
+ *  @param {int}                    The height of the new <div>
+ *
+ */
 function createDiv(parentId, newDivId, width, height) {
 	//Find parent and append new div with id specified by newDivId
 	var parentDiv = document.getElementById(parentId);
@@ -454,7 +465,6 @@ function createDiv(parentId, newDivId, width, height) {
 	newDiv.style.width= width+"px";
 	newDiv.style.height= height+"px";
 	newDiv.style.display = "none";
-	//document.getElementById("visArea").appendChild(newDiv);
 	parentDiv.appendChild(newDiv);
 	return true;
 }
