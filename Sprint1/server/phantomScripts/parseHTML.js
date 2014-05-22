@@ -51,8 +51,17 @@ var URL = system.args[1];
 var page = webpage.create();
 //Page error handler
 
+/*phantom.onError = function(msg, trace)
+{
+	system.stderr.writeLine(msg);
+	system.stderr.writeLine(trace);
+	writeQuit(outputData);
+}*/
+
 page.onError = function(msg, trace) 
 {
+	system.stderr.writeLine(msg);
+	system.stderr.writeLine(trace);
 	outputData.Status = 0;
 	outputData.Data = [];
 	writeQuit(outputData);
@@ -69,9 +78,9 @@ page.open(URL, function(status)
 	}
 	
 	//Inject jquery and the table parsing script
-	page.includeJs("http://localhost/Sprint1/server/phantomScripts/jquery-2.1.1.min.js", function()
+	page.includeJs("http://localhost/repo/Sprint1/server/phantomScripts/jquery-2.1.1.min.js", function()
 	{
-		page.includeJs("http://localhost/Sprint1/server/phantomScripts/tableScraper.js", function()
+		page.includeJs("http://localhost/repo/Sprint1/server/phantomScripts/tableScraper.js", function()
 		{
 			var table = page.evaluate(function()
 			{

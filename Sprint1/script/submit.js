@@ -10,10 +10,10 @@ $(document).ready(function(){
 	$("#submitButton").click(function()
 	{
 		var url = $("#urlTextbox").val();
-		
+
 		url = url.trim();
-		
-		if (url == "") 
+
+		if (url == "")
 		{
 			$("#submissionNotification").text("Please enter a valid URL.");
 			return;
@@ -24,8 +24,9 @@ $(document).ready(function(){
 		$("#form").fadeOut(0);
 		$("#loadingContent").show();//style.display = "inline";
 
+
 		parseHTML(url, parseComplete);
-		// parseHTML(url, parseComplete);
+
 
 		//parseComplete("kldhdjkshg");
 
@@ -34,28 +35,26 @@ $(document).ready(function(){
 		// var parentId = $(this).parent().parent().parent().attr('id');
 		// console.log('Parent Id is: ' + parentId);
 		//$("#form").hide(1000);
-		
-		
-		// $("#visArea").fadeIn(500);
-	});
 
-	
+
+		// $("#visArea").fadeIn(500);
+});
+
+
 
 });
 
 
-function parseComplete(data) 
+function parseComplete(data)
 {
-	//var cleanData = doWork(data); // Call AI
-	// var cleanData = AI(data); // Call AI
-	
+
 	// var cleanData = AI(data); // Call AI
 
 
 	// numDataSets = cleanData.length;
 
 	// for (var i = 0; i < numDataSets; i++) {
-	// 	visualize(cleanData[i],"visArea");
+	// visualize(cleanData[i],"visArea");
 	// }
 
 	visualize(0, "visArea");
@@ -66,16 +65,16 @@ function parseComplete(data)
 
 function showResults()
 {
-	
+
 	// Display results message.
 	$("#resultsMessage").fadeIn(500);
-		
+
 	// Display all of the visualizations.
 	var visDivs = $("#visArea").children();
 	var numVis = visDivs.length;
 	for (var i = 0; i < numVis; i++) {
 		$("#vis" + i).fadeIn(500);
 	}
-	
+
 	$("#loadingContent").hide();//style.display = "none";
 }

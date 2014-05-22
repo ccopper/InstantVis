@@ -26,7 +26,7 @@ var InstantVisAPI_Config =
  */
 function parseHTML(URL, APICallback)
 {
-	var start = URL.trim().substr(0,6);
+	var start = URL.trim().substr(0,7);
 	start = start.toLowerCase();	
 	
 	if(start != "http://")
