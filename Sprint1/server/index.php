@@ -40,7 +40,8 @@
 		//$encURL = base64_encode($url);
 		
 		$URL = $app->request->post('URL');
-		
+
+		chdir(dirname(__FILE__));
 		echo exec("phantomjs phantomScripts/parseHTML.js \"$URL\"");
 		
 	}	

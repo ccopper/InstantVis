@@ -47,7 +47,6 @@ $(document).ready(function(){
 
 function parseComplete(data) 
 {
-	alert(data);
 	
 	// var cleanData = AI(data); // Call AI
 
