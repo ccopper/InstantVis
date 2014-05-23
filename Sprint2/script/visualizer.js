@@ -50,8 +50,18 @@ console.log('InstantLog!');
         .attr({
             cx: function(d) { return xScale(d[0]); },
             cy: function(d) { return yScale(d[1]); },
-            r: 3//function(d) { return rScale(d[1]); }
-            //fill: function(d) { return "rgb(0,0," + (d*10) + ")"; }
+            r: 3,//function(d) { return rScale(d[1]); }
+            fill: "black"
+        })
+        .on("mouseover",function() {
+            d3.select(this)
+                .attr("fill", "orange")
+                .attr("r", 5);
+        })
+        .on("mouseout", function(d) {
+            d3.select(this)
+                .attr("fill", "black")
+                .attr("r", 3);
         });
 
     svg.append("g")
@@ -123,6 +133,10 @@ Line.prototype.draw = function (divId) {
             .attr("width", w)
             .attr("height", h);
 
+    svg.append("path")
+        .attr("class", "line")
+        .attr("d", line(this.dataSet));
+
     svg.selectAll("circle")
         .data(this.dataSet)
         .enter()
@@ -130,8 +144,18 @@ Line.prototype.draw = function (divId) {
         .attr({
             cx: function(d) { return xScale(d[0]); },
             cy: function(d) { return yScale(d[1]); },
-            r: 3//function(d) { return rScale(d[1]); }
-            //fill: function(d) { return "rgb(0,0," + (d*10) + ")"; }
+            r: 3,
+            fill: "black"
+        })
+        .on("mouseover",function() {
+            d3.select(this)
+                .attr("fill", "orange")
+                .attr("r", 5);
+        })
+        .on("mouseout", function(d) {
+            d3.select(this)
+                .attr("fill", "black")
+                .attr("r", 3);
         });
 
 	console.log("B");
@@ -152,9 +176,7 @@ Line.prototype.draw = function (divId) {
 
     console.log("C");
 
-    svg.append("path")
-    	.attr("class", "line")
-    	.attr("d", line(this.dataSet));  
+      
 
     console.log("D");
 };
@@ -244,7 +266,15 @@ Bar.prototype.draw = function(divId) {
 	    })
 	    .attr("fill", function(d) {
 	        return "rgb(0, 0, " + (d[1] * 10) + ")";
-	    });
+	    })
+        .on("mouseover",function() {
+            d3.select(this)
+                .attr("fill", "orange");
+        })
+        .on("mouseout", function(d) {
+            d3.select(this)
+                .attr("fill", "rgb(0, 0, " + (d[1] * 10) + ")");
+        });
 
     //Create labels
     svg.selectAll("text")
