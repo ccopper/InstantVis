@@ -44,13 +44,6 @@ function submitForm()
 	// parseComplete("kldhdjkshg");
 
 	console.log("url: " + url);
-
-	// var parentId = $(this).parent().parent().parent().attr('id');
-	// console.log('Parent Id is: ' + parentId);
-	//$("#form").hide(1000);
-
-
-	// $("#visArea").fadeIn(500);
 }
 
 function parseComplete(data)

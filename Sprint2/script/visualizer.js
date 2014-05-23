@@ -43,27 +43,7 @@ console.log('InstantLog!');
             .attr("width", w)
             .attr("height", h);
 
-    svg.selectAll("circle")
-        .data(this.dataSet)
-        .enter()
-        .append("circle")
-        .attr({
-            cx: function(d) { return xScale(d[0]); },
-            cy: function(d) { return yScale(d[1]); },
-            r: 3,//function(d) { return rScale(d[1]); }
-            fill: "black"
-        })
-        .on("mouseover",function() {
-            d3.select(this)
-                .attr("fill", "orange")
-                .attr("r", 5);
-        })
-        .on("mouseout", function(d) {
-            d3.select(this)
-                .attr("fill", "black")
-                .attr("r", 3);
-        });
-
+    // Draw the x-axis.
     svg.append("g")
         .attr({
             class: "axis",
@@ -71,12 +51,37 @@ console.log('InstantLog!');
             })
         .call(xAxis);
 
+    // Draw the y-axis.
     svg.append("g")
         .attr({
             class: "y-axis",
             transform: "translate(" + padding + ",0)"
             })
-        .call(yAxis); 
+        .call(yAxis);
+
+    // Draw the scatter plot points.
+    svg.selectAll("circle")
+        .data(this.dataSet)
+        .enter()
+        .append("circle")
+        .attr({
+            cx: function(d) { return xScale(d[0]); },
+            cy: function(d) { return yScale(d[1]); },
+            r: 3,
+            fill: "black"
+        })
+        // When moused over, change size and shape of point.
+        .on("mouseover",function() {
+            d3.select(this)
+                .attr("fill", "orange")
+                .attr("r", 6);
+        })
+        // When mouse leaves, revert the size and shape back to the default.
+        .on("mouseout", function(d) {
+            d3.select(this)
+                .attr("fill", "black")
+                .attr("r", 3);
+        }); 
 }
 
 function Line(dataSet, width, height) {
@@ -133,6 +138,20 @@ Line.prototype.draw = function (divId) {
             .attr("width", w)
             .attr("height", h);
 
+    svg.append("g")
+        .attr({
+            class: "axis",
+            transform: "translate(0," + (h-padding) + ")"
+            })
+        .call(xAxis);
+
+    svg.append("g")
+        .attr({
+            class: "y-axis",
+            transform: "translate(" + padding + ",0)"
+            })
+        .call(yAxis); 
+
     svg.append("path")
         .attr("class", "line")
         .attr("d", line(this.dataSet));
@@ -150,7 +169,7 @@ Line.prototype.draw = function (divId) {
         .on("mouseover",function() {
             d3.select(this)
                 .attr("fill", "orange")
-                .attr("r", 5);
+                .attr("r", 6);
         })
         .on("mouseout", function(d) {
             d3.select(this)
@@ -160,25 +179,7 @@ Line.prototype.draw = function (divId) {
 
 	console.log("B");
 
-    svg.append("g")
-        .attr({
-            class: "axis",
-            transform: "translate(0," + (h-padding) + ")"
-            })
-        .call(xAxis);
 
-    svg.append("g")
-        .attr({
-            class: "y-axis",
-            transform: "translate(" + padding + ",0)"
-            })
-        .call(yAxis); 
-
-    console.log("C");
-
-      
-
-    console.log("D");
 };
 
 function Bar (dataSet, width, height) {
@@ -231,17 +232,6 @@ Bar.prototype.draw = function(divId) {
  	var xAxisLineCoords = [[padding,h-padding],[w-padding,h-padding]]
 
  	var xAxisLine = d3.svg.line(xAxisLineCoords);
-    				// .x(function(d) {
-    				// 	return xAxisLineCoords[0];
-    				// })
-    				// .y(function(d) {
-    				// 	return yScale(d[1]);
-    				// });				
-
-    // console.log("xScale(0): " + xScale(0));
-    // console.log("xScale(1): " + xScale(1));
-    // console.log("xScale(2): " + xScale(2));
-    // console.log("xScale(3): " + xScale(3));
 
     //Create SVG element
     var svg = d3.select("#" + divId)
@@ -314,9 +304,6 @@ Bar.prototype.draw = function(divId) {
 	svg.append("path")
     	.attr("class", "line")
     	.attr("d", xAxisLine(xAxisLineCoords)); 
-
-    // console.log("Done Drawing!");
-
 };
 
 
@@ -363,17 +350,9 @@ function visualize(dataPackage, parentId) {
 		visualizations[i].draw(divId);
 	}
 
-	
-	// var dataSet = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
- //                            11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-
-	// var bar = new Bar(dataSet, width, height);
-	// var barId = 'bar';
-
-	// createDiv(parentId,barId,bar.width,bar.height);
-	// bar.draw(barId);
 	return;
 }
+
 
 // Search through the provided data object to instantiate a list
 // containing each of the specified visualizations.
@@ -383,81 +362,38 @@ function extractVisualizations(dataPackage) {
 	var width = 600;
 
 	var visList = [];
-	var data = [];
-
-	var d = dataPackage;
 	var type = "";
-	var numValues;
-
 	var columns = [];
 
 	// Determine the total number of visualizations.
-	var numVisualizations = d.Visualizations.length;
+	var numVisualizations = dataPackage.Visualizations.length;
+    var values = dataPackage.Data.Values;
 
 	// Iterate over each visualization.
 	for (var i = 0; i < numVisualizations; i++ ) {
-		data = [];
-		type = d.Visualizations[i].Type;
-
-		numValues = d.Data.Values.length;
-
-		// console.log("columns: " + d.Visualizations.DataColumns);
-		// console.log("columns (type): " + typeof(d.Visualizations.DataColumns));
-
-		columns = d.Visualizations[i].DataColumns;
-		numColumns = columns.length;
-
+		type = dataPackage.Visualizations[i].Type;
+		columns = dataPackage.Visualizations[i].DataColumns;
 
 		// Instantiate a visualization of the appropriate type.
 		switch(type) {
 			case "Line":
-
-				// Pull out visualization specific data according to AI instructions.
-				var row = [];
-				for (var j = 0; j < numValues; j++) {
-					row = [];
-					for (var k = 0; k < numColumns; k++) {
-						row[k] = d.Data.Values[j][columns[k]];
-					}
-					data.push(row);
-				}
-
 				// Create new Line object and append it to the list of visualizations.
-				v = new Line(data, width, height);
+				v = new Line(getData(columns, values), width, height);
 				visList.push(v);
 				break;
+
 			case "Bar":
-
-				// Pull out visualization specific data according to AI instructions.
-				var row = [];
-				for (var j = 0; j < numValues; j++) {
-					row = [];
-					for (var k = 0; k < numColumns; k++) {
-						row[k] = d.Data.Values[j][columns[k]];
-					}
-					data.push(row);
-				}
-
 				// Create new Bar object and append it to the list of visualizations.
-				v = new Bar(data, width, height);
+				v = new Bar(getData(columns, values), width, height);
 				visList.push(v);
 				break;
+
 			case "Scatter":
-
-				// Pull out visualization specific data according to AI instructions.
-				var row = [];
-				for (var j = 0; j < numValues; j++) {
-					row = [];
-					for (var k = 0; k < numColumns; k++) {
-						row[k] = d.Data.Values[j][columns[k]];
-					}
-					data.push(row);
-				}
-
 				// Create new Bar object and append it to the list of visualizations.
-				v = new Scatter(data, width, height);
+				v = new Scatter(getData(columns, values), width, height);
 				visList.push(v);
 				break;	
+
 			default:
 				// The type extracted from the data object did not match any of the defined visualization types.
 				console.log("ERROR: Could not match visualization type with definition in visualizer.");
@@ -465,11 +401,26 @@ function extractVisualizations(dataPackage) {
 	}
 
 	return visList;
-
-	console.log("come on man");
 }
 
 
+function getData(columns, values)
+{
+    var data = [];
+    var row = [];
+    var numValues = values.length;
+    var numColumns = columns.length;
+
+    for (var j = 0; j < numValues; j++) {
+        row = [];
+        for (var k = 0; k < numColumns; k++) {
+            row[k] = values[j][columns[k]];
+        }
+        data.push(row);
+    }
+
+    return data;
+}
 
 /**
  *  Insert a new <div> tag into the DOM as a child of the element
