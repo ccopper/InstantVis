@@ -133,5 +133,10 @@ input[type="text"]{
 {
 	fill: none;
 	stroke: black;
-	shape-rendering: crispEdges;
+}
+
+.area
+{
+	fill: rgb(67, 127, 238);
+	stroke: none;
 }

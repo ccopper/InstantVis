@@ -56,6 +56,10 @@ function AI(parserData) {
 				{
 					"Type" : "Scatter",
 					"DataColumns" : dataColumns
+				},
+				{
+					"Type" : "Area",
+					"DataColumns" : dataColumns
 				}
 			],
 			"Data" : {
