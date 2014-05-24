@@ -162,21 +162,47 @@ Line.prototype.draw = function (divId) {
 
 	// TODO: Make the number of ticks on an axis somehow dynamic.
 
+    console.log("DRAWING LINE CHART");
+
+    console.log("this.dataSet: " + this.dataSet.toString());
+
     var w = this.width;
     var h = this.height;
     var padding = 20;
+    var data = [];
+
+    var numDataSets = this.dataSet[0].length;
+    var numValues = this.dataSet.length;
+
+    console.log("numDataSets: " + numDataSets);
+    console.log("numValues: " + numValues);
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([padding, w - padding*2]);
 
+    var maxY = 0;
+
+    for (var i = 1; i < numDataSets; i++) {
+        for (var j = 0; j < numValues; j++) {
+            console.log("this.dataSet[" + j + "][" + i + "]: " + this.dataSet[j][i]);
+            if (this.dataSet[j][i] > maxY) {
+                maxY = this.dataSet[j][i];
+            }
+        }
+    }
+
+    console.log("maxY: " + maxY);
+
     var yScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
+                        .domain([0, maxY])
                         .range([h - padding, padding]);
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
                         .range([2, 5]);
+
+
 
     var xAxis = d3.svg.axis()
                     .scale(xScale)
@@ -188,13 +214,7 @@ Line.prototype.draw = function (divId) {
                     .orient("left")
                     .ticks(5);
 
-    var line = d3.svg.line()
-    				.x(function(d) {
-    					return xScale(d[0]);
-    				})
-    				.y(function(d) {
-    					return yScale(d[1]);
-    				});
+    var line; 
 
     var svg = d3.select("#" + divId)
             .append("svg")
@@ -215,32 +235,67 @@ Line.prototype.draw = function (divId) {
             })
         .call(yAxis); 
 
-    svg.append("path")
-        .attr("class", "line")
-        .attr("d", line(this.dataSet));
+    
+    console.log("numDataSets: " + numDataSets);
+    
+    var colors = [];
+    colors[0] = "green";
 
-    if (this.showPoints) {
-        svg.selectAll("circle")
-            .data(this.dataSet)
-            .enter()
-            .append("circle")
-            .attr({
-                cx: function(d) { return xScale(d[0]); },
-                cy: function(d) { return yScale(d[1]); },
-                r: 3,
-                fill: "black"
+    for (var i = 1; i < numDataSets; i++) {
+        data = getData([0,i],this.dataSet);
+
+        if (numDataSets <= 2) {
+            colors[i] = "black";
+        }
+        else {
+            colors[i] = randRGB(100,200);
+        }
+
+        console.log("DRAWING W/ COLUMN " + i);
+        console.log("data: " + data);
+
+        line = d3.svg.line()
+            .x(function(d) {
+                return xScale(d[0]);
             })
-            .on("mouseover",function() {
-                d3.select(this)
-                    .attr("fill", "orange")
-                    .attr("r", 6);
-            })
-            .on("mouseout", function(d) {
-                d3.select(this)
-                    .attr("fill", "black")
-                    .attr("r", 3);
+            .y(function(d) {
+                return yScale(d[1]);
             });
+
+        svg.append("path")
+            .attr("class", "line")
+            .attr("style", "stroke: " + colors[i])
+            .attr("d", line(data));
+
+        if (this.showPoints) {
+            console.log("About to draw circles...");
+            console.log("svg.selectAll('circle').data(data): " + svg.selectAll("circle").data(data).enter());
+            
+            for (var j = 0; j < numValues; j++) {
+                console.log("p(x,y): " + xScale(data[j][0]) + "," + yScale(data[j][1]));
+                svg.append("circle")
+                    .attr("cx", xScale(data[j][0]))
+                    .attr("cy", yScale(data[j][1]))
+                    .attr("r", 3)
+                    .attr("fill", colors[i])
+                    .attr("color", colors[i])
+                    .on("mouseover",function() {
+                    d3.select(this)
+                        .attr("fill", this.getAttribute("color"))
+                        .attr("r", 6);
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this)
+                            .attr("fill", this.getAttribute("color"))
+                            .attr("r", 3);
+                        console.log("colorOut: " + this.color);
+                    });
+            }
+        }
     }
+
+    console.log("colors: " + colors.toString());
+   
 };
 
 function Bar (dataSet, width, height) {
@@ -372,7 +427,7 @@ function visualize(dataPackage, parentId) {
 	// 			"DataColumns": [0, 1]		
 	// 		},{			
 	// 			"Type": "Line",			
-	// 			"DataColumns": [0, 1]		
+	// 			"DataColumns": [0, 1, 2, 3]		
 	// 		},{			
 	// 			"Type": "Scatter",			
 	// 			"DataColumns": [0, 1]		
@@ -385,16 +440,16 @@ function visualize(dataPackage, parentId) {
 	// 			"ColumnLabel": ["X", "Y"],			
 	// 			"ColumnType": ["Integer", "Integer"],			
 	// 			"Values":				
-	// 				[[0, 0],					
-	// 				[1,	1],				
-	// 				[2,	4],				
-	// 				[3,	9],				
-	// 				[4,	16],				
-	// 				[5,	25],				
-	// 				[6,	15],				
-	// 				[7,	21],				
-	// 				[8,	23],				
-	// 				[9,	15]]		
+	// 				[[0, 0, 0, 34],					
+	// 				[1,	1, 2, 45],				
+	// 				[2,	4, 35, 4],				
+	// 				[3,	9, 24, 23],				
+	// 				[4,	16, 32, 10],				
+	// 				[5,	25, 4, 14],				
+	// 				[6,	15, 2, 15],				
+	// 				[7,	21, 18, 12],				
+	// 				[8,	23, 50, 34],				
+	// 				[9,	15, 66, 45]]		
 	// 		}		
 	// 	};
 
@@ -521,4 +576,11 @@ function createDiv(parentId, newDivId, width, height) {
 	newDiv.style.display = "none";
 	parentDiv.appendChild(newDiv);
 	return true;
+}
+
+
+function randRGB(min, max)
+{
+    var range = max - min;
+    return "rgb(" + (min + Math.floor(Math.random() * range)) + "," + (min + Math.floor(Math.random() * range)) + "," + (min + Math.floor(Math.random() * range)) + ")";
 }
