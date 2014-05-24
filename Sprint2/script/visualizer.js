@@ -269,16 +269,42 @@ Line.prototype.draw = function (divId) {
     //       .attr("x", 9)
     //       .attr("dy", ".35em");
 
-    svg.append("rect")
-          .attr("class", "overlay")
-          .attr("width", w)
-          .attr("height", h)
-          .on("mouseover", function() { focus.style("display", null); })
-          .on("mouseout", function() { focus.style("display", "none"); })
-          .on("mousemove", mousemove);
+    
 
     function mousemove() {
         focus.attr("transform", "translate(" + d3.mouse(this)[0] + "," + 0 + ")");
+
+        var mouseX = d3.mouse(this)[0];
+
+
+        console.log("mouseX: " + mouseX);
+        
+        // var circleHighlights = 
+        svg.selectAll(".circle-highlight")
+            .attr("display", function() {
+                console.log("cx: " + this.getAttribute("cx"));
+                if ((this.getAttribute("cx") < mouseX + 1) && (this.getAttribute("cx") > mouseX - 1)) {
+                    return null;
+                } else {
+                    return "none";
+                }
+            });
+
+
+        // .forEach(function() {
+        //     this.attr("display", null);
+        // });
+       
+
+
+        // console.log("circleHighlights: " + circleHighlights);
+        // var numCircleHighlights = circleHighlights.length;
+        // console.log("numCircleHighlights:" + numCircleHighlights);
+
+        // for (var i = 0; i < numCircleHighlights; i++) {
+        //     circleHighlights[i].attr("display", null);
+        // }
+
         // focus.select("text").text("|");
     }
 
@@ -319,7 +345,7 @@ Line.prototype.draw = function (divId) {
 
         if (this.showPoints) {            
             for (var j = 0; j < numValues; j++) {
-                console.log("p(x,y): " + xScale(data[j][0]) + "," + yScale(data[j][1]));
+                console.log("p(x,y): " + xScale(data[j][0])+1 + "," + yScale(data[j][1]));
                 svg.append("circle")
                     .attr("cx", xScale(data[j][0]))
                     .attr("cy", yScale(data[j][1]))
@@ -336,9 +362,30 @@ Line.prototype.draw = function (divId) {
                             .attr("fill", this.getAttribute("color"))
                             .attr("r", 3);
                     });
+                svg.append("circle")
+                    .attr("class", "circle-highlight")
+                    .attr("cx", xScale(data[j][0]))
+                    .attr("cy", yScale(data[j][1]))
+                    .attr("r", 6)
+                    .attr("fill", "none")
+                    .attr("display", "none")
+                    .attr("stroke", colors[i]);
             }
         }
     }
+
+    svg.append("rect")
+          .attr("class", "overlay")
+          .attr("width", w)
+          .attr("height", h)
+          .on("mouseover", function() { 
+            focus.style("display", null); 
+          })
+          .on("mouseout", function() { 
+            focus.style("display", "none");
+            svg.selectAll(".circle-highlight").attr("display", "none") 
+          })
+          .on("mousemove", mousemove);
 
    
 };
