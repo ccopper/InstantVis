@@ -1,5 +1,8 @@
 //This is our code for the visualizer. 
 
+var globalPadding = 25;
+
+
 function Area(dataSet, width, height) {
     this.dataSet = dataSet;
     this.width = width;
@@ -18,11 +21,11 @@ Area.prototype.draw = function(divId)
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([padding, w - padding*2]);
+                 .range([globalPadding, w - globalPadding*2]);
 
     var yScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
-                        .range([h - padding, padding]);
+                        .range([h - globalPadding, globalPadding]);
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
@@ -51,14 +54,14 @@ Area.prototype.draw = function(divId)
     svg.append("g")
         .attr({
             class: "axis",
-            transform: "translate(0," + (h-padding) + ")"
+            transform: "translate(0," + (h-globalPadding) + ")"
             })
         .call(xAxis);
 
     svg.append("g")
         .attr({
             class: "y-axis",
-            transform: "translate(" + padding + ",0)"
+            transform: "translate(" + globalPadding + ",0)"
             })
         .call(yAxis); 
 
@@ -85,11 +88,11 @@ Scatter.prototype.draw = function(divId)
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([padding, w - padding*2]);
+                 .range([globalPadding, w - globalPadding*2]);
 
     var yScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
-                        .range([h - padding, padding]);
+                        .range([h - globalPadding, globalPadding]);
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
@@ -114,7 +117,7 @@ Scatter.prototype.draw = function(divId)
     svg.append("g")
         .attr({
             class: "axis",
-            transform: "translate(0," + (h-padding) + ")"
+            transform: "translate(0," + (h-globalPadding) + ")"
             })
         .call(xAxis);
 
@@ -122,7 +125,7 @@ Scatter.prototype.draw = function(divId)
     svg.append("g")
         .attr({
             class: "y-axis",
-            transform: "translate(" + padding + ",0)"
+            transform: "translate(" + globalPadding + ",0)"
             })
         .call(yAxis);
 
@@ -151,6 +154,17 @@ Scatter.prototype.draw = function(divId)
         }); 
 }
 
+
+/**
+ *  Create a Line object.
+ *
+ *  @method Line
+ *  @param [[int*]*] dataSet        The 2-dimensional array of data values comprising the Line graph's data.
+ *  @param int width                The width of the visualization in pixels.
+ *  @param int height               The height of the visualization in pixels.
+ *  @param Boolean showPoints       Whether or not points should be displayed on the lines.
+ *
+ */
 function Line(dataSet, width, height, showPoints) {
 	this.dataSet = dataSet;
 	this.width = width;
@@ -179,7 +193,8 @@ Line.prototype.draw = function (divId) {
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([padding, w - padding*2]);
+                 .range([globalPadding, w - globalPadding*2])
+                 .clamp(true);
 
     var maxY = 0;
 
@@ -196,7 +211,8 @@ Line.prototype.draw = function (divId) {
 
     var yScale = d3.scale.linear()
                         .domain([0, maxY])
-                        .range([h - padding, padding]);
+                        .range([h - globalPadding, globalPadding])
+                        .clamp(true);
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
@@ -214,24 +230,69 @@ Line.prototype.draw = function (divId) {
                     .orient("left")
                     .ticks(5);
 
-    var line; 
+    var line = d3.svg.line()
+            .x(function(d) {
+                return xScale(d[0]);
+            })
+            .y(function(d) {
+                return yScale(d[1]);
+            }); 
+
+    var guideline = d3.svg.line()
+            .x(function(d) {
+                return d[0];
+            })
+            .y(function(d) {
+                return d[1];
+            }); 
 
     var svg = d3.select("#" + divId)
             .append("svg")
             .attr("width", w)
             .attr("height", h);
 
+
+    var focus = svg.append("g")
+          .attr("class", "focus")
+          .style("display", "none");
+
+    var topLinePoint = [0, globalPadding];
+    var bottomLinePoint = [0, h-globalPadding];
+    var lineData = [topLinePoint, bottomLinePoint];
+
+    focus.append("path")
+        .attr("class", "guideline")
+        .attr("style", "stroke: gray")
+        .attr("d", guideline(lineData));
+
+    // focus.append("text")
+    //       .attr("x", 9)
+    //       .attr("dy", ".35em");
+
+    svg.append("rect")
+          .attr("class", "overlay")
+          .attr("width", w)
+          .attr("height", h)
+          .on("mouseover", function() { focus.style("display", null); })
+          .on("mouseout", function() { focus.style("display", "none"); })
+          .on("mousemove", mousemove);
+
+    function mousemove() {
+        focus.attr("transform", "translate(" + d3.mouse(this)[0] + "," + 0 + ")");
+        // focus.select("text").text("|");
+    }
+
     svg.append("g")
         .attr({
             class: "axis",
-            transform: "translate(0," + (h-padding) + ")"
+            transform: "translate(0," + (h-globalPadding) + ")"
             })
         .call(xAxis);
 
     svg.append("g")
         .attr({
             class: "y-axis",
-            transform: "translate(" + padding + ",0)"
+            transform: "translate(" + globalPadding + ",0)"
             })
         .call(yAxis); 
 
@@ -251,26 +312,12 @@ Line.prototype.draw = function (divId) {
             colors[i] = randRGB(100,200);
         }
 
-        console.log("DRAWING W/ COLUMN " + i);
-        console.log("data: " + data);
-
-        line = d3.svg.line()
-            .x(function(d) {
-                return xScale(d[0]);
-            })
-            .y(function(d) {
-                return yScale(d[1]);
-            });
-
         svg.append("path")
             .attr("class", "line")
             .attr("style", "stroke: " + colors[i])
             .attr("d", line(data));
 
-        if (this.showPoints) {
-            console.log("About to draw circles...");
-            console.log("svg.selectAll('circle').data(data): " + svg.selectAll("circle").data(data).enter());
-            
+        if (this.showPoints) {            
             for (var j = 0; j < numValues; j++) {
                 console.log("p(x,y): " + xScale(data[j][0]) + "," + yScale(data[j][1]));
                 svg.append("circle")
@@ -288,13 +335,11 @@ Line.prototype.draw = function (divId) {
                         d3.select(this)
                             .attr("fill", this.getAttribute("color"))
                             .attr("r", 3);
-                        console.log("colorOut: " + this.color);
                     });
             }
         }
     }
 
-    console.log("colors: " + colors.toString());
    
 };
 
@@ -320,15 +365,15 @@ Bar.prototype.draw = function(divId) {
     var h = this.height;
     var padding = 20;
     var barPadding = 5;
-    var barWidth = ((w - 2*padding) / numBars) - barPadding;
+    var barWidth = ((w - 2*globalPadding) / numBars) - barPadding;
 
     var xScale = d3.scale.linear()
     				.domain([0, d3.max(xValues)])
-    				.range([padding + barPadding, w - (padding + barPadding + barWidth)]);
+    				.range([globalPadding + barPadding, w - (globalPadding + barPadding + barWidth)]);
 
     var yScale = d3.scale.linear()
                     .domain([0, d3.max(yValues)])
-                    .range([h - padding, padding]);
+                    .range([h - globalPadding, globalPadding]);
  
  	var xAxis = d3.svg.axis()
  					.scale(xScale)
@@ -340,7 +385,7 @@ Bar.prototype.draw = function(divId) {
  					.orient("left")
  					.ticks(5);
 
- 	var xAxisLineCoords = [[padding,h-padding],[w-padding,h-padding]]
+ 	var xAxisLineCoords = [[globalPadding,h-globalPadding],[w-globalPadding,h-globalPadding]]
 
  	var xAxisLine = d3.svg.line(xAxisLineCoords);
 
@@ -363,7 +408,7 @@ Bar.prototype.draw = function(divId) {
 	    })
 	    .attr("width", barWidth)//xScale.rangeBand())
 	    .attr("height", function(d) {
-	        return h - yScale(d[1]) - padding;
+	        return h - yScale(d[1]) - globalPadding;
 	    })
 	    .attr("fill", function(d) {
 	        return "rgb(0, 0, " + (d[1] * 10) + ")";
@@ -400,7 +445,7 @@ Bar.prototype.draw = function(divId) {
     svg.append("g")
     	.attr({
     		class: "x-axis",
-    		"transform": "translate(" + (barWidth/2) + "," + (h - padding) + ")"
+    		"transform": "translate(" + (barWidth/2) + "," + (h - globalPadding) + ")"
     	})
     	.call(xAxis);
 
@@ -408,7 +453,7 @@ Bar.prototype.draw = function(divId) {
     svg.append("g")
     	.attr({
     		class: "y-axis",
-    		"transform": "translate(" + padding + ",0)"
+    		"transform": "translate(" + globalPadding + ",0)"
     	})
     	.call(yAxis);
 
@@ -418,8 +463,10 @@ Bar.prototype.draw = function(divId) {
 };
 
 
+
 function visualize(dataPackage, parentId) {
 
+    // KEEP THIS FOR CONTINUAL TESTING PURPOSES DURING DEVELOPMENT...for now...
 	// var dataPackage = {		
 	// 	"Visualizations":		
 	// 		[{			
@@ -472,8 +519,8 @@ function visualize(dataPackage, parentId) {
 // containing each of the specified visualizations.
 function extractVisualizations(dataPackage) {
 
-	var height = 250;
-	var width = 600;
+	var height = 300;
+	var width = 650;
 
 	var visList = [];
 	var type = "";
