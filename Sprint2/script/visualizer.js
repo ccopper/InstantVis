@@ -354,7 +354,13 @@ Line.prototype.draw = function (divId) {
                     .attr("color", colors[i])
                     .on("mouseover",function() {
                     d3.select(this)
-                        .attr("fill", this.getAttribute("color"))
+                        .attr("fill", function() {
+                        if (numDataSets <= 2) {
+                            return "orange";    
+                        } else {
+                            return this.getAttribute("color");
+                        }
+                        })
                         .attr("r", 6);
                     })
                     .on("mouseout", function() {
@@ -374,19 +380,21 @@ Line.prototype.draw = function (divId) {
         }
     }
 
-    svg.append("rect")
-          .attr("class", "overlay")
-          .attr("width", w)
-          .attr("height", h)
-          .on("mouseover", function() { 
-            focus.style("display", null); 
-          })
-          .on("mouseout", function() { 
-            focus.style("display", "none");
-            svg.selectAll(".circle-highlight").attr("display", "none") 
-          })
-          .on("mousemove", mousemove);
+    if (numDataSets > 2) {
 
+        svg.append("rect")
+              .attr("class", "overlay")
+              .attr("width", w)
+              .attr("height", h)
+              .on("mouseover", function() { 
+                focus.style("display", null); 
+              })
+              .on("mouseout", function() { 
+                focus.style("display", "none");
+                svg.selectAll(".circle-highlight").attr("display", "none") 
+              })
+              .on("mousemove", mousemove);
+    }
    
 };
 
