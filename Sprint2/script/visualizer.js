@@ -182,6 +182,8 @@ Line.prototype.draw = function (divId) {
 
     var w = this.width;
     var h = this.height;
+    var defaultRadius = 3;
+    var highlightRadius = 6;
     var padding = 20;
     var data = [];
 
@@ -193,7 +195,7 @@ Line.prototype.draw = function (divId) {
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([globalPadding, w - globalPadding*2])
+                 .range([globalPadding, w - globalPadding])
                  .clamp(true);
 
     var maxY = 0;
@@ -272,23 +274,29 @@ Line.prototype.draw = function (divId) {
     
 
     function mousemove() {
-        focus.attr("transform", "translate(" + d3.mouse(this)[0] + "," + 0 + ")");
+        
 
         var mouseX = d3.mouse(this)[0];
 
+        if (mouseX >= globalPadding) {
+            focus.attr("transform", "translate(" + d3.mouse(this)[0] + "," + 0 + ")");
+        }
 
         console.log("mouseX: " + mouseX);
         
         // var circleHighlights = 
-        svg.selectAll(".circle-highlight")
-            .attr("display", function() {
-                console.log("cx: " + this.getAttribute("cx"));
-                if ((this.getAttribute("cx") < mouseX + 1) && (this.getAttribute("cx") > mouseX - 1)) {
-                    return null;
-                } else {
-                    return "none";
-                }
-            });
+        //if (mouseX >= globalPadding) {
+            svg.selectAll(".circle-highlight")
+                .attr("display", function() {
+                    console.log("cx: " + this.getAttribute("cx"));
+                    if ((this.getAttribute("cx") < mouseX + defaultRadius) && (this.getAttribute("cx") > mouseX - defaultRadius)) {
+                        focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
+                        return null;
+                    } else {
+                        return "none";
+                    }
+                });
+        //}
 
 
         // .forEach(function() {
@@ -313,6 +321,7 @@ Line.prototype.draw = function (divId) {
             class: "axis",
             transform: "translate(0," + (h-globalPadding) + ")"
             })
+        .attr("width", w-2*globalPadding)
         .call(xAxis);
 
     svg.append("g")
@@ -349,30 +358,40 @@ Line.prototype.draw = function (divId) {
                 svg.append("circle")
                     .attr("cx", xScale(data[j][0]))
                     .attr("cy", yScale(data[j][1]))
-                    .attr("r", 3)
+                    .attr("r", defaultRadius)
                     .attr("fill", colors[i])
                     .attr("color", colors[i])
                     .on("mouseover",function() {
-                    d3.select(this)
-                        .attr("fill", function() {
-                        if (numDataSets <= 2) {
-                            return "orange";    
-                        } else {
-                            return this.getAttribute("color");
+                        if (this.getAttribute("cx") <= globalPadding || this.getAttribute("cx") > w+globalPadding 
+                            || this.getAttribute("cy") >= h-globalPadding || this.getAttribute("cy") < globalPadding) {
+                            return;
                         }
-                        })
-                        .attr("r", 6);
+                        if (numDataSets <= 2) {
+                            d3.select(this)
+                                .attr("fill", function() {
+                                    if (numDataSets <= 2) {
+                                        return "orange";    
+                                    }// } else {
+                                //     return this.getAttribute("color");
+                                // }
+                                })
+                                .attr("r", function() {
+                                    if (numDataSets <= 2) {
+                                        return highlightRadius;    
+                                    }
+                                });
+                        }
                     })
                     .on("mouseout", function() {
                         d3.select(this)
                             .attr("fill", this.getAttribute("color"))
-                            .attr("r", 3);
+                            .attr("r", defaultRadius);
                     });
                 svg.append("circle")
                     .attr("class", "circle-highlight")
                     .attr("cx", xScale(data[j][0]))
                     .attr("cy", yScale(data[j][1]))
-                    .attr("r", 6)
+                    .attr("r", highlightRadius)
                     .attr("fill", "none")
                     .attr("display", "none")
                     .attr("stroke", colors[i]);
@@ -383,17 +402,19 @@ Line.prototype.draw = function (divId) {
     if (numDataSets > 2) {
 
         svg.append("rect")
-              .attr("class", "overlay")
-              .attr("width", w)
-              .attr("height", h)
-              .on("mouseover", function() { 
-                focus.style("display", null); 
-              })
-              .on("mouseout", function() { 
-                focus.style("display", "none");
-                svg.selectAll(".circle-highlight").attr("display", "none") 
-              })
-              .on("mousemove", mousemove);
+            .attr("x", globalPadding-1)
+            .attr("y", globalPadding-1)
+            .attr("class", "overlay")
+            .attr("width", w-(2*globalPadding)+2)
+            .attr("height", h-(2*globalPadding)+2)
+            .on("mouseover", function() { 
+              focus.style("display", null); 
+            })
+            .on("mouseout", function() { 
+              focus.style("display", "none");
+              svg.selectAll(".circle-highlight").attr("display", "none") 
+            })
+            .on("mousemove", mousemove);
     }
    
 };
@@ -542,16 +563,16 @@ function visualize(dataPackage, parentId) {
 	// 			"ColumnLabel": ["X", "Y"],			
 	// 			"ColumnType": ["Integer", "Integer"],			
 	// 			"Values":				
-	// 				[[0, 0, 0, 34],					
-	// 				[1,	1, 2, 45],				
-	// 				[2,	4, 35, 4],				
-	// 				[3,	9, 24, 23],				
-	// 				[4,	16, 32, 10],				
-	// 				[5,	25, 4, 14],				
-	// 				[6,	15, 2, 15],				
-	// 				[7,	21, 18, 12],				
-	// 				[8,	23, 50, 34],				
-	// 				[9,	15, 66, 45]]		
+	// 				[[0, 0, randNum(0,50), randNum(0,50)],					
+	// 				[1,	1, randNum(0,50), randNum(0,50)],				
+	// 				[2,	4, randNum(0,50), randNum(0,50)],				
+	// 				[3,	9, randNum(0,50), randNum(0,50)],				
+	// 				[4,	16, randNum(0,50), randNum(0,50)],				
+	// 				[5,	25, randNum(0,50), randNum(0,50)],				
+	// 				[6,	15, randNum(0,50), randNum(0,50)],				
+	// 				[7,	21, randNum(0,50), randNum(0,50)],				
+	// 				[8,	23, randNum(0,50), randNum(0,50)],				
+	// 				[9,	15, randNum(0,50), randNum(0,50)]]		
 	// 		}		
 	// 	};
 
@@ -685,4 +706,9 @@ function randRGB(min, max)
 {
     var range = max - min;
     return "rgb(" + (min + Math.floor(Math.random() * range)) + "," + (min + Math.floor(Math.random() * range)) + "," + (min + Math.floor(Math.random() * range)) + ")";
+}
+
+function randNum(min, max)
+{
+    return Math.floor(Math.random()*(max-min))+min;
 }
