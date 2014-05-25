@@ -69,7 +69,7 @@ Area.prototype.draw = function(divId)
         .datum(this.dataSet)
         .attr("class", "area")
         .attr("d", area);
-}
+};
 
 function Scatter(dataSet, width, height) {
 	this.dataSet = dataSet;
@@ -186,6 +186,11 @@ Line.prototype.draw = function (divId) {
     var highlightRadius = 6;
     var padding = 20;
     var data = [];
+    var highlightTextHeight = 12;
+    var highlightTextPadding = 2;
+    var highlightTextLength = 20;
+    var colors = [];
+    colors[0] = "green";
 
     var numDataSets = this.dataSet[0].length;
     var numValues = this.dataSet.length;
@@ -272,8 +277,11 @@ Line.prototype.draw = function (divId) {
     //       .attr("dy", ".35em");
 
     
+var highlightText = [];
 
     function mousemove() {
+        
+        var thisText = [];
         
         var mouseX = d3.mouse(this)[0];
 
@@ -281,11 +289,8 @@ Line.prototype.draw = function (divId) {
             focus.attr("transform", "translate(" + d3.mouse(this)[0] + "," + 0 + ")");
         }
 
-        console.log("mouseX: " + mouseX);
-        
         svg.selectAll(".circle-highlight")
             .attr("display", function() {
-                console.log("cx: " + this.getAttribute("cx"));
                 if ((this.getAttribute("cx") < mouseX + defaultRadius) && (this.getAttribute("cx") > mouseX - defaultRadius)) {
                     focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
                     return null;
@@ -308,26 +313,30 @@ Line.prototype.draw = function (divId) {
                 }
             });
 
-        svg.selectAll(".text-highlight")
+        svg.selectAll(".rect-highlight")
+            .moveToFront()
             .attr("display", function() {
                 var xPosition = this.getAttribute("x");
-
-                if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= 3*highlightRadius + defaultRadius + highlightTextPadding) && (xPosition - mouseX >= 2*highlightRadius + (highlightRadius - defaultRadius) + highlightTextPadding))) {
+                if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= 3*highlightRadius + defaultRadius) && (xPosition - mouseX >= 2*highlightRadius + (highlightRadius - defaultRadius)))) {
                     return null;
                 } else {
                     return "none";
                 }
             });
-       
-        // console.log("circleHighlights: " + circleHighlights);
-        // var numCircleHighlights = circleHighlights.length;
-        // console.log("numCircleHighlights:" + numCircleHighlights);
 
-        // for (var i = 0; i < numCircleHighlights; i++) {
-        //     circleHighlights[i].attr("display", null);
-        // }
-
-        // focus.select("text").text("|");
+        svg.selectAll(".text-highlight")
+            .attr("display", function() {
+                var xPosition = this.getAttribute("x");
+                var yPosition = this.getAttribute("y");
+                var textH = this.getBBox().height;
+                var textW = this.getBBox().width;
+                if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= 3*highlightRadius + defaultRadius + highlightTextPadding) && (xPosition - mouseX >= 2*highlightRadius + (highlightRadius - defaultRadius) + highlightTextPadding))) {
+                    return null;
+                } else {
+                    return "none";
+                }
+            })
+            .moveToFront();
     }
 
     svg.append("g")
@@ -344,13 +353,7 @@ Line.prototype.draw = function (divId) {
             transform: "translate(" + globalPadding + ",0)"
             })
         .call(yAxis); 
-
     
-    console.log("numDataSets: " + numDataSets);
-    
-    var colors = [];
-    colors[0] = "green";
-
     for (var i = 1; i < numDataSets; i++) {
         data = getData([0,i],this.dataSet);
 
@@ -368,7 +371,6 @@ Line.prototype.draw = function (divId) {
 
         if (this.showPoints) {            
             for (var j = 0; j < numValues; j++) {
-                console.log("p(x,y): " + xScale(data[j][0]) + "," + yScale(data[j][1]));
                 svg.append("circle")
                     .attr("cx", xScale(data[j][0]))
                     .attr("cy", yScale(data[j][1]))
@@ -411,9 +413,7 @@ Line.prototype.draw = function (divId) {
                     .attr("display", "none")
                     .attr("stroke", colors[i]);
 
-                //var lineHighlightData = [ [ (xScale(data[j][0])+highlightRadius), yScale(data[j][1]) ] , [ (xScale(data[j][0])+3*highlightRadius) , yScale(data[j][1]) ] ];
                 var lineHighlightData = [ [ 0 , 0 ] , [ 2*highlightRadius , 0 ] ];
-                console.log("||||||||||||  " +lineHighlightData.toString());
                 svg.append("path")
                     .attr("class", "line-highlight")
                     .attr("style", "stroke: " + colors[i])
@@ -421,18 +421,30 @@ Line.prototype.draw = function (divId) {
                     .attr("transform", "translate(" + (xScale(data[j][0])+highlightRadius) + "," + yScale(data[j][1]) + ")")
                     .attr("d", lineNoScale(lineHighlightData));
 
-                var highlightTextHeight = 12;
-                var highlightTextPadding = 2;
                 svg.append("text")
                     .attr("class", "text-highlight")
                     .attr("x", xScale(data[j][0]) + 3*highlightRadius + highlightTextPadding)
                     .attr("y", yScale(data[j][1]) + (highlightTextHeight/3))
-                    .attr("style", "font-size: " + highlightTextHeight + "px; font-family: sans-serif")
-                    .attr("display", "none")
+                    .attr("style", function() {
+                        return "font-size: " + highlightTextHeight + "px; font-family: sans-serif";
+                    })
+                    .attr("display", function() {
+                        highlightText[j] = this;
+                        return "none"
+                    })
                     .text( data[j][0] + ", " + data[j][1]);
-                // focus.append("text")
-    //       .attr("x", 9)
-    //       .attr("dy", ".35em");
+                    
+                textCounter = 0;
+                var highlightRectWidth = 20;
+                var highlightRectHeight = highlightTextHeight + 2 * highlightTextPadding;
+                svg.append("rect")
+                    .attr("class", "rect-highlight")
+                    .attr("x", xScale(data[j][0]) + 3*highlightRadius)
+                    .attr("y", yScale(data[j][1]) - highlightRectHeight/2)
+                    .attr("width", (highlightText[j].textContent.length*6)+highlightTextPadding)
+                    .attr("height", highlightRectHeight)
+                    .attr("display", "none")
+                    .attr("style", "stroke: " + colors[i] + "; fill: white");
             }
         }
     }
@@ -453,6 +465,7 @@ Line.prototype.draw = function (divId) {
               svg.selectAll(".circle-highlight").attr("display", "none");
               svg.selectAll(".line-highlight").attr("display", "none");
               svg.selectAll(".text-highlight").attr("display", "none");
+              svg.selectAll(".rect-highlight").attr("display", "none");
             })
             .on("mousemove", mousemove);
     }
@@ -752,3 +765,13 @@ function randNum(min, max)
 {
     return Math.floor(Math.random()*(max-min))+min;
 }
+
+d3.selection.prototype.moveToFront = function() {
+    return this.each(function() {
+        this.parentNode.appendChild(this);
+    });
+};
+
+// function adjustRect(text) {
+//     var boundingBox = text.getBBox();
+// }
