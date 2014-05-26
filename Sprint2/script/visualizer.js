@@ -182,13 +182,18 @@ Line.prototype.draw = function (divId) {
 
     var w = this.width;
     var h = this.height;
+    var rightGraphBoundary = w - globalPadding;
     var defaultRadius = 3;
     var highlightRadius = 6;
+    var highlightLineWidth = highlightRadius;
     var padding = 20;
     var data = [];
     var highlightTextHeight = 12;
     var highlightTextPadding = 2;
     var highlightTextLength = 20;
+    var highlightText = [];
+    var dataPoints = [];
+    var pointX, pointY, lineTransformX, lineTransformY, rectX, rectY, textX, textY;
     var colors = [];
     colors[0] = "green";
 
@@ -207,7 +212,7 @@ Line.prototype.draw = function (divId) {
 
     for (var i = 1; i < numDataSets; i++) {
         for (var j = 0; j < numValues; j++) {
-            console.log("this.dataSet[" + j + "][" + i + "]: " + this.dataSet[j][i]);
+            // console.log("this.dataSet[" + j + "][" + i + "]: " + this.dataSet[j][i]);
             if (this.dataSet[j][i] > maxY) {
                 maxY = this.dataSet[j][i];
             }
@@ -277,21 +282,79 @@ Line.prototype.draw = function (divId) {
     //       .attr("dy", ".35em");
 
     
-var highlightText = [];
+
 
     function mousemove() {
-        
+        console.log("----------------");
         var thisText = [];
         
         var mouseX = d3.mouse(this)[0];
 
         if (mouseX >= globalPadding) {
-            focus.attr("transform", "translate(" + d3.mouse(this)[0] + "," + 0 + ")");
+            focus.attr("transform", "translate(" + mouseX + "," + 0 + ")");
         }
 
+        // Determine which data points are highlighted by the guideline.
+        var pointsHighlighted = [];
+        svg.selectAll(".data-point")
+            .each(function() {
+                if ( Math.abs(this.getAttribute("cx") - mouseX) < defaultRadius ) {
+                    pointsHighlighted.push([this.getAttribute("cx"),this.getAttribute("cy")]);
+                    // this.setAttribute("r", "10");
+                }
+            });
+
+        var numPointsHighlighted = pointsHighlighted.length;
+        var numStoredDataPoints = dataPoints.length;
+
+        var dataPointsHighlighted = [];
+        // Determine which indices of dataPoints are highlighted
+        for (var i = 0; i < numPointsHighlighted; i++) {
+            // console.log("loop " + i);
+            // console.log("numValues: " + numValues);
+            for (var j = numValues; j < numStoredDataPoints; j++) {
+                if (pointsHighlighted[i][0] == dataPoints[j][0][0] && pointsHighlighted[i][1] == dataPoints[j][0][1]) {
+                    // console.log("pushing..." + j);
+                    dataPointsHighlighted.push(j);
+                    break;
+                }
+            }
+        }
+
+        console.log("dataPointsHighlighted: " + dataPointsHighlighted.toString());
+
+                // dataPoints[j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY]  ]
+
+
+        console.log("highlightedPoints: " + pointsHighlighted.toString());
+        console.log("dataPoints.length: " + dataPoints.length);
+        // console.log("dataPoints: " + dataPoints.toString());
+
+        
+        console.log("numHP: " + numPointsHighlighted);
+
+        var display = false;
         svg.selectAll(".circle-highlight")
             .attr("display", function() {
-                if ((this.getAttribute("cx") < mouseX + defaultRadius) && (this.getAttribute("cx") > mouseX - defaultRadius)) {
+                display = false;
+                for (var i = 0; i < dataPointsHighlighted.length; i++) {
+                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
+                    if (this.getAttribute("cx") == dataPoints[dataPointsHighlighted[i]][0][0] && this.getAttribute("cy") == dataPoints[dataPointsHighlighted[i]][0][1] ) {
+                        
+                        display = true;
+                        break;
+                    }
+                }
+
+                // for (var i = 0; i < numPointsHighlighted; i++) {
+                //     if (pointsHighlighted[i][0] == this.getAttribute("cx")) {
+                //         console.log("display");
+                //         display = true;
+                //         break;
+                //     }
+                // }
+                //if ((this.getAttribute("cx") < mouseX + defaultRadius) && (this.getAttribute("cx") > mouseX - defaultRadius)) {
+                if (display) {
                     focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
                     return null;
                 } else {
@@ -301,40 +364,94 @@ var highlightText = [];
 
         svg.selectAll(".line-highlight")
             .attr("display", function() {
+                display = false;
+                
                 var transform = this.getAttribute("transform");
                 var openParen = transform.indexOf("(");
+                var closeParen = transform.indexOf(")");    
                 var comma = transform.indexOf(",");
-                var xPosition = transform.substr(openParen+1, comma-openParen-1);
+                var xTransform = transform.substr(openParen+1, comma-openParen-1);
+                var yTransform = transform.substr(comma+1, closeParen-comma-1);
 
-                if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= defaultRadius + highlightRadius) && (xPosition - mouseX >= highlightRadius - defaultRadius))) {
+                for (var i = 0; i < dataPointsHighlighted.length; i++) {
+                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
+                    if (xTransform == dataPoints[dataPointsHighlighted[i]][1][0] && yTransform == dataPoints[dataPointsHighlighted[i]][1][1] ) {
+                        
+                        display = true;
+                        break;
+                    }
+                }
+                
+                if (display) {
+                    // focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
                     return null;
                 } else {
                     return "none";
                 }
+
+                // if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= defaultRadius + highlightRadius) && (xPosition - mouseX >= highlightRadius - defaultRadius))) {
+                //     return null;
+                // } else {
+                //     return "none";
+                // }
             });
 
         svg.selectAll(".rect-highlight")
             .moveToFront()
             .attr("display", function() {
-                var xPosition = this.getAttribute("x");
-                if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= 3*highlightRadius + defaultRadius) && (xPosition - mouseX >= 2*highlightRadius + (highlightRadius - defaultRadius)))) {
+                display = false;
+                for (var i = 0; i < dataPointsHighlighted.length; i++) {
+                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
+                    if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][2][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][2][1] ) {
+                        display = true;
+                        break;
+                    }
+                }                
+
+                if (display) {
                     return null;
                 } else {
                     return "none";
                 }
+                // var xPosition = this.getAttribute("x");
+                // if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= highlightRadius + highlightLineWidth + defaultRadius) && (xPosition - mouseX >= highlightLineWidth + (highlightRadius - defaultRadius)))) {
+                //     return null;
+                // } else {
+                //     return "none";
+                // }
             });
 
         svg.selectAll(".text-highlight")
             .attr("display", function() {
-                var xPosition = this.getAttribute("x");
-                var yPosition = this.getAttribute("y");
-                var textH = this.getBBox().height;
-                var textW = this.getBBox().width;
-                if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= 3*highlightRadius + defaultRadius + highlightTextPadding) && (xPosition - mouseX >= 2*highlightRadius + (highlightRadius - defaultRadius) + highlightTextPadding))) {
+                display = false;
+                for (var i = 0; i < dataPointsHighlighted.length; i++) {
+                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
+                    if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][3][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][3][1] ) {
+                        display = true;
+                        break;
+                    }
+                } 
+
+
+                if (display) {
+                    // focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
                     return null;
                 } else {
                     return "none";
                 }
+
+                // var xPosition = this.getAttribute("x");
+                // var yPosition = this.getAttribute("y");
+                // var textH = this.getBBox().height;
+                // var textW = this.getBBox().width;
+                // var distanceToMouse = xPosition - mouseX;
+                // var distanceToFarPointEdge = highlightRadius + highlightLineWidth + defaultRadius + highlightTextPadding;
+                // var distanceToClosePointEdge = highlightLineWidth + (highlightRadius - defaultRadius) + highlightTextPadding;
+                // if ( ( distanceToMouse > 0) && ((distanceToMouse <= distanceToFarPointEdge) && (distanceToMouse >= distanceToClosePointEdge))) {
+                //     return null;
+                // } else {
+                //     return "none";
+                // }
             })
             .moveToFront();
     }
@@ -361,7 +478,7 @@ var highlightText = [];
             colors[i] = "black";
         }
         else {
-            colors[i] = randRGB(100,200);
+            colors[i] = randRGB(50,200);
         }
 
         svg.append("path")
@@ -371,9 +488,14 @@ var highlightText = [];
 
         if (this.showPoints) {            
             for (var j = 0; j < numValues; j++) {
+
+                pointX = xScale(data[j][0]);
+                pointY = yScale(data[j][1]);
+
                 svg.append("circle")
-                    .attr("cx", xScale(data[j][0]))
-                    .attr("cy", yScale(data[j][1]))
+                    .attr("class", "data-point")
+                    .attr("cx", pointX)
+                    .attr("cy", pointY)
                     .attr("r", defaultRadius)
                     .attr("fill", colors[i])
                     .attr("color", colors[i])
@@ -406,45 +528,88 @@ var highlightText = [];
 
                 svg.append("circle")
                     .attr("class", "circle-highlight")
-                    .attr("cx", xScale(data[j][0]))
-                    .attr("cy", yScale(data[j][1]))
+                    .attr("cx", pointX)
+                    .attr("cy", pointY)
                     .attr("r", highlightRadius)
                     .attr("fill", "none")
                     .attr("display", "none")
                     .attr("stroke", colors[i]);
 
-                var lineHighlightData = [ [ 0 , 0 ] , [ 2*highlightRadius , 0 ] ];
+                highlightText[j] = data[j][0] + ", " + data[j][1];
+                var highlightRectWidth = (highlightText[j].length*6)+highlightTextPadding;
+                var highlightRectHeight = highlightTextHeight + 2 * highlightTextPadding;
+
+
+                
+
+                var lineHighlightData = [ [ 0 , 0 ] , [ highlightLineWidth , 0 ] ];
+                var highlightLineXLength = Math.abs(lineHighlightData[0][0] - lineHighlightData[1][0]);
+
+                var rightHighlightEdge = pointX+highlightRadius+highlightLineXLength+highlightRectWidth;
+
+                var overRightEdge = false;
+
+                console.log("----------------");
+                console.log("highlightText[j]: " + highlightText[j]);
+                console.log("rightHighlightEdge: " + pointX + " " + highlightRadius + " " + highlightLineXLength + " " + highlightRectWidth);
+                console.log("rightHighlightEdge >= rightGraphBoundary ::: " + rightHighlightEdge + ">=" + rightGraphBoundary);
+                if (rightHighlightEdge >= rightGraphBoundary) {
+                    overRightEdge = true;
+                }
+
                 svg.append("path")
                     .attr("class", "line-highlight")
                     .attr("style", "stroke: " + colors[i])
                     .attr("display", "none")
-                    .attr("transform", "translate(" + (xScale(data[j][0])+highlightRadius) + "," + yScale(data[j][1]) + ")")
+                    .attr("transform", function() {
+                        if ( overRightEdge ) {
+                            console.log("HERE ((" + pointX + ")) translate(" + (pointX-highlightRadius-highlightLineXLength) + ", " + pointY + ")");
+                            lineTransformX = (pointX-highlightRadius-highlightLineXLength);
+                            lineTransformY = pointY;
+                            
+                        } else {
+                            console.log("THERE: ((" + pointX + ")) translate(" + (pointX+highlightRadius) + ", " + pointY + ")");
+                            lineTransformX = (pointX+highlightRadius);
+                            lineTransformY = pointY;
+                        }
+                        return "translate(" + lineTransformX + ", " + lineTransformY + ")";
+                    })
                     .attr("d", lineNoScale(lineHighlightData));
 
+                textY = pointY + (highlightTextHeight/3);
+                if ( overRightEdge ) {
+                    textX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth + highlightTextPadding;
+                } else {
+                    textX = pointX + highlightRadius + highlightLineWidth + highlightTextPadding;
+                }
                 svg.append("text")
                     .attr("class", "text-highlight")
-                    .attr("x", xScale(data[j][0]) + 3*highlightRadius + highlightTextPadding)
-                    .attr("y", yScale(data[j][1]) + (highlightTextHeight/3))
-                    .attr("style", function() {
-                        return "font-size: " + highlightTextHeight + "px; font-family: sans-serif";
-                    })
-                    .attr("display", function() {
-                        highlightText[j] = this;
-                        return "none"
-                    })
-                    .text( data[j][0] + ", " + data[j][1]);
+                    .attr("x", textX)
+                    .attr("y", textY)
+                    .attr("style", "font-size: " + highlightTextHeight + "px; font-family: sans-serif")
+                    .attr("display", "none")
+                    .text( highlightText[j] );
                     
                 textCounter = 0;
-                var highlightRectWidth = 20;
-                var highlightRectHeight = highlightTextHeight + 2 * highlightTextPadding;
+                
+                rectY = pointY - highlightRectHeight/2;
+                if ( overRightEdge ) {
+                    rectX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth;
+                } else {
+                    rectX = pointX + highlightRadius + highlightLineWidth;
+                }
                 svg.append("rect")
                     .attr("class", "rect-highlight")
-                    .attr("x", xScale(data[j][0]) + 3*highlightRadius)
-                    .attr("y", yScale(data[j][1]) - highlightRectHeight/2)
-                    .attr("width", (highlightText[j].textContent.length*6)+highlightTextPadding)
+                    .attr("x", rectX)
+                    .attr("y", rectY)
+                    .attr("width", highlightRectWidth)
                     .attr("height", highlightRectHeight)
                     .attr("display", "none")
-                    .attr("style", "stroke: " + colors[i] + "; fill: white");
+                    .attr("style", "stroke: " + colors[i] + "; fill: rgb(212,212,212);");
+
+                // dataPoints[j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY]  ]
+                dataPoints[numValues+((i-1)*numValues)+j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY] ]; 
+
             }
         }
     }
