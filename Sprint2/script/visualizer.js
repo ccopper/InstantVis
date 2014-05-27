@@ -797,7 +797,7 @@ Line.prototype.draw = function (divId) {
             .attr("width", dataPoints[d][4])
             .attr("height", highlightRectHeight)
             .attr("display", "none")
-            .attr("style", "stroke: " + dataPoints[d][5] + "; fill: rgb(212,212,212);");
+            .attr("style", "stroke: " + dataPoints[d][5] + "; fill: rgb(225,225,225);");
 
         dataPoints[d][2][1] = newRectY;
 
