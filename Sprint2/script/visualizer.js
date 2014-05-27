@@ -17,8 +17,6 @@ Area.prototype.draw = function(divId)
     var h = this.height;
     var padding = 20;
 
-    var numDataPoints = this.dataSet.length;
-
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([globalPadding, w - globalPadding]);
@@ -175,11 +173,6 @@ function Line(dataSet, width, height, showPoints) {
 Line.prototype.draw = function (divId) {
 
 	// TODO: Make the number of ticks on an axis somehow dynamic.
-
-    console.log("DRAWING LINE CHART");
-
-    console.log("this.dataSet: " + this.dataSet.toString());
-
     var w = this.width;
     var h = this.height;
     var rightGraphBoundary = w - globalPadding;
@@ -194,45 +187,37 @@ Line.prototype.draw = function (divId) {
     var highlightText = [];
     var dataPoints = [];
     var xValues = [];
-    var displaySets = new Array();
     var pointX, pointY, lineTransformX, lineTransformY, rectX, rectY, textX, textY;
     var colors = [];
-    colors[0] = "green";
+    var characterWidth = 6;
+    var highlightTextExternalPadding = highlightRadius;
+    var highlightRectFillColor = "rgb(225,225,225)";
 
     var numDataSets = this.dataSet[0].length;
     var numValues = this.dataSet.length;
 
-    console.log("numDataSets: " + numDataSets);
-    console.log("numValues: " + numValues);
+    var multiline = false;
+    multiline = (numDataSets > 2) ? true : false;
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([globalPadding, w - globalPadding])
                  .clamp(true);
 
+    // Determine the maximum Y value for the datasets.
     var maxY = 0;
-
     for (var i = 1; i < numDataSets; i++) {
         for (var j = 0; j < numValues; j++) {
-            // console.log("this.dataSet[" + j + "][" + i + "]: " + this.dataSet[j][i]);
             if (this.dataSet[j][i] > maxY) {
                 maxY = this.dataSet[j][i];
             }
         }
     }
 
-    console.log("maxY: " + maxY);
-
     var yScale = d3.scale.linear()
                         .domain([0, maxY])
                         .range([h - globalPadding, globalPadding])
                         .clamp(true);
-
-    var rScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
-                        .range([2, 5]);
-
-
 
     var xAxis = d3.svg.axis()
                     .scale(xScale)
@@ -245,53 +230,36 @@ Line.prototype.draw = function (divId) {
                     .ticks(5);
 
     var line = d3.svg.line()
-            .x(function(d) {
-                return xScale(d[0]);
-            })
-            .y(function(d) {
-                return yScale(d[1]);
-            }); 
+            .x(function(d) { return xScale(d[0]); })
+            .y(function(d) { return yScale(d[1]); }); 
 
-    var lineNoScale = d3.svg.line()
-            .x(function(d) {
-                return d[0];
-            })
-            .y(function(d) {
-                return d[1];
-            }); 
+    var unscaledLine = d3.svg.line()
+            .x(function(d) { return d[0]; })
+            .y(function(d) { return d[1]; }); 
 
+    // Use the given <div> as the drawing area. This <svg> will contain all of the visualization elements.
     var svg = d3.select("#" + divId)
             .append("svg")
             .attr("width", w)
             .attr("height", h);
 
-
+    // Setup the guideline.
     var focus = svg.append("g")
           .attr("class", "focus")
           .style("display", "none");
-
-    var topLinePoint = [0, globalPadding];
-    var bottomLinePoint = [0, h-globalPadding];
-    var lineData = [topLinePoint, bottomLinePoint];
-
+    
+    var lineData = [ [0, globalPadding], [0, h-globalPadding] ];
+    
     focus.append("path")
         .attr("class", "guideline")
         .attr("style", "stroke: gray")
-        .attr("d", lineNoScale(lineData));
+        .attr("d", unscaledLine(lineData));
 
-    // focus.append("text")
-    //       .attr("x", 9)
-    //       .attr("dy", ".35em");
-
-    
-
-
-    function mousemove() {
-        // console.log("----------------");
-        var thisText = [];
-        
+    // Actions that occur when the mouse moves within the graph.
+    function mousemove() {        
         var mouseX = d3.mouse(this)[0];
 
+        // Move the guideline to align with the mouse movement.
         if (mouseX >= globalPadding) {
             focus.attr("transform", "translate(" + mouseX + "," + 0 + ")");
         }
@@ -302,21 +270,17 @@ Line.prototype.draw = function (divId) {
             .each(function() {
                 if ( Math.abs(this.getAttribute("cx") - mouseX) < defaultRadius ) {
                     pointsHighlighted.push([this.getAttribute("cx"),this.getAttribute("cy")]);
-                    // this.setAttribute("r", "10");
                 }
             });
 
         var numPointsHighlighted = pointsHighlighted.length;
-        var numStoredDataPoints = dataPoints.length;
-
+        var numDataPoints = dataPoints.length;
+        
         var dataPointsHighlighted = [];
         // Determine which indices of dataPoints are highlighted
         for (var i = 0; i < numPointsHighlighted; i++) {
-            // console.log("loop " + i);
-            // console.log("numValues: " + numValues);
-            for (var j = 0; j < numStoredDataPoints; j++) {
+            for (var j = 0; j < numDataPoints; j++) {
                 if (pointsHighlighted[i][0] == dataPoints[j][0][0] && pointsHighlighted[i][1] == dataPoints[j][0][1]) {
-                    // console.log("pushing..." + j);
                     if (dataPointsHighlighted.indexOf(j) == -1) {
                         dataPointsHighlighted.push(j);
                     } else {
@@ -327,39 +291,18 @@ Line.prototype.draw = function (divId) {
             }
         }
 
-        // console.log("dataPointsHighlighted: " + dataPointsHighlighted.toString());
-
-                // dataPoints[j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY]  ]
-
-
-        // console.log("highlightedPoints: " + pointsHighlighted.toString());
-        // console.log("dataPoints.length: " + dataPoints.length);
-        // console.log("dataPoints: " + dataPoints.toString());
-
-        
-        console.log("numHP: " + numPointsHighlighted);
-
+        // Look through all circle highlight elements and display those that correspond to the highlighted data points.
         var display = false;
         svg.selectAll(".circle-highlight")
             .attr("display", function() {
                 display = false;
                 for (var i = 0; i < dataPointsHighlighted.length; i++) {
-                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
                     if (this.getAttribute("cx") == dataPoints[dataPointsHighlighted[i]][0][0] && this.getAttribute("cy") == dataPoints[dataPointsHighlighted[i]][0][1] ) {
-                        
                         display = true;
                         break;
                     }
                 }
 
-                // for (var i = 0; i < numPointsHighlighted; i++) {
-                //     if (pointsHighlighted[i][0] == this.getAttribute("cx")) {
-                //         console.log("display");
-                //         display = true;
-                //         break;
-                //     }
-                // }
-                //if ((this.getAttribute("cx") < mouseX + defaultRadius) && (this.getAttribute("cx") > mouseX - defaultRadius)) {
                 if (display) {
                     focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
                     return null;
@@ -368,144 +311,40 @@ Line.prototype.draw = function (divId) {
                 }
             });
 
-        // svg.selectAll(".line-highlight")
-        //     .attr("display", function() {
-        //         display = false;
-                
-        //         var transform = this.getAttribute("transform");
-        //         var openParen = transform.indexOf("(");
-        //         var closeParen = transform.indexOf(")");    
-        //         var comma = transform.indexOf(",");
-        //         var xTransform = transform.substr(openParen+1, comma-openParen-1);
-        //         var yTransform = transform.substr(comma+1, closeParen-comma-1);
-
-        //         for (var i = 0; i < dataPointsHighlighted.length; i++) {
-        //             // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
-        //             if (xTransform == dataPoints[dataPointsHighlighted[i]][1][0] && yTransform == dataPoints[dataPointsHighlighted[i]][1][1] ) {
-                        
-        //                 display = true;
-        //                 break;
-        //             }
-        //         }
-                
-        //         if (display) {
-        //             // focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
-        //             return null;
-        //         } else {
-        //             return "none";
-        //         }
-
-        //         // if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= defaultRadius + highlightRadius) && (xPosition - mouseX >= highlightRadius - defaultRadius))) {
-        //         //     return null;
-        //         // } else {
-        //         //     return "none";
-        //         // }
-        //     });
-
-        // for (var y = 0; y < displaySets.length; y++) {/////////////////////////////////////////////////////////////////////////////////////////
-        //     if (displaySets[y][0][0] == )
-        //     for (var x = 0; x < displaySets[y].length) {
-
-        //     }
-        // }
-
-        // var rects = svg.selectAll(".rect-highlight")
-        //     .moveToFront();
-
-        // rects.each(function {
-        //     display = false;
-        //     for (var i = 0; i < dataPointsHighlighted.length; i++) {
-        //         // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
-        //         if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][2][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][2][1] ) {
-        //             //display = true;
-        //             rectsToDraw.push(dataPoints[dataPointsHighlighted[i]][2]);
-        //             break;
-        //         }
-        //     }
-        // });
-
-        // rectsToDraw.sort(function(a, b) { return a[1] - b[1]; });
-
-        // for (var f = 0; f < rectsToDraw.length; f++) {
-        //     rects.each(function() {
-        //         if ()
-        //     });
-        // }
-
-        var numDisplayed = 0;
-
-        console.log("numRects: " + svg.selectAll(".rect-highlight").size);
-        console.log("numPointsHighlighted: " + dataPointsHighlighted.length);
-
+        // Look through all rectangle highlight elements and display those that correspond to the highlighted data points.
         svg.selectAll(".rect-highlight")
             .moveToFront()
             .attr("display", function() {
                 display = false;
-                console.log("DPH: " + dataPointsHighlighted.toString());
                 for (var i = 0; i < dataPointsHighlighted.length; i++) {
-                    console.log("i = " + i + " |" + this.getAttribute("x") + " == " + dataPoints[dataPointsHighlighted[i]][2][0] + " && " + this.getAttribute("y") + " == " + dataPoints[dataPointsHighlighted[i]][2][1] + "|");
-                    if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][2][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][2][1] ) {
-                        console.log("x:::::: " + this.getAttribute("x"));
-                        // countdown = numDisplayed;
-                        // if (countdown > 0) {
-                        //     countdown = countdown - 1;
-                        //     continue;
-                        // }
-                        // numDisplayed++;
+                    if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][1][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][1][1] ) {
                         display = true;
                         break;
                     }
                 }                
 
-                if (display) {
-                    return null;
-
-                } else {
-                    return "none";
-                }
-                // var xPosition = this.getAttribute("x");
-                // if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= highlightRadius + highlightLineWidth + defaultRadius) && (xPosition - mouseX >= highlightLineWidth + (highlightRadius - defaultRadius)))) {
-                //     return null;
-                // } else {
-                //     return "none";
-                // }
+                // If display == true, return null, else return "none."
+                return (display) ? null : "none";
             });
 
+        // Look through all text highlight elements and display those that correspond to the highlighted data points.
         svg.selectAll(".text-highlight")
             .attr("display", function() {
                 display = false;
                 for (var i = 0; i < dataPointsHighlighted.length; i++) {
-                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
-                    if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][3][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][3][1] ) {
+                    if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][2][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][2][1] ) {
                         display = true;
                         break;
                     }
                 } 
 
-
-                if (display) {
-                    // focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
-                    return null;
-                } else {
-                    return "none";
-                }
-
-                // var xPosition = this.getAttribute("x");
-                // var yPosition = this.getAttribute("y");
-                // var textH = this.getBBox().height;
-                // var textW = this.getBBox().width;
-                // var distanceToMouse = xPosition - mouseX;
-                // var distanceToFarPointEdge = highlightRadius + highlightLineWidth + defaultRadius + highlightTextPadding;
-                // var distanceToClosePointEdge = highlightLineWidth + (highlightRadius - defaultRadius) + highlightTextPadding;
-                // if ( ( distanceToMouse > 0) && ((distanceToMouse <= distanceToFarPointEdge) && (distanceToMouse >= distanceToClosePointEdge))) {
-                //     return null;
-                // } else {
-                //     return "none";
-                // }
+                // If display == true, return null, else return "none."
+                return (display) ? null : "none";
             })
             .moveToFront();
     }
 
+    // Display the x-axis.
     svg.append("g")
         .attr({
             class: "axis",
@@ -514,6 +353,7 @@ Line.prototype.draw = function (divId) {
         .attr("width", w-2*globalPadding)
         .call(xAxis);
 
+    // Display the y-axis.
     svg.append("g")
         .attr({
             class: "y-axis",
@@ -521,24 +361,26 @@ Line.prototype.draw = function (divId) {
             })
         .call(yAxis); 
     
+
     for (var i = 1; i < numDataSets; i++) {
         data = getData([0,i],this.dataSet);
 
         if (numDataSets <= 2) {
-            colors[i] = "black";
+            colors[i-1] = "black";
         }
         else {
-            colors[i] = randRGB(50,200);
+            colors[i-1] = randRGB(50,200);
         }
 
+        // Display the line for the dataset.
         svg.append("path")
             .attr("class", "line")
-            .attr("style", "stroke: " + colors[i])
+            .attr("style", "stroke: " + colors[i-1])
             .attr("d", line(data));
 
+        // If instructed, display the data points.
         if (this.showPoints) {            
             for (var j = 0; j < numValues; j++) {
-
                 pointX = xScale(data[j][0]);
                 pointY = yScale(data[j][1]);
 
@@ -547,29 +389,24 @@ Line.prototype.draw = function (divId) {
                     xValues.push(pointX);
                 }
 
+                // Display the data point circles.
                 svg.append("circle")
                     .attr("class", "data-point")
                     .attr("cx", pointX)
                     .attr("cy", pointY)
                     .attr("r", defaultRadius)
-                    .attr("fill", colors[i])
-                    .attr("color", colors[i])
+                    .attr("fill", colors[i-1])
+                    .attr("color", colors[i-1])
                     .on("mouseover",function() {
-                        if (this.getAttribute("cx") <= globalPadding || this.getAttribute("cx") > w+globalPadding 
-                            || this.getAttribute("cy") >= h-globalPadding || this.getAttribute("cy") < globalPadding) {
-                            return;
-                        }
                         if (numDataSets <= 2) {
                             d3.select(this)
                                 .attr("fill", function() {
-                                    if (numDataSets <= 2) {
+                                    if (!multiline) {
                                         return "orange";    
-                                    }// } else {
-                                //     return this.getAttribute("color");
-                                // }
+                                    }
                                 })
                                 .attr("r", function() {
-                                    if (numDataSets <= 2) {
+                                    if (!multiline) {
                                         return highlightRadius;    
                                     }
                                 });
@@ -581,6 +418,7 @@ Line.prototype.draw = function (divId) {
                             .attr("r", defaultRadius);
                     });
 
+                // Add hidden circle highlight elements.
                 svg.append("circle")
                     .attr("class", "circle-highlight")
                     .attr("cx", pointX)
@@ -588,30 +426,18 @@ Line.prototype.draw = function (divId) {
                     .attr("r", highlightRadius)
                     .attr("fill", "none")
                     .attr("display", "none")
-                    .attr("stroke", colors[i]);
+                    .attr("stroke", colors[i-1]);
 
+                // Determine the text associated with the data point when highlighted.
                 highlightText[j] = data[j][0] + ", " + data[j][1];
-                var highlightRectWidth = (highlightText[j].length*6)+highlightTextPadding;
-                var highlightRectHeight = highlightTextHeight + 2 * highlightTextPadding;
 
-
-                
-
-                
-
-
-
+                var highlightRectWidth = (highlightText[j].length*characterWidth)+highlightTextPadding;
+                var highlightRectHeight = highlightTextHeight + (2 * highlightTextPadding);
 
                 textY = pointY + (highlightTextHeight/3);
-
-
                 rectY = pointY - highlightRectHeight/2;
                 
-                var lineHighlightData = [ [ 0 , 0 ] , [ highlightLineWidth , 0 ] ];
-
-                var highlightLineXLength = Math.abs(lineHighlightData[0][0] - lineHighlightData[1][0]);
-
-                var rightHighlightEdge = pointX+highlightRadius+highlightLineXLength+highlightRectWidth;
+                var rightHighlightEdge = pointX+highlightRadius+highlightTextExternalPadding+highlightRectWidth;
 
                 var overRightEdge = false;
                 if (rightHighlightEdge >= rightGraphBoundary) {
@@ -619,168 +445,36 @@ Line.prototype.draw = function (divId) {
                 }
 
                 if ( overRightEdge ) {
-                    textX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth + highlightTextPadding;
-                    rectX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth;
-                    // lineHighlightData[1][0] = lineHighlightData[1][0] - highlightLineWidth;
-                    lineTransformX = (pointX-highlightRadius-highlightLineXLength);
-                    lineTransformY = pointY;
+                    textX = pointX - highlightRadius - highlightTextExternalPadding - highlightRectWidth + highlightTextPadding;
+                    rectX = pointX - highlightRadius - highlightTextExternalPadding - highlightRectWidth;
                 } else {
-                    textX = pointX + highlightRadius + highlightLineWidth + highlightTextPadding;
-                    rectX = pointX + highlightRadius + highlightLineWidth;
-                    lineTransformX = (pointX+highlightRadius);
-                    lineTransformY = pointY;
+                    textX = pointX + highlightRadius + highlightTextExternalPadding + highlightTextPadding;
+                    rectX = pointX + highlightRadius + highlightTextExternalPadding;
                 } 
-
-
-                var currentDataPointsLength = dataPoints.length;
-
-                // rectYCounter = 0;
-                // for (var t = 0; t < currentDataPointsLength; t++) {
-                //     if (dataPoints[t][2][0] == rectX) {
-                //         // If the existing point is further down than the new one
-                //         if (dataPoints[t][0][1] > pointY) {
-                            
-                //         } else {
-                //             rectYCounter++;
-                //         }
-
-                //     }
-                // }
-
-                // rectY = 5 + ((highlightRectHeight + 2) * rectYCounter);
-
-                // console.log("----------------");
-                // console.log("highlightText[j]: " + highlightText[j]);
-                // console.log("rightHighlightEdge: " + pointX + " " + highlightRadius + " " + highlightLineXLength + " " + highlightRectWidth);
-                // console.log("rightHighlightEdge >= rightGraphBoundary ::: " + rightHighlightEdge + ">=" + rightGraphBoundary);
-                
-
-                // Detect highlight conflicts with other points at same x position
-                    // get a list of all points in same x position
-                // console.log("A");
-                
-                // var atSameX = [];
-                // console.log("B");
-                // console.log("dataPoints: " + dataPoints.toString());
-                // for (var k = numValues; k < currentDataPointsLength; k++) {
-                //     console.log("C");
-                //     if (dataPoints[k][0][0] == pointX) {
-                //         atSameX.push(dataPoints[k]);
-                //     }
-                // }
-                // console.log("D");
-                // for (var l = 0; l < atSameX.length; l++) {
-                //     if 
-                    // console.log("E");
-                //     var yDistance = atSameX[l][0][1] - pointY;
-                //     var distToRect = atSameX[l][2][1] - pointY;
-                //     if ( Math.abs(yDistance) <= highlightRectHeight) {
-                //         var overlapAmount = highlightRectHeight - Math.abs(yDistance);
-                //         if (yDistance < 0) {
-                //             rectY = rectY + overlapAmount+2;
-                //             textY = textY + overlapAmount+2;
-
-                //             // push down
-                //         } else {
-                //             rectY = rectY - overlapAmount-2;
-                //             textY = textY - overlapAmount-2;
-                //             // push up
-                //         }
-
-                //         // lineHighlightData = [[0, 0], [highlightLineWidth, rectY-pointY]];
-
-                //         // Intersection
-                //         // So move this one appropriately
-
-                //     } else if (Math.abs(distToRect) < highlightRectHeight) {
-                //         if (distToRect < 0) {
-                //             rectY = rectY + highlightRectHeight+2;
-                //             textY = textY + highlightRectHeight+2;
-
-                //             // push down
-                //         } else {
-                //             rectY = rectY - highlightRectHeight-2;
-                //             textY = textY - highlightRectHeight-2;
-                //             // push up
-                //         }
-                //     }
-                // }
-                // console.log("F");
-
-                
-            
-
-                svg.append("path")
-                    .attr("class", "line-highlight")
-                    .attr("style", "stroke: " + colors[i])
-                    .attr("display", "none")
-                    .attr("transform", "translate(" + lineTransformX + ", " + lineTransformY + ")")
-                    .attr("d", lineNoScale(lineHighlightData));
-
-
-                
-                // svg.append("text")
-                // svg.append("text")
-                //     .attr("class", "text-highlight")
-                //     .attr("x", textX)
-                //     .attr("y", textY)
-                //     .attr("style", "font-size: " + highlightTextHeight + "px; font-family: sans-serif")
-                //     .attr("display", "none")
-                //     .text( highlightText[j] );
                     
-                textCounter = 0;
-                
-
-
-                
-                // svg.append("rect")
-                // svg.append("rect")
-                //     .attr("class", "rect-highlight")
-                //     .attr("x", rectX)
-                //     .attr("y", rectY)
-                //     .attr("width", highlightRectWidth)
-                //     .attr("height", highlightRectHeight)
-                //     .attr("display", "none")
-                //     .attr("style", "stroke: " + colors[i] + "; fill: rgb(212,212,212);");
-
-                // dataPoints[j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY]  ]
-                dataPoints[((i-1)*numValues)+j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY], highlightText[j].length*6+highlightTextPadding, colors[i], highlightText[j] ]; 
+                dataPoints[((i-1)*numValues)+j] = [ [pointX, pointY], [rectX, rectY], [textX, textY], highlightText[j].length*6+highlightTextPadding, colors[i-1], highlightText[j] ]; 
 
             }
         }
     }
 
+    // Sort first by data point's x position, they by y position.
     dataPoints.sort(function(a,b) {
         var pxA = a[0][0];
         var pxB = b[0][0];
         var pyA = a[0][1];
         var pyB = b[0][1];
-        // var ryA = a[2][1];
-        // var ryB = b[2][1];
-
         if (pxA == pxB) {
             return pyA - pyB;
-            // if (ryA < ryB) {
-            //     return a;
-            // } else {
-            //     return b;
-            // }
         } else {
             return pxA - pxB;
-            // if (pxA < pxB) {
-            //     return a;
-            // } else {
-            //     return b;
-            // }
         }
     });
 
-
-
+    // Determine the placement of the highlight rects and text now that the data points have been sorted.
     var count = 0;
     var lastX = -0.112323;
     var currentX = 0;
-    console.log("DP: ");
     for (var d = 0; d < dataPoints.length; d++) {
         currentX = dataPoints[d][0][0];
         if (currentX != lastX) {
@@ -790,57 +484,35 @@ Line.prototype.draw = function (divId) {
         }
         var newRectY = globalPadding+(count*(highlightRectHeight+2));
         var newTextY = newRectY + highlightTextHeight;
+
+        // Add the rect highlight element.
         svg.append("rect")
             .attr("class", "rect-highlight")
-            .attr("x", dataPoints[d][2][0])
+            .attr("x", dataPoints[d][1][0])
             .attr("y", newRectY)
-            .attr("width", dataPoints[d][4])
+            .attr("width", dataPoints[d][3])
             .attr("height", highlightRectHeight)
             .attr("display", "none")
-            .attr("style", "stroke: " + dataPoints[d][5] + "; fill: rgb(225,225,225);");
+            .attr("style", "stroke: " + dataPoints[d][4] + "; fill: " + highlightRectFillColor + ";");
 
-        dataPoints[d][2][1] = newRectY;
+        dataPoints[d][1][1] = newRectY;
 
+        // Add the text highlight element.
         svg.append("text")
             .attr("class", "text-highlight")
-            .attr("x", dataPoints[d][3][0])
+            .attr("x", dataPoints[d][2][0])
             .attr("y", newTextY)
             .attr("style", "font-size: " + highlightTextHeight + "px; font-family: sans-serif")
             .attr("display", "none")
-            .text( dataPoints[d][6] );
+            .text( dataPoints[d][5] );
 
-        dataPoints[d][3][1] = newTextY;
+        dataPoints[d][2][1] = newTextY;
 
         lastX = currentX;
-        console.log(dataPoints[d].toString());
     }
 
-    // var tempRects = [];
-    // // For every x value associated with a data point
-    // for (var r = 0; r < xValues.length; r++) {
-    //     tempRects = [];
-    //     // Get info of all rects at that x value
-    //     for (var q = numValues; q < dataPoints.length; q++) {
-    //         if (dataPoints[q][0][0] == xValues[r]) {
-    //             tempRects.push([dataPoints[q][2][0], dataPoints[q][2][1]]);
-    //         }
-    //     }
-
-    //     console.log("tempRects b4 sort: " + tempRects.toString());
-    
-    //     tempRects.sort(function(a,b) { return a[1] - b[1]; });
-
-    //     console.log("tempRects: " + tempRects.toString());
-
-
-
-    //     displaySets.push(tempRects);
-    // }
-
-
-
-    if (numDataSets > 2) {
-
+    // Detect mouse motion in the graph area.
+    if (multiline) {
         svg.append("rect")
             .attr("x", globalPadding-1)
             .attr("y", globalPadding-1)
@@ -850,12 +522,13 @@ Line.prototype.draw = function (divId) {
             .on("mouseover", function() { 
               focus.style("display", null); 
             })
-            .on("mouseout", function() { 
-              focus.style("display", "none");
-              svg.selectAll(".circle-highlight").attr("display", "none");
-              svg.selectAll(".line-highlight").attr("display", "none");
-              svg.selectAll(".text-highlight").attr("display", "none");
-              svg.selectAll(".rect-highlight").attr("display", "none");
+            .on("mouseout", function() {
+                // Clear the graph area.
+                focus.style("display", "none");
+                svg.selectAll(".circle-highlight").attr("display", "none");
+                svg.selectAll(".line-highlight").attr("display", "none");
+                svg.selectAll(".text-highlight").attr("display", "none");
+                svg.selectAll(".rect-highlight").attr("display", "none");
             })
             .on("mousemove", mousemove);
     }
