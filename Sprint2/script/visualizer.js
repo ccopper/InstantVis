@@ -193,6 +193,8 @@ Line.prototype.draw = function (divId) {
     var highlightTextLength = 20;
     var highlightText = [];
     var dataPoints = [];
+    var xValues = [];
+    var displaySets = new Array();
     var pointX, pointY, lineTransformX, lineTransformY, rectX, rectY, textX, textY;
     var colors = [];
     colors[0] = "green";
@@ -285,7 +287,7 @@ Line.prototype.draw = function (divId) {
 
 
     function mousemove() {
-        console.log("----------------");
+        // console.log("----------------");
         var thisText = [];
         
         var mouseX = d3.mouse(this)[0];
@@ -312,22 +314,26 @@ Line.prototype.draw = function (divId) {
         for (var i = 0; i < numPointsHighlighted; i++) {
             // console.log("loop " + i);
             // console.log("numValues: " + numValues);
-            for (var j = numValues; j < numStoredDataPoints; j++) {
+            for (var j = 0; j < numStoredDataPoints; j++) {
                 if (pointsHighlighted[i][0] == dataPoints[j][0][0] && pointsHighlighted[i][1] == dataPoints[j][0][1]) {
                     // console.log("pushing..." + j);
-                    dataPointsHighlighted.push(j);
+                    if (dataPointsHighlighted.indexOf(j) == -1) {
+                        dataPointsHighlighted.push(j);
+                    } else {
+                        continue;
+                    }
                     break;
                 }
             }
         }
 
-        console.log("dataPointsHighlighted: " + dataPointsHighlighted.toString());
+        // console.log("dataPointsHighlighted: " + dataPointsHighlighted.toString());
 
                 // dataPoints[j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY]  ]
 
 
-        console.log("highlightedPoints: " + pointsHighlighted.toString());
-        console.log("dataPoints.length: " + dataPoints.length);
+        // console.log("highlightedPoints: " + pointsHighlighted.toString());
+        // console.log("dataPoints.length: " + dataPoints.length);
         // console.log("dataPoints: " + dataPoints.toString());
 
         
@@ -362,47 +368,90 @@ Line.prototype.draw = function (divId) {
                 }
             });
 
-        svg.selectAll(".line-highlight")
-            .attr("display", function() {
-                display = false;
+        // svg.selectAll(".line-highlight")
+        //     .attr("display", function() {
+        //         display = false;
                 
-                var transform = this.getAttribute("transform");
-                var openParen = transform.indexOf("(");
-                var closeParen = transform.indexOf(")");    
-                var comma = transform.indexOf(",");
-                var xTransform = transform.substr(openParen+1, comma-openParen-1);
-                var yTransform = transform.substr(comma+1, closeParen-comma-1);
+        //         var transform = this.getAttribute("transform");
+        //         var openParen = transform.indexOf("(");
+        //         var closeParen = transform.indexOf(")");    
+        //         var comma = transform.indexOf(",");
+        //         var xTransform = transform.substr(openParen+1, comma-openParen-1);
+        //         var yTransform = transform.substr(comma+1, closeParen-comma-1);
 
-                for (var i = 0; i < dataPointsHighlighted.length; i++) {
-                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
-                    if (xTransform == dataPoints[dataPointsHighlighted[i]][1][0] && yTransform == dataPoints[dataPointsHighlighted[i]][1][1] ) {
+        //         for (var i = 0; i < dataPointsHighlighted.length; i++) {
+        //             // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
+        //             if (xTransform == dataPoints[dataPointsHighlighted[i]][1][0] && yTransform == dataPoints[dataPointsHighlighted[i]][1][1] ) {
                         
-                        display = true;
-                        break;
-                    }
-                }
+        //                 display = true;
+        //                 break;
+        //             }
+        //         }
                 
-                if (display) {
-                    // focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
-                    return null;
-                } else {
-                    return "none";
-                }
+        //         if (display) {
+        //             // focus.attr("transform", "translate(" + this.getAttribute("cx") + "," + 0 + ")");
+        //             return null;
+        //         } else {
+        //             return "none";
+        //         }
 
-                // if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= defaultRadius + highlightRadius) && (xPosition - mouseX >= highlightRadius - defaultRadius))) {
-                //     return null;
-                // } else {
-                //     return "none";
-                // }
-            });
+        //         // if ( (xPosition - mouseX > 0) && ((xPosition - mouseX <= defaultRadius + highlightRadius) && (xPosition - mouseX >= highlightRadius - defaultRadius))) {
+        //         //     return null;
+        //         // } else {
+        //         //     return "none";
+        //         // }
+        //     });
+
+        // for (var y = 0; y < displaySets.length; y++) {/////////////////////////////////////////////////////////////////////////////////////////
+        //     if (displaySets[y][0][0] == )
+        //     for (var x = 0; x < displaySets[y].length) {
+
+        //     }
+        // }
+
+        // var rects = svg.selectAll(".rect-highlight")
+        //     .moveToFront();
+
+        // rects.each(function {
+        //     display = false;
+        //     for (var i = 0; i < dataPointsHighlighted.length; i++) {
+        //         // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
+        //         if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][2][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][2][1] ) {
+        //             //display = true;
+        //             rectsToDraw.push(dataPoints[dataPointsHighlighted[i]][2]);
+        //             break;
+        //         }
+        //     }
+        // });
+
+        // rectsToDraw.sort(function(a, b) { return a[1] - b[1]; });
+
+        // for (var f = 0; f < rectsToDraw.length; f++) {
+        //     rects.each(function() {
+        //         if ()
+        //     });
+        // }
+
+        var numDisplayed = 0;
+
+        console.log("numRects: " + svg.selectAll(".rect-highlight").size);
+        console.log("numPointsHighlighted: " + dataPointsHighlighted.length);
 
         svg.selectAll(".rect-highlight")
             .moveToFront()
             .attr("display", function() {
                 display = false;
+                console.log("DPH: " + dataPointsHighlighted.toString());
                 for (var i = 0; i < dataPointsHighlighted.length; i++) {
-                    // console.log("x|" this.getAttribute("cx") + " == " +  + "|");
+                    console.log("i = " + i + " |" + this.getAttribute("x") + " == " + dataPoints[dataPointsHighlighted[i]][2][0] + " && " + this.getAttribute("y") + " == " + dataPoints[dataPointsHighlighted[i]][2][1] + "|");
                     if (this.getAttribute("x") == dataPoints[dataPointsHighlighted[i]][2][0] && this.getAttribute("y") == dataPoints[dataPointsHighlighted[i]][2][1] ) {
+                        console.log("x:::::: " + this.getAttribute("x"));
+                        // countdown = numDisplayed;
+                        // if (countdown > 0) {
+                        //     countdown = countdown - 1;
+                        //     continue;
+                        // }
+                        // numDisplayed++;
                         display = true;
                         break;
                     }
@@ -410,6 +459,7 @@ Line.prototype.draw = function (divId) {
 
                 if (display) {
                     return null;
+
                 } else {
                     return "none";
                 }
@@ -492,6 +542,11 @@ Line.prototype.draw = function (divId) {
                 pointX = xScale(data[j][0]);
                 pointY = yScale(data[j][1]);
 
+                // If this x-value has not been seen before, add it to the list of x-values.
+                if (xValues.indexOf(pointX) == -1) {
+                    xValues.push(pointX);
+                }
+
                 svg.append("circle")
                     .attr("class", "data-point")
                     .attr("cx", pointX)
@@ -542,77 +597,247 @@ Line.prototype.draw = function (divId) {
 
                 
 
+                
+
+
+
+
+                textY = pointY + (highlightTextHeight/3);
+
+
+                rectY = pointY - highlightRectHeight/2;
+                
                 var lineHighlightData = [ [ 0 , 0 ] , [ highlightLineWidth , 0 ] ];
+
                 var highlightLineXLength = Math.abs(lineHighlightData[0][0] - lineHighlightData[1][0]);
 
                 var rightHighlightEdge = pointX+highlightRadius+highlightLineXLength+highlightRectWidth;
 
                 var overRightEdge = false;
-
-                console.log("----------------");
-                console.log("highlightText[j]: " + highlightText[j]);
-                console.log("rightHighlightEdge: " + pointX + " " + highlightRadius + " " + highlightLineXLength + " " + highlightRectWidth);
-                console.log("rightHighlightEdge >= rightGraphBoundary ::: " + rightHighlightEdge + ">=" + rightGraphBoundary);
                 if (rightHighlightEdge >= rightGraphBoundary) {
                     overRightEdge = true;
                 }
+
+                if ( overRightEdge ) {
+                    textX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth + highlightTextPadding;
+                    rectX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth;
+                    // lineHighlightData[1][0] = lineHighlightData[1][0] - highlightLineWidth;
+                    lineTransformX = (pointX-highlightRadius-highlightLineXLength);
+                    lineTransformY = pointY;
+                } else {
+                    textX = pointX + highlightRadius + highlightLineWidth + highlightTextPadding;
+                    rectX = pointX + highlightRadius + highlightLineWidth;
+                    lineTransformX = (pointX+highlightRadius);
+                    lineTransformY = pointY;
+                } 
+
+
+                var currentDataPointsLength = dataPoints.length;
+
+                // rectYCounter = 0;
+                // for (var t = 0; t < currentDataPointsLength; t++) {
+                //     if (dataPoints[t][2][0] == rectX) {
+                //         // If the existing point is further down than the new one
+                //         if (dataPoints[t][0][1] > pointY) {
+                            
+                //         } else {
+                //             rectYCounter++;
+                //         }
+
+                //     }
+                // }
+
+                // rectY = 5 + ((highlightRectHeight + 2) * rectYCounter);
+
+                // console.log("----------------");
+                // console.log("highlightText[j]: " + highlightText[j]);
+                // console.log("rightHighlightEdge: " + pointX + " " + highlightRadius + " " + highlightLineXLength + " " + highlightRectWidth);
+                // console.log("rightHighlightEdge >= rightGraphBoundary ::: " + rightHighlightEdge + ">=" + rightGraphBoundary);
+                
+
+                // Detect highlight conflicts with other points at same x position
+                    // get a list of all points in same x position
+                // console.log("A");
+                
+                // var atSameX = [];
+                // console.log("B");
+                // console.log("dataPoints: " + dataPoints.toString());
+                // for (var k = numValues; k < currentDataPointsLength; k++) {
+                //     console.log("C");
+                //     if (dataPoints[k][0][0] == pointX) {
+                //         atSameX.push(dataPoints[k]);
+                //     }
+                // }
+                // console.log("D");
+                // for (var l = 0; l < atSameX.length; l++) {
+                //     if 
+                    // console.log("E");
+                //     var yDistance = atSameX[l][0][1] - pointY;
+                //     var distToRect = atSameX[l][2][1] - pointY;
+                //     if ( Math.abs(yDistance) <= highlightRectHeight) {
+                //         var overlapAmount = highlightRectHeight - Math.abs(yDistance);
+                //         if (yDistance < 0) {
+                //             rectY = rectY + overlapAmount+2;
+                //             textY = textY + overlapAmount+2;
+
+                //             // push down
+                //         } else {
+                //             rectY = rectY - overlapAmount-2;
+                //             textY = textY - overlapAmount-2;
+                //             // push up
+                //         }
+
+                //         // lineHighlightData = [[0, 0], [highlightLineWidth, rectY-pointY]];
+
+                //         // Intersection
+                //         // So move this one appropriately
+
+                //     } else if (Math.abs(distToRect) < highlightRectHeight) {
+                //         if (distToRect < 0) {
+                //             rectY = rectY + highlightRectHeight+2;
+                //             textY = textY + highlightRectHeight+2;
+
+                //             // push down
+                //         } else {
+                //             rectY = rectY - highlightRectHeight-2;
+                //             textY = textY - highlightRectHeight-2;
+                //             // push up
+                //         }
+                //     }
+                // }
+                // console.log("F");
+
+                
+            
 
                 svg.append("path")
                     .attr("class", "line-highlight")
                     .attr("style", "stroke: " + colors[i])
                     .attr("display", "none")
-                    .attr("transform", function() {
-                        if ( overRightEdge ) {
-                            console.log("HERE ((" + pointX + ")) translate(" + (pointX-highlightRadius-highlightLineXLength) + ", " + pointY + ")");
-                            lineTransformX = (pointX-highlightRadius-highlightLineXLength);
-                            lineTransformY = pointY;
-                            
-                        } else {
-                            console.log("THERE: ((" + pointX + ")) translate(" + (pointX+highlightRadius) + ", " + pointY + ")");
-                            lineTransformX = (pointX+highlightRadius);
-                            lineTransformY = pointY;
-                        }
-                        return "translate(" + lineTransformX + ", " + lineTransformY + ")";
-                    })
+                    .attr("transform", "translate(" + lineTransformX + ", " + lineTransformY + ")")
                     .attr("d", lineNoScale(lineHighlightData));
 
-                textY = pointY + (highlightTextHeight/3);
-                if ( overRightEdge ) {
-                    textX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth + highlightTextPadding;
-                } else {
-                    textX = pointX + highlightRadius + highlightLineWidth + highlightTextPadding;
-                }
-                svg.append("text")
-                    .attr("class", "text-highlight")
-                    .attr("x", textX)
-                    .attr("y", textY)
-                    .attr("style", "font-size: " + highlightTextHeight + "px; font-family: sans-serif")
-                    .attr("display", "none")
-                    .text( highlightText[j] );
+
+                
+                // svg.append("text")
+                // svg.append("text")
+                //     .attr("class", "text-highlight")
+                //     .attr("x", textX)
+                //     .attr("y", textY)
+                //     .attr("style", "font-size: " + highlightTextHeight + "px; font-family: sans-serif")
+                //     .attr("display", "none")
+                //     .text( highlightText[j] );
                     
                 textCounter = 0;
                 
-                rectY = pointY - highlightRectHeight/2;
-                if ( overRightEdge ) {
-                    rectX = pointX - highlightRadius - highlightLineWidth - highlightRectWidth;
-                } else {
-                    rectX = pointX + highlightRadius + highlightLineWidth;
-                }
-                svg.append("rect")
-                    .attr("class", "rect-highlight")
-                    .attr("x", rectX)
-                    .attr("y", rectY)
-                    .attr("width", highlightRectWidth)
-                    .attr("height", highlightRectHeight)
-                    .attr("display", "none")
-                    .attr("style", "stroke: " + colors[i] + "; fill: rgb(212,212,212);");
+
+
+                
+                // svg.append("rect")
+                // svg.append("rect")
+                //     .attr("class", "rect-highlight")
+                //     .attr("x", rectX)
+                //     .attr("y", rectY)
+                //     .attr("width", highlightRectWidth)
+                //     .attr("height", highlightRectHeight)
+                //     .attr("display", "none")
+                //     .attr("style", "stroke: " + colors[i] + "; fill: rgb(212,212,212);");
 
                 // dataPoints[j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY]  ]
-                dataPoints[numValues+((i-1)*numValues)+j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY] ]; 
+                dataPoints[((i-1)*numValues)+j] = [ [pointX, pointY], [lineTransformX, lineTransformY], [rectX, rectY], [textX, textY], highlightText[j].length*6+highlightTextPadding, colors[i], highlightText[j] ]; 
 
             }
         }
     }
+
+    dataPoints.sort(function(a,b) {
+        var pxA = a[0][0];
+        var pxB = b[0][0];
+        var pyA = a[0][1];
+        var pyB = b[0][1];
+        // var ryA = a[2][1];
+        // var ryB = b[2][1];
+
+        if (pxA == pxB) {
+            return pyA - pyB;
+            // if (ryA < ryB) {
+            //     return a;
+            // } else {
+            //     return b;
+            // }
+        } else {
+            return pxA - pxB;
+            // if (pxA < pxB) {
+            //     return a;
+            // } else {
+            //     return b;
+            // }
+        }
+    });
+
+
+
+    var count = 0;
+    var lastX = -0.112323;
+    var currentX = 0;
+    console.log("DP: ");
+    for (var d = 0; d < dataPoints.length; d++) {
+        currentX = dataPoints[d][0][0];
+        if (currentX != lastX) {
+            count = 0;
+        } else {
+            count++;
+        }
+        var newRectY = globalPadding+(count*(highlightRectHeight+2));
+        var newTextY = newRectY + highlightTextHeight;
+        svg.append("rect")
+            .attr("class", "rect-highlight")
+            .attr("x", dataPoints[d][2][0])
+            .attr("y", newRectY)
+            .attr("width", dataPoints[d][4])
+            .attr("height", highlightRectHeight)
+            .attr("display", "none")
+            .attr("style", "stroke: " + dataPoints[d][5] + "; fill: rgb(212,212,212);");
+
+        dataPoints[d][2][1] = newRectY;
+
+        svg.append("text")
+            .attr("class", "text-highlight")
+            .attr("x", dataPoints[d][3][0])
+            .attr("y", newTextY)
+            .attr("style", "font-size: " + highlightTextHeight + "px; font-family: sans-serif")
+            .attr("display", "none")
+            .text( dataPoints[d][6] );
+
+        dataPoints[d][3][1] = newTextY;
+
+        lastX = currentX;
+        console.log(dataPoints[d].toString());
+    }
+
+    // var tempRects = [];
+    // // For every x value associated with a data point
+    // for (var r = 0; r < xValues.length; r++) {
+    //     tempRects = [];
+    //     // Get info of all rects at that x value
+    //     for (var q = numValues; q < dataPoints.length; q++) {
+    //         if (dataPoints[q][0][0] == xValues[r]) {
+    //             tempRects.push([dataPoints[q][2][0], dataPoints[q][2][1]]);
+    //         }
+    //     }
+
+    //     console.log("tempRects b4 sort: " + tempRects.toString());
+    
+    //     tempRects.sort(function(a,b) { return a[1] - b[1]; });
+
+    //     console.log("tempRects: " + tempRects.toString());
+
+
+
+    //     displaySets.push(tempRects);
+    // }
+
+
 
     if (numDataSets > 2) {
 
@@ -679,7 +904,7 @@ Bar.prototype.draw = function(divId) {
  					.orient("left")
  					.ticks(5);
 
- 	var xAxisLineCoords = [[globalPadding,h-globalPadding],[w-globalPadding,h-globalPadding]]
+ 	var xAxisLineCoords = [[globalPadding,h-globalPadding],[w-globalPadding,h-globalPadding]];
 
  	var xAxisLine = d3.svg.line(xAxisLineCoords);
 
@@ -781,16 +1006,28 @@ function visualize(dataPackage, parentId) {
 	// 			"ColumnLabel": ["X", "Y"],			
 	// 			"ColumnType": ["Integer", "Integer"],			
 	// 			"Values":				
-	// 				[[0, 0, randNum(0,50), randNum(0,50)],					
-	// 				[1,	1, randNum(0,50), randNum(0,50)],				
-	// 				[2,	4, randNum(0,50), randNum(0,50)],				
-	// 				[3,	9, randNum(0,50), randNum(0,50)],				
-	// 				[4,	16, randNum(0,50), randNum(0,50)],				
-	// 				[5,	25, randNum(0,50), randNum(0,50)],				
-	// 				[6,	15, randNum(0,50), randNum(0,50)],				
-	// 				[7,	21, randNum(0,50), randNum(0,50)],				
-	// 				[8,	23, randNum(0,50), randNum(0,50)],				
-	// 				[9,	15, randNum(0,50), randNum(0,50)]]		
+	// 				[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+	// 				[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+ //                    [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [11, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [13, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [14, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [18, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [19, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [20, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
 	// 		}		
 	// 	};
 
