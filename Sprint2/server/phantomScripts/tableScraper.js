@@ -15,7 +15,9 @@ function TableData() {
 	this._data = [];	// an array of array of TableDataElement
 							// each row is made of an array of TableDataElement
 							// this._data is an array of rows
-	this._caption = "";	// table caption
+	this._caption = "";	// table caption, the AI expects an empty string if none found
+	this._columnLabel = []; // labels for each column, default is an array of size 1 with the empty string
+	this._columnLabel[0] = "";
 
 	this._checkDimensions = function() {
 		if (this._data.length > this._rows) {
@@ -45,6 +47,15 @@ function TableData() {
 
 	this.getCaption = function() {
 		return this._caption;
+	}
+
+	this.getColumnLabel = function() {
+		return this._columnLabel;
+	}
+
+	// pass in an array of strings that are the column labels
+	this.setColumnLabel(columnLabel) {
+		this._columnLabel = columnLabel;
 	}
 
 	this.setRows = function(rows) {
@@ -145,6 +156,37 @@ function getTableData() {
 			tableData.setCaption(caption);
 		}
 
+		// look for table heading data, collect it if it exists
+		// this will look for all theads in the table, so if the table is malformed and
+		// there are numerous theads, the last one encountered will be the column headings
+		$( $( currentTable ).find( 'thead' ) ).each( function(currentTableHeadIndex,
+					currentTableHead) {
+			
+			var currentTableHeadData = [];
+
+			$( currentTableHead ).find( 'th' ).each( function(currentTableHeadColumnIndex,
+						currentTableHeadColumn) {
+
+				currentTableHeadData.push( $( currentTableHeadColumn ).text() );
+			}
+
+
+			var dataFound = false;	// set true if any of the table headings contain data
+			for (var i = 0; i < currentTableHeadData.size(); i++) {
+				if (currentTableHeadData[i] != undefined &&
+					 currentTableHeadData[i] != "") {
+					dataFound = true;
+					break;
+				}
+			}
+			
+			if (dataFound) {
+				tableData.setColumnLabel(currentTableHeadData);
+			}
+
+		}
+
+
 		// iterate over each <tr> table row
 		$( $( currentTable ).find( 'tr' ) ).each( function(currentRowIndex, currentRow) {
 			var currentRowData = [];
@@ -218,6 +260,7 @@ function tableScraper() {
 
 		exportableData.push(
 				{
+					ColumnLabel : allTables.getTable(table).getColumnLabel(),
 					Caption : allTables.getTable(table).getCaption(),
 					Rows : rows,
 					Cols : cols,
@@ -231,6 +274,8 @@ function tableScraper() {
 	 *
 	 * {
 	 * 	Data : [
+	 * 		ColumnLabel : [(string)],
+	 * 		Caption : [(string)],
 	 * 		Rows : (integer),
 	 * 		Cols : (integer),
 	 * 		Values : [Rows][Cols]
