@@ -54,7 +54,7 @@ function TableData() {
 	}
 
 	// pass in an array of strings that are the column labels
-	this.setColumnLabel(columnLabel) {
+	this.setColumnLabel = function(columnLabel) {
 		this._columnLabel = columnLabel;
 	}
 
@@ -149,7 +149,7 @@ function getTableData() {
 	// iterate over each <table> in the document
 	$( 'table' ).each( function(currentTableIndex, currentTable) {
 		var tableData = new TableData();
-		
+
 		// find the table caption if it exists
 		var caption = $( $( currentTable ).find( 'caption' ) ).text();
 		if (caption != undefined) {
@@ -168,11 +168,11 @@ function getTableData() {
 						currentTableHeadColumn) {
 
 				currentTableHeadData.push( $( currentTableHeadColumn ).text() );
-			}
+			});
 
 
 			var dataFound = false;	// set true if any of the table headings contain data
-			for (var i = 0; i < currentTableHeadData.size(); i++) {
+			for (var i = 0; i < currentTableHeadData.length; i++) {
 				if (currentTableHeadData[i] != undefined &&
 					 currentTableHeadData[i] != "") {
 					dataFound = true;
@@ -184,11 +184,11 @@ function getTableData() {
 				tableData.setColumnLabel(currentTableHeadData);
 			}
 
-		}
+		});
 
 
 		// iterate over each <tr> table row
-		$( $( currentTable ).find( 'tr' ) ).each( function(currentRowIndex, currentRow) {
+		$( $( currentTable ).find( 'tbody tr' ) ).each( function(currentRowIndex, currentRow) {
 			var currentRowData = [];
 		
 			// pick out each <td> table data element and make a new TableDataElement for that data	
