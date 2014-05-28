@@ -15,6 +15,7 @@ function TableData() {
 	this._data = [];	// an array of array of TableDataElement
 							// each row is made of an array of TableDataElement
 							// this._data is an array of rows
+	this._caption = "";	// table caption
 
 	this._checkDimensions = function() {
 		if (this._data.length > this._rows) {
@@ -36,6 +37,14 @@ function TableData() {
 
 	this.getDataAt = function(row, col) {
 		return this._data[row][col];
+	}
+
+	this.setCaption = function(caption) {
+		this._caption = caption;
+	}
+
+	this.getCaption = function() {
+		return this._caption;
 	}
 
 	this.setRows = function(rows) {
@@ -130,6 +139,12 @@ function getTableData() {
 	$( 'table' ).each( function(currentTableIndex, currentTable) {
 		var tableData = new TableData();
 		
+		// find the table caption if it exists
+		var caption = $( $( currentTable ).find( 'caption' ) ).text();
+		if (caption != undefined) {
+			tableData.setCaption(caption);
+		}
+
 		// iterate over each <tr> table row
 		$( $( currentTable ).find( 'tr' ) ).each( function(currentRowIndex, currentRow) {
 			var currentRowData = [];
@@ -203,6 +218,7 @@ function tableScraper() {
 
 		exportableData.push(
 				{
+					Caption : allTables.getTable(table).getCaption(),
 					Rows : rows,
 					Cols : cols,
 					Values : exportableDataSingleSetValues
