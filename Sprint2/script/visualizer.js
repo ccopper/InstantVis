@@ -83,6 +83,15 @@ Scatter.prototype.draw = function(divId)
     var w = this.width;
     var h = this.height;
     var padding = 20;
+    var color = "black";
+    var highlightRadius = 6;
+    var defaultRadius = 3;
+    var highlightTextHeight = 12;
+    var highlightTextPadding = 2;
+    var highlightRectFillColor = "rgb(225,225,225)";
+    var highlightRectHeight = highlightTextHeight + highlightTextPadding * 2;
+    var highlightRectWidth;
+    var characterWidth = 6;
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
@@ -111,6 +120,10 @@ Scatter.prototype.draw = function(divId)
             .attr("width", w)
             .attr("height", h);
 
+    var line = d3.svg.line()
+        .x(function(d) { return d[0]; })
+        .y(function(d) { return d[1]; });
+
     // Draw the x-axis.
     svg.append("g")
         .attr({
@@ -135,20 +148,64 @@ Scatter.prototype.draw = function(divId)
         .attr({
             cx: function(d) { return xScale(d[0]); },
             cy: function(d) { return yScale(d[1]); },
-            r: 3,
-            fill: "black"
+            r: defaultRadius,
+            fill: color
         })
-        // When moused over, change size and shape of point.
-        .on("mouseover",function() {
-            d3.select(this)
-                .attr("fill", "orange")
-                .attr("r", 6);
+        .on("mouseover",function(d) {
+            var xPosition = parseFloat(d3.select(this).attr("cx"));
+            var yPosition = parseFloat(d3.select(this).attr("cy"));
+            var xRectPosition = xPosition + 2*highlightRadius;
+            var yRectPosition = yPosition - highlightRectHeight/2;
+            var xTextPosition = xRectPosition + highlightTextPadding;
+            var yTextPosition = yRectPosition  + highlightTextHeight;
+            var highlightLineData = [[xPosition+highlightRadius,yPosition],[xPosition+2*highlightRadius,yPosition]]; 
+            highlightRectWidth = (2*highlightTextPadding) + (characterWidth*d.toString().length);
+            
+            console.log("x: " + xPosition + " | y: " + yPosition);
+            console.log("xT: " + xTextPosition + " | yT: " + yTextPosition);
+
+            svg.append("circle")
+                .attr("id", "circle-highlight")
+                .attr("cx", xPosition)
+                .attr("cy", yPosition)
+                .attr("fill", "none")
+                .style("stroke", color)
+                .attr("r", highlightRadius);
+
+            svg.append("rect")
+                .attr("id", "tooltip-rect")
+                .attr("x", xRectPosition)
+                .attr("y", yRectPosition)
+                .attr("fill", highlightRectFillColor)
+                .style("stroke", color)
+                .attr("width", highlightRectWidth)
+                .attr("height", highlightRectHeight);
+
+            svg.append("text")
+                .attr("id", "tooltip-text")
+                .attr("x", xTextPosition)
+                .attr("y", yTextPosition)
+                .style("pointer-events", "none")
+                .attr("text-anchor", "left")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .attr("fill", "black")
+                .text(d);
+
+            svg.append("path")
+                .attr("id", "tooltip-line")
+                .style("stroke", color)
+                .attr("d", line(highlightLineData))
         })
-        // When mouse leaves, revert the size and shape back to the default.
         .on("mouseout", function(d) {
             d3.select(this)
                 .attr("fill", "black")
                 .attr("r", 3);
+            svg.selectAll("#circle-highlight").remove();
+            svg.selectAll("#tooltip-text").remove();
+            svg.selectAll("#tooltip-rect").remove();
+            svg.selectAll("#tooltip-line").remove();            
         }); 
 }
 
@@ -397,26 +454,6 @@ Line.prototype.draw = function (divId) {
                     .attr("r", defaultRadius)
                     .attr("fill", colors[i-1])
                     .attr("color", colors[i-1]);
-                    // .on("mouseover",function() {
-                    //     if (numDataSets <= 2) {
-                    //         d3.select(this)
-                    //             .attr("fill", function() {
-                    //                 // if (!multiline) {
-                    //                 //     return "orange";    
-                    //                 // }
-                    //             })
-                    //             .attr("r", function() {
-                    //                 if (!multiline) {
-                    //                     return highlightRadius;    
-                    //                 }
-                    //             });
-                    //     }
-                    // })
-                    // .on("mouseout", function() {
-                    //     d3.select(this)
-                    //         .attr("fill", this.getAttribute("color"))
-                    //         .attr("r", defaultRadius);
-                    // });
 
                 // Add hidden circle highlight elements.
                 svg.append("circle")
@@ -613,7 +650,7 @@ Bar.prototype.draw = function(divId) {
 	    .attr("y", function(d) {
 	        return (yScale(d[1]));
 	    })
-	    .attr("width", barWidth)//xScale.rangeBand())
+	    .attr("width", barWidth)
 	    .attr("height", function(d) {
 	        return h - yScale(d[1]) - globalPadding;
 	    })
@@ -671,42 +708,11 @@ Bar.prototype.draw = function(divId) {
             d3.select("#tooltip").remove();
             d3.select("#barline").remove();
             d3.select(this)
-                // .transition()
-                // .duration(100)
                 .attr("fill", fillColor);
             svg.selectAll(".bar")
-                // .transition()
-                // .duration(100)
                 .attr("fill", fillColor);
             
         });
-
-
-
-// svg.append("path")
-//             .attr("class", "line")
-//             .attr("style", "stroke: " + colors[i-1])
-//             .attr("d", line(data));
-
-    //Create labels
-    // svg.selectAll("text")
-    //     .data(this.dataSet)
-    //     .enter()
-    //     .append("text")
-    //     .text(function(d) {
-    //         return d[1];
-    //     })
-    //     .attr("text-anchor", "middle")
-    //     .attr("x", function(d, i) {
-    //         return xScale(d[0]) + (w / numBars - barPadding) / 2;
-    //     })
-    //     .attr("y", function(d) {
-    //         return yScale(d[1]) + 14;
-    //     })
-    //     .attr("font-family", "sans-serif")
-    //     .attr("font-size", "11px")
-    //     .attr("fill", "white");
-
 
     // Create x-axis
     svg.append("g")
