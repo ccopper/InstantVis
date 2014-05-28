@@ -161,6 +161,12 @@ Scatter.prototype.draw = function(divId)
             var highlightLineData = [[xPosition+highlightRadius,yPosition],[xPosition+2*highlightRadius,yPosition]]; 
             highlightRectWidth = (2*highlightTextPadding) + (characterWidth*d.toString().length);
             
+            if (xRectPosition + highlightRectWidth > w-globalPadding) {
+                highlightLineData = [[xPosition-2*highlightRadius, yPosition],[xPosition-highlightRadius, yPosition]];
+                xRectPosition = xPosition - 2*highlightRadius - highlightRectWidth;
+                xTextPosition = xRectPosition + highlightTextPadding;
+            }
+
             console.log("x: " + xPosition + " | y: " + yPosition);
             console.log("xT: " + xTextPosition + " | yT: " + yTextPosition);
 
@@ -740,50 +746,50 @@ Bar.prototype.draw = function(divId) {
 function visualize(dataPackage, parentId) {
 
     // KEEP THIS FOR CONTINUAL TESTING PURPOSES DURING DEVELOPMENT...for now...
-	// var dataPackage = {		
-	// 	"Visualizations":		
-	// 		[{			
-	// 			"Type": "Bar",			
-	// 			"DataColumns": [0, 1]		
-	// 		},{			
-	// 			"Type": "Line",			
-	// 			"DataColumns": [0, 1]		
-	// 		},{			
-	// 			"Type": "Scatter",			
-	// 			"DataColumns": [0, 1]		
-	// 		},{         
- //                "Type": "Area",          
- //                "DataColumns": [0, 1]       
- //            }],		
-	// 	"Data":		
-	// 		{			
-	// 			"ColumnLabel": ["X", "Y"],			
-	// 			"ColumnType": ["Integer", "Integer"],			
-	// 			"Values":				
-	// 				[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
-	// 				[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
- //                    [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
-	// 		}		
-	// 	};
+	var dataPackage = {		
+		"Visualizations":		
+			[{			
+				"Type": "Bar",			
+				"DataColumns": [0, 1]		
+			},{			
+				"Type": "Line",			
+				"DataColumns": [0, 1, 2]		
+			},{			
+				"Type": "Scatter",			
+				"DataColumns": [0, 1]		
+			},{         
+                "Type": "Area",          
+                "DataColumns": [0, 1]       
+            }],		
+		"Data":		
+			{			
+				"ColumnLabel": ["X", "Y"],			
+				"ColumnType": ["Integer", "Integer"],			
+				"Values":				
+					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+					[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+                    [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                    [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+			}		
+		};
 
 	// Get a list of visualization objects based on the provided data.
 	var visualizations = extractVisualizations(dataPackage);
