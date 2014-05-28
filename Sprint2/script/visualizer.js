@@ -396,27 +396,27 @@ Line.prototype.draw = function (divId) {
                     .attr("cy", pointY)
                     .attr("r", defaultRadius)
                     .attr("fill", colors[i-1])
-                    .attr("color", colors[i-1])
-                    .on("mouseover",function() {
-                        if (numDataSets <= 2) {
-                            d3.select(this)
-                                .attr("fill", function() {
-                                    if (!multiline) {
-                                        return "orange";    
-                                    }
-                                })
-                                .attr("r", function() {
-                                    if (!multiline) {
-                                        return highlightRadius;    
-                                    }
-                                });
-                        }
-                    })
-                    .on("mouseout", function() {
-                        d3.select(this)
-                            .attr("fill", this.getAttribute("color"))
-                            .attr("r", defaultRadius);
-                    });
+                    .attr("color", colors[i-1]);
+                    // .on("mouseover",function() {
+                    //     if (numDataSets <= 2) {
+                    //         d3.select(this)
+                    //             .attr("fill", function() {
+                    //                 // if (!multiline) {
+                    //                 //     return "orange";    
+                    //                 // }
+                    //             })
+                    //             .attr("r", function() {
+                    //                 if (!multiline) {
+                    //                     return highlightRadius;    
+                    //                 }
+                    //             });
+                    //     }
+                    // })
+                    // .on("mouseout", function() {
+                    //     d3.select(this)
+                    //         .attr("fill", this.getAttribute("color"))
+                    //         .attr("r", defaultRadius);
+                    // });
 
                 // Add hidden circle highlight elements.
                 svg.append("circle")
@@ -482,8 +482,14 @@ Line.prototype.draw = function (divId) {
         } else {
             count++;
         }
-        var newRectY = globalPadding+(count*(highlightRectHeight+2));
-        var newTextY = newRectY + highlightTextHeight;
+        
+        var newRectY = dataPoints[d][1][1];
+        var newTextY = dataPoints[d][2][1];
+
+        if (multiline) {
+            newRectY = globalPadding+(count*(highlightRectHeight+2));
+            newTextY = newRectY + highlightTextHeight;
+        }
 
         // Add the rect highlight element.
         svg.append("rect")
@@ -512,7 +518,7 @@ Line.prototype.draw = function (divId) {
     }
 
     // Detect mouse motion in the graph area.
-    if (multiline) {
+    //if (multiline) {
         svg.append("rect")
             .attr("x", globalPadding-1)
             .attr("y", globalPadding-1)
@@ -531,7 +537,7 @@ Line.prototype.draw = function (divId) {
                 svg.selectAll(".rect-highlight").attr("display", "none");
             })
             .on("mousemove", mousemove);
-    }
+    //}
    
 };
 
@@ -555,9 +561,14 @@ Bar.prototype.draw = function(divId) {
 	//Width and height
     var w = this.width;
     var h = this.height;
+    var highlightTextHeight = 12;
+    var highlightTextPadding = 2;
     var padding = 20;
     var barPadding = 5;
     var barWidth = ((w - 2*globalPadding) / numBars) - barPadding;
+
+    var fillColor = randRGB(100, 200);
+    var highlightColor = randRGB(100, 200);
 
     var xScale = d3.scale.linear()
     				.domain([0, d3.max(xValues)])
@@ -576,6 +587,10 @@ Bar.prototype.draw = function(divId) {
  					.scale(yScale)
  					.orient("left")
  					.ticks(5);
+
+    var unscaledLine = d3.svg.line()
+        .x(function(d) { return d[0]; })
+        .y(function(d) { return d[1]; });                    
 
  	var xAxisLineCoords = [[globalPadding,h-globalPadding],[w-globalPadding,h-globalPadding]];
 
@@ -603,35 +618,95 @@ Bar.prototype.draw = function(divId) {
 	        return h - yScale(d[1]) - globalPadding;
 	    })
 	    .attr("fill", function(d) {
-	        return "rgb(0, 0, " + (d[1] * 10) + ")";
+	        return fillColor;
 	    })
-        .on("mouseover",function() {
+        .attr("class", "bar")
+        .on("mouseover",function(d) {
+            var xPosition = parseFloat(d3.select(this).attr("x"));
+            var xTextPosition = xPosition + barWidth/2;
+            var yPosition = parseFloat(d3.select(this).attr("y"));
+            var yTextPosition = yPosition + highlightTextHeight;
+            if (yTextPosition > h - globalPadding) {
+                yTextPosition = yPosition - highlightTextPadding;
+            }
+            svg.append("text")
+                .attr("id", "tooltip")
+                .attr("x", xTextPosition)
+                .attr("y", yTextPosition)
+                .style("pointer-events", "none")
+                .attr("text-anchor", "middle")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .attr("fill", "black")
+                .text(d[1]);
+
+            var barLineData = [ [globalPadding,yPosition], [w-globalPadding,yPosition] ];
+
+            svg.append("path")
+                .attr("class", "bar-line")
+                .attr("id", "barline")
+                .attr("style", "stroke: rgb(150,150,150)")
+                .attr("d", unscaledLine(barLineData));
+
             d3.select(this)
-                .attr("fill", "orange");
+                .attr("fill", highlightColor);
+
+            svg.selectAll(".bar")
+                .attr("fill", function() {
+                    console.log("y: " + this.getAttribute("y"));
+                    console.log("bar[0][1]: " + barLineData[0][1]);
+                    if (this.getAttribute("y") < barLineData[0][1]) {
+                        return "rgb(161,219,136)";
+                    } else if (this.getAttribute("y") > barLineData[0][1]) {
+                        return "rgb(219,136,136)";
+                    } else {
+                        return "rgb(191,191,191)";
+                    }
+                });
+
+            this.setAttribute("fill", "rgb(240,209,86)");
         })
         .on("mouseout", function(d) {
+            d3.select("#tooltip").remove();
+            d3.select("#barline").remove();
             d3.select(this)
-                .attr("fill", "rgb(0, 0, " + (d[1] * 10) + ")");
+                // .transition()
+                // .duration(100)
+                .attr("fill", fillColor);
+            svg.selectAll(".bar")
+                // .transition()
+                // .duration(100)
+                .attr("fill", fillColor);
+            
         });
 
+
+
+// svg.append("path")
+//             .attr("class", "line")
+//             .attr("style", "stroke: " + colors[i-1])
+//             .attr("d", line(data));
+
     //Create labels
-    svg.selectAll("text")
-        .data(this.dataSet)
-        .enter()
-        .append("text")
-        .text(function(d) {
-            return d[1];
-        })
-        .attr("text-anchor", "middle")
-        .attr("x", function(d, i) {
-            return xScale(d[0]) + (w / numBars - barPadding) / 2;
-        })
-        .attr("y", function(d) {
-            return yScale(d[1]) + 14;
-        })
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "11px")
-        .attr("fill", "white");
+    // svg.selectAll("text")
+    //     .data(this.dataSet)
+    //     .enter()
+    //     .append("text")
+    //     .text(function(d) {
+    //         return d[1];
+    //     })
+    //     .attr("text-anchor", "middle")
+    //     .attr("x", function(d, i) {
+    //         return xScale(d[0]) + (w / numBars - barPadding) / 2;
+    //     })
+    //     .attr("y", function(d) {
+    //         return yScale(d[1]) + 14;
+    //     })
+    //     .attr("font-family", "sans-serif")
+    //     .attr("font-size", "11px")
+    //     .attr("fill", "white");
+
 
     // Create x-axis
     svg.append("g")
@@ -666,7 +741,7 @@ function visualize(dataPackage, parentId) {
 	// 			"DataColumns": [0, 1]		
 	// 		},{			
 	// 			"Type": "Line",			
-	// 			"DataColumns": [0, 1, 2, 3]		
+	// 			"DataColumns": [0, 1]		
 	// 		},{			
 	// 			"Type": "Scatter",			
 	// 			"DataColumns": [0, 1]		
@@ -690,16 +765,16 @@ function visualize(dataPackage, parentId) {
 	// 				[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
 	// 				[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
  //                    [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [11, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
  //                    [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [13, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [14, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
  //                    [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
  //                    [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [18, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [19, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [20, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
  //                    [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
 	// 		}		
 	// 	};
