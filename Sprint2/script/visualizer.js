@@ -83,7 +83,7 @@ Scatter.prototype.draw = function(divId)
     var w = this.width;
     var h = this.height;
     var padding = 20;
-    var color = "black";
+    var colors = [];
     var highlightRadius = 6;
     var defaultRadius = 3;
     var highlightTextHeight = 12;
@@ -92,14 +92,37 @@ Scatter.prototype.draw = function(divId)
     var highlightRectHeight = highlightTextHeight + highlightTextPadding * 2;
     var highlightRectWidth;
     var characterWidth = 6;
+    var data = [];
+    var dataPoints = [];
+
+    var numDataSets = this.dataSet[0].length;
+    var numValuesPerDataSet = this.dataSet.length;
+
+    var multiset = false;
+    multiset = (numDataSets > 2) ? true : false;
 
     var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([globalPadding, w - globalPadding]);
 
+    // Determine the maximum Y value for the datasets.
+    var maxY = 0;
+    for (var i = 1; i < numDataSets; i++) {
+        for (var j = 0; j < numValuesPerDataSet; j++) {
+            if (this.dataSet[j][i] > maxY) {
+                maxY = this.dataSet[j][i];
+            }
+        }
+    }
+
     var yScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
-                        .range([h - globalPadding, globalPadding]);
+                        .domain([0, maxY])
+                        .range([h - globalPadding, globalPadding])
+                        .clamp(true);
+
+    // var yScale = d3.scale.linear()
+    //                     .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
+    //                     .range([h - globalPadding, globalPadding]);
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
@@ -140,79 +163,179 @@ Scatter.prototype.draw = function(divId)
             })
         .call(yAxis);
 
-    // Draw the scatter plot points.
-    svg.selectAll("circle")
-        .data(this.dataSet)
-        .enter()
-        .append("circle")
-        .attr({
-            cx: function(d) { return xScale(d[0]); },
-            cy: function(d) { return yScale(d[1]); },
-            r: defaultRadius,
-            fill: color
-        })
-        .on("mouseover",function(d) {
-            var xPosition = parseFloat(d3.select(this).attr("cx"));
-            var yPosition = parseFloat(d3.select(this).attr("cy"));
-            var xRectPosition = xPosition + 2*highlightRadius;
-            var yRectPosition = yPosition - highlightRectHeight/2;
+
+    function mousemove() {
+        var mouseX = d3.mouse(this)[0];
+        var mouseY = d3.mouse(this)[1];
+
+        var pointHighlighted = false;
+
+        for (var k = 0; k < dataPoints.length; k++) {
+            var thisPointX = dataPoints[k][0][0];
+            var thisPointY = dataPoints[k][0][1];
+            var thisRectX = dataPoints[k][1][0];
+            var thisRectY = dataPoints[k][1][1];
+            var thisTextX = dataPoints[k][2][0];
+            var thisTextY = dataPoints[k][2][1];
+            var thisLineData = dataPoints[k][3];
+            
+            if (mouseX < thisPointX + defaultRadius && mouseX > thisPointX - defaultRadius &&
+                mouseY > thisPointY - defaultRadius && mouseY < thisPointY + defaultRadius) {
+                pointHighlighted = true;
+                svg.selectAll(".circle-highlight")
+                    .moveToFront()
+                    .attr("display", function() {
+                        if (this.getAttribute("cx") == thisPointX && this.getAttribute("cy") == thisPointY) {
+                            return null;
+                        }
+                        return "none"
+                    });
+                svg.selectAll(".tooltip-rect")
+                    .moveToFront()
+                    .attr("display", function() {
+                        if (this.getAttribute("x") == thisRectX && this.getAttribute("y") == thisRectY) {
+                            return null;
+                        }
+                        return "none"
+                    });
+                svg.selectAll(".tooltip-text")
+                    .moveToFront()
+                    .attr("display", function() {
+                        if (this.getAttribute("x") == thisTextX && this.getAttribute("y") == thisTextY) {
+                            return null;
+                        }
+                        return "none"
+                    });
+                svg.selectAll(".tooltip-line")
+                    .moveToFront()
+                    .attr("display", function() {
+                        if (this.getAttribute("d") == line(thisLineData)) {
+                            return null;
+                        }
+                        return "none"
+                    });
+            }
+        } 
+
+        if (!pointHighlighted) {
+            svg.selectAll(".circle-highlight").attr("display", "none");
+            svg.selectAll(".tooltip-text").attr("display", "none");
+            svg.selectAll(".tooltip-rect").attr("display", "none");
+            svg.selectAll(".tooltip-line").attr("display", "none");
+        }
+    }
+
+    for (var i = 1; i < numDataSets; i++) {
+        data = getData([0,i],this.dataSet);
+
+        if (!multiset) {
+            colors[i-1] = "black";
+        }
+        else {
+            colors[i-1] = randRGB(50,200);
+        }
+
+        for (var j = 0; j < numValuesPerDataSet; j++) {
+            pointX = xScale(data[j][0]);
+            pointY = yScale(data[j][1]);
+            var dataX = data[j][0];
+            var dataY = data[j][1];
+            var highlightText = dataX + ", " + dataY;
+            var xRectPosition = pointX + 2*highlightRadius;
+            var yRectPosition = pointY - highlightRectHeight/2;
             var xTextPosition = xRectPosition + highlightTextPadding;
             var yTextPosition = yRectPosition  + highlightTextHeight;
-            var highlightLineData = [[xPosition+highlightRadius,yPosition],[xPosition+2*highlightRadius,yPosition]]; 
-            highlightRectWidth = (2*highlightTextPadding) + (characterWidth*d.toString().length);
-            
+            var highlightLineData = [[pointX+highlightRadius,pointY],[pointX+2*highlightRadius,pointY]]; 
+            var color = colors[i-1];
+            highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
             if (xRectPosition + highlightRectWidth > w-globalPadding) {
-                highlightLineData = [[xPosition-2*highlightRadius, yPosition],[xPosition-highlightRadius, yPosition]];
-                xRectPosition = xPosition - 2*highlightRadius - highlightRectWidth;
+                highlightLineData = [[pointX-2*highlightRadius, pointY],[pointX-highlightRadius, pointY]];
+                xRectPosition = pointX - 2*highlightRadius - highlightRectWidth;
                 xTextPosition = xRectPosition + highlightTextPadding;
             }
 
-            console.log("x: " + xPosition + " | y: " + yPosition);
-            console.log("xT: " + xTextPosition + " | yT: " + yTextPosition);
+            dataPoints.push([[pointX, pointY], [xRectPosition, yRectPosition], [xTextPosition, yTextPosition], highlightLineData, highlightText, color]); 
+        }
+    }
 
-            svg.append("circle")
-                .attr("id", "circle-highlight")
-                .attr("cx", xPosition)
-                .attr("cy", yPosition)
+    for (var k = 0; k < dataPoints.length; k++) {
+        var x = dataPoints[k][0][0];
+        var y = dataPoints[k][0][1];
+        var xRect = dataPoints[k][1][0];
+        var yRect = dataPoints[k][1][1];
+        var xText = dataPoints[k][2][0];
+        var yText = dataPoints[k][2][1];
+        var lineData = dataPoints[k][3];
+        var text = dataPoints[k][4];
+        var col = dataPoints[k][5];
+        var highlightRectW = (2*highlightTextPadding) + (characterWidth*text.length);
+
+
+        // Draw the scatter plot points.
+        svg.append("circle")
+            .attr("class", "data-point")
+            .attr({
+                cx: x,
+                cy: y,
+                r: defaultRadius,
+                fill: col
+            });
+
+        svg.append("circle")
+                .attr("class", "circle-highlight")
+                .attr("cx", x)
+                .attr("cy", y)
                 .attr("fill", "none")
-                .style("stroke", color)
+                .style("stroke", col)
+                .attr("display", "none")
                 .attr("r", highlightRadius);
 
             svg.append("rect")
-                .attr("id", "tooltip-rect")
-                .attr("x", xRectPosition)
-                .attr("y", yRectPosition)
+                .attr("class", "tooltip-rect")
+                .attr("x", xRect)
+                .attr("y", yRect)
                 .attr("fill", highlightRectFillColor)
-                .style("stroke", color)
-                .attr("width", highlightRectWidth)
+                .style("stroke", col)
+                .attr("display", "none")
+                .attr("width", highlightRectW)
                 .attr("height", highlightRectHeight);
 
             svg.append("text")
-                .attr("id", "tooltip-text")
-                .attr("x", xTextPosition)
-                .attr("y", yTextPosition)
+                .attr("class", "tooltip-text")
+                .attr("x", xText)
+                .attr("y", yText)
                 .style("pointer-events", "none")
+                .attr("display", "none")
                 .attr("text-anchor", "left")
                 .attr("font-family", "sans-serif")
                 .attr("font-size", highlightTextHeight)
                 .attr("font-weight", "bold")
                 .attr("fill", "black")
-                .text(d);
+                .text(text);
 
             svg.append("path")
-                .attr("id", "tooltip-line")
-                .style("stroke", color)
-                .attr("d", line(highlightLineData))
+                .attr("class", "tooltip-line")
+                .style("stroke", col)
+                .attr("display", "none")
+                .attr("d", line(lineData))    
+    }
+
+    svg.append("rect")
+        .attr("x", globalPadding - defaultRadius)
+        .attr("y", globalPadding - defaultRadius)
+        .attr("class", "overlay")
+        .attr("width", w-(2*globalPadding)+2*defaultRadius)
+        .attr("height", h-(2*globalPadding)+2*defaultRadius)
+        .on("mouseout", function() {
+            // Clear the graph area.
+            svg.selectAll(".circle-highlight").attr("display", "none");
+            svg.selectAll(".tooltip-text").attr("display", "none");
+            svg.selectAll(".tooltip-rect").attr("display", "none");
+            svg.selectAll(".tooltip-line").attr("display", "none");
         })
-        .on("mouseout", function(d) {
-            d3.select(this)
-                .attr("fill", "black")
-                .attr("r", 3);
-            svg.selectAll("#circle-highlight").remove();
-            svg.selectAll("#tooltip-text").remove();
-            svg.selectAll("#tooltip-rect").remove();
-            svg.selectAll("#tooltip-line").remove();            
-        }); 
+        .on("mousemove", mousemove);
+
+
 }
 
 
@@ -697,8 +820,6 @@ Bar.prototype.draw = function(divId) {
 
             svg.selectAll(".bar")
                 .attr("fill", function() {
-                    console.log("y: " + this.getAttribute("y"));
-                    console.log("bar[0][1]: " + barLineData[0][1]);
                     if (this.getAttribute("y") < barLineData[0][1]) {
                         return "rgb(161,219,136)";
                     } else if (this.getAttribute("y") > barLineData[0][1]) {
@@ -746,50 +867,50 @@ Bar.prototype.draw = function(divId) {
 function visualize(dataPackage, parentId) {
 
     // KEEP THIS FOR CONTINUAL TESTING PURPOSES DURING DEVELOPMENT...for now...
-	var dataPackage = {		
-		"Visualizations":		
-			[{			
-				"Type": "Bar",			
-				"DataColumns": [0, 1]		
-			},{			
-				"Type": "Line",			
-				"DataColumns": [0, 1, 2]		
-			},{			
-				"Type": "Scatter",			
-				"DataColumns": [0, 1]		
-			},{         
-                "Type": "Area",          
-                "DataColumns": [0, 1]       
-            }],		
-		"Data":		
-			{			
-				"ColumnLabel": ["X", "Y"],			
-				"ColumnType": ["Integer", "Integer"],			
-				"Values":				
-					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
-					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-					[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
-                    [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                    [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
-			}		
-		};
+	// var dataPackage = {		
+	// 	"Visualizations":		
+	// 		[{			
+	// 			"Type": "Bar",			
+	// 			"DataColumns": [0, 1]		
+	// 		},{			
+	// 			"Type": "Line",			
+	// 			"DataColumns": [0, 1, 2]		
+	// 		},{			
+	// 			"Type": "Scatter",			
+	// 			"DataColumns": [0, 1, 2, 3, 4, 5]		
+	// 		},{         
+ //                "Type": "Area",          
+ //                "DataColumns": [0, 1]       
+ //            }],		
+	// 	"Data":		
+	// 		{			
+	// 			"ColumnLabel": ["X", "Y"],			
+	// 			"ColumnType": ["Integer", "Integer"],			
+	// 			"Values":				
+	// 				[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+	// 				[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+	// 				[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+ //                    [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+ //                    [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+	// 		}		
+	// 	};
 
 	// Get a list of visualization objects based on the provided data.
 	var visualizations = extractVisualizations(dataPackage);
