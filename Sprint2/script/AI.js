@@ -65,6 +65,52 @@ var setTypes = function(datasets) {
 }
 
 
+var determineVisualizationsToRequest = function(AIdataStructure) {
+	var newAIdataStructure = []; 	// this will be the data from the AIdataStructure that has
+											// been expanded with more datasets assembled based on 
+											// column type
+
+	// look at each dataset, see what column types it has and determine what groups of columns can be visualized
+	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
+		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
+		var numberColumns = [];			// indexes of columns that contain numeric data
+		var currentDataset = AIdataStructure[currentDatasetIndex];
+		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
+
+		for (var currentColumn = 0; currentColumn < currentDataset.Cols; currentColumn++) {
+			var colType = currentDataset.Data.ColumnType[currentColumn];
+
+			if (colType == "Integer" || colType == "Float") {
+				numberColumns.push(currentColumn);
+			} else if (colType == "String" || colType == "Data") {
+				stringDateColumns.push(currentColumn);
+			} else {
+				// the column has no type, this is no good, so no additional visualizations will be generated
+			}
+		}
+		
+		// look for (string|date) and numeric sets, request a pie chart for them
+		for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
+			for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
+
+				var colsInvolved = [];
+				colsInvolved.push(numericCurrentCol);
+				colsInvolved.push(stringDataCurrentCol);
+
+				visualizations.push(
+						{
+							"Type" : "Pie",
+							"DataColumns" : colsInvolved
+						}
+					);
+			}
+		}
+
+		currentDataset.Visualizations = visualizations;
+	}
+
+}
+
 
 /**
  * Take raw parser data and return a data object to be used by the visualizer.
@@ -121,6 +167,10 @@ function AI(parserData) {
 	for (var i = 0; i < AIdataStructure.length; i++) {
 		setTypes(AIdataStructure[i]); // have the type checker assign column type to each column in each table
 	}
+	
+	determineVisualizationsToRequest(AIdataStructure);
+	
+	console.log("AI produced this data: " + JSON.stringify(AIdataStructure));
 
 	return AIdataStructure;
 }
@@ -134,12 +184,14 @@ function AIdemo() {
 				{
 					"Rows": 3,
 					"Cols": 2,
-					"Values": [["1", "2"],["3", "4"],["5", "6"]]
+					"Values": [["1", "2"],["3", "4"],["5", "6"]],
+					"ColumnLabel" : []
 				},
 				{
 					"Rows": 4,
 					"Cols": 3,
-					"Values": [["1", "2", "4"],["3", "4", "5"],["5", "6", "5"], ["7", "8", "40"]]
+					"Values": [["1", "2", "4"],["3", "4", "5"],["5", "6", "5"], ["7", "8", "40"]],
+					"ColumnLabel" : []
 				}
 			]
 	};
@@ -149,8 +201,7 @@ function AIdemo() {
 }
 
 // Uncomment the below to run a demo function that will output some data to the console
-// AItest();
-
+//AIdemo();
 
 
 
