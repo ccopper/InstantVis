@@ -21,6 +21,45 @@ var shiftAllTableRowsUpByOneDiscardRowZero = function(currentTable) {
 
 }
 
+var makeColumnLabelsIfNeedBe = function(currentTable) {
+
+	// if the column labels appear to be unpopulated, take the data from the first
+	// row and make column labels out of them
+	if (currentTable.ColumnLabel[0] == "" && currentTable.ColumnLabel.length == 1) {
+		var columnLabelsAreJustANumberSequence = false;
+
+		// do not take column labels from the first row if there is no first row or the data
+		// is a list (single row of data with no labels)
+		if (currentTable.Values.length > 1) {
+			columnLabelsAreJustANumberSequence = true;
+		}
+
+
+		var currentLabel;
+		for (var colLabelIndex = 0; colLabelIndex < cols; colLabelIndex++) {
+			if (columnLabelsAreJustANumberSequence) {
+				currentLabel = "" + colLabelIndex; // force the labels to be strings
+			} else {
+				currentLabel =	"" + currentTable.Values[0][colLabelIndex];
+			}
+			columnLabels.push();
+		}
+
+		shiftAllTableRowsUpByOneDiscardRowZero(currentTable);
+	} 
+
+}
+
+var setTypes = function(datasets) {
+
+	var TH = new TypeHandler();
+	
+	for (var i = 0; i < datasets.length; i++) {
+		TH.processTable(datasets[i]);
+	}
+
+}
+
 
 
 /**
@@ -30,7 +69,7 @@ var shiftAllTableRowsUpByOneDiscardRowZero = function(currentTable) {
  * @returns A js object for delivery to the visualizer in the format as defined by the wiki
  */
 function AI(parserData) {
-	var AIoutput = [];
+	var AIdataStructure = [];
 
 	for (var tableNum = 0; tableNum < parserData.Data.length; tableNum++) {
 		var columnLabels = [];
@@ -39,52 +78,16 @@ function AI(parserData) {
 		var cols = currentTable.Cols;
 		var rows = currentTable.Rows;
 		
-		// for now the AI is semi pass through, assign each graph as a bar and a line
 		for (var col = 0; col < cols; col++) {
 			dataColumns.push(col); // set all columns to be graphed
 		}
 		
-		// if the column labels appear to be unpopulated, take the data from the first
-		// row and make column labels out of them
-		if (currentTable.ColumnLabel[0] == "" && currentTable.ColumnLabel.length == 1) {
-			var columnLabelsAreJustANumberSequence = false;
-
-			// do not take column labels from the first row if there is no first row or the data
-			// is a list (single row of data with no labels)
-			if (currentTable.Values.length > 1) {
-				columnLabelsAreJustANumberSequence = true;
-			}
+		makeColumnLabelsIfNeedBe(currentTable);
 
 		
-			var currentLabel;
-			for (var colLabelIndex = 0; colLabelIndex < cols; colLabelIndex++) {
-				if (columnLabelsAreJustANumberSequence) {
-					currentLabel = "" + colLabelIndex; // force the labels to be strings
-				} else {
-					currentLabel =	"" + currentTable.Values[0][colLabelIndex];
-				}
-				columnLabels.push();
-			}
-
-			shiftAllTableRowsUpByOneDiscardRowZero(currentTable);
-		} 
-		
-
-		// iterate over every data element from the parser data,
-		// convert the string element data to integer and store that
-		// in dataRows[]
-		var dataRows = [];
-		for (var row = 0; row < rows; row++) {
-			var dataCols = [];
-			for (var col = 0; col < cols; col++) {
-				dataCols.push(parseInt(parserData.Data[tableNum].Values[row][col]));
-			}
-			dataRows.push(dataCols);
-		}
-
 		// assemble the object for the type checker, it is an array of the following, one
 		// for each data table
-		AIoutput.push( {
+		AIdataStructure.push( {
 			"Visualizations" : [
 				{
 					"Type" : "Line",
@@ -105,27 +108,18 @@ function AI(parserData) {
 			],
 			"Data" : {
 				"ColumnLabel" : columnLabels,
-				"Values" : dataRows
+				"Values" : currentTable.Values
 				// ColumnType will be set by the type checker later
 			}
 		} );
 
 	}
 
-	setTypes(AIoutput); // have the type checker assign column type to each column in each table
-	return AIoutput;
+	// setTypes(AIdataStructure); // have the type checker assign column type to each column in each table
+
+	return AIdataStructure;
 }
 
-
-var setTypes = function(datasets) {
-
-	var TH = new TypeHandler();
-	
-	for (var i = 0; i < datasets.length; i++) {
-		TH.processTable(datasets[i]);
-	}
-
-}
 
 
 function AIdemo() {
