@@ -2,6 +2,26 @@
  * to the visualizer.
  */
 
+// remove the 0th row from a table, shift all the others up by one
+// helpful when the column labels have been extracted from the first 
+// row of values  
+var shiftAllTableRowsUpByOneDiscardRowZero = function(currentTable) {
+	var totalOldRows = currentTable.Values.length;
+	var colSize = currentTable.Cols;
+
+	// do not try to adjust a table with only one or zero rows
+	if (totalOldRows > 1) {
+		for (var i = 0; i < totalOldRows - 1; i++) {
+			for (var col = 0; col < colSize; col++) {
+				currentTable[i][j] = currentTable[i+1][j];
+			}
+		}
+		currentTable.Rows = currentTable.Rows - 1; // to account for the now removed 0th row
+	}
+
+}
+
+
 
 /**
  * Take raw parser data and return a data object to be used by the visualizer.
@@ -15,19 +35,40 @@ function AI(parserData) {
 	for (var tableNum = 0; tableNum < parserData.Data.length; tableNum++) {
 		var columnLabels = [];
 		var dataColumns = [];
-		var cols = parserData.Data[tableNum].Cols;
-		var rows = parserData.Data[tableNum].Rows;
+		var currentTable = parserData.Data[tableNum];
+		var cols = currentTable.Cols;
+		var rows = currentTable.Rows;
 		
-		// for now the AI is pass through, assign each graph as a bar and a line
+		// for now the AI is semi pass through, assign each graph as a bar and a line
 		for (var col = 0; col < cols; col++) {
 			dataColumns.push(col); // set all columns to be graphed
 		}
 		
-		// TODO: this is just a placeholder column namer with no smarts to it, fix that
-		// make column labels like 'col2', 'col3', etc for each column	
-		for (var colLabel = 0; colLabel < cols; colLabel++) {
-			columnLabels.push("col" + colLabel);
-		}
+		// if the column labels appear to be unpopulated, take the data from the first
+		// row and make column labels out of them
+		if (currentTable.ColumnLabel[0] == "" && currentTable.ColumnLabel.length == 1) {
+			var columnLabelsAreJustANumberSequence = false;
+
+			// do not take column labels from the first row if there is no first row or the data
+			// is a list (single row of data with no labels)
+			if (currentTable.Values.length > 1) {
+				columnLabelsAreJustANumberSequence = true;
+			}
+
+		
+			var currentLabel;
+			for (var colLabelIndex = 0; colLabelIndex < cols; colLabelIndex++) {
+				if (columnLabelsAreJustANumberSequence) {
+					currentLabel = "" + colLabelIndex; // force the labels to be strings
+				} else {
+					currentLabel =	"" + currentTable.Values[0][colLabelIndex];
+				}
+				columnLabels.push();
+			}
+
+			shiftAllTableRowsUpByOneDiscardRowZero(currentTable);
+		} 
+		
 
 		// iterate over every data element from the parser data,
 		// convert the string element data to integer and store that
@@ -41,7 +82,7 @@ function AI(parserData) {
 			dataRows.push(dataCols);
 		}
 
-		// assemble the object for the visualizer, it is an array of the following, one
+		// assemble the object for the type checker, it is an array of the following, one
 		// for each data table
 		AIoutput.push( {
 			"Visualizations" : [
@@ -64,16 +105,27 @@ function AI(parserData) {
 			],
 			"Data" : {
 				"ColumnLabel" : columnLabels,
-				"ColumnType" : "Integer", 	// TODO: remove hard coded type integer assumption
 				"Values" : dataRows
+				// ColumnType will be set by the type checker later
 			}
 		} );
 
 	}
 
+	setTypes(AIoutput); // have the type checker assign column type to each column in each table
 	return AIoutput;
 }
 
+
+var setTypes = function(datasets) {
+
+	var TH = new TypeHandler();
+	
+	for (var i = 0; i < datasets.length; i++) {
+		TH.processTable(datasets[i]);
+	}
+
+}
 
 
 function AIdemo() {
