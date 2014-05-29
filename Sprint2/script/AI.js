@@ -118,7 +118,9 @@ function AI(parserData) {
 
 	}
 
-	// setTypes(AIdataStructure); // have the type checker assign column type to each column in each table
+	for (var i = 0; i < AIdataStructure.length; i++) {
+		setTypes(AIdataStructure[i]); // have the type checker assign column type to each column in each table
+	}
 
 	return AIdataStructure;
 }
