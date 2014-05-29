@@ -67,9 +67,6 @@ var setTypes = function(datasets) {
 
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
 var determineVisualizationsToRequest = function(AIdataStructure) {
-	var newAIdataStructure = []; 	// this will be the data from the AIdataStructure that has
-											// been expanded with more datasets assembled based on 
-											// column type
 
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
 		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
@@ -88,7 +85,16 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 				// the column has no type, this is no good, so no additional visualizations will be generated
 			}
 		}
-		
+
+
+		/*********************		
+		 * DEBUG CODE:
+		 * making all columns of type Integer
+		 */
+		for (var i = 0; i < currentDataset.Cols; i++) {
+			numberColumns.push(i);
+		}
+
 		// look for (string|date) and numeric sets, request a pie chart for them
 		for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
 			for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
