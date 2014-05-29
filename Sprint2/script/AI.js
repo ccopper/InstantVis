@@ -36,7 +36,7 @@ var makeColumnLabelsIfNeedBe = function(currentTable) {
 
 
 		var currentLabel;
-		for (var colLabelIndex = 0; colLabelIndex < cols; colLabelIndex++) {
+		for (var colLabelIndex = 0; colLabelIndex < currentTable.Cols; colLabelIndex++) {
 			if (columnLabelsAreJustANumberSequence) {
 				currentLabel = "" + colLabelIndex; // force the labels to be strings
 			} else {
