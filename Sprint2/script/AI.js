@@ -172,6 +172,8 @@ function AI(parserData) {
 		setTypes(AIdataStructure[i]); // have the type checker assign column type to each column in each table
 	}
 	
+	console.log("TypeHandler produced this data: " + JSON.stringify(AIdataStructure));
+
 	determineVisualizationsToRequest(AIdataStructure);
 	
 	console.log("AI produced this data: " + JSON.stringify(AIdataStructure));
