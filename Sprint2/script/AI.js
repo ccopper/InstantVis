@@ -22,11 +22,13 @@ var shiftAllTableRowsUpByOneDiscardRowZero = function(currentTable) {
 }
 
 var makeColumnLabelsIfNeedBe = function(currentTable) {
+	
 
 	// if the column labels appear to be unpopulated, take the data from the first
 	// row and make column labels out of them
 	if (currentTable.ColumnLabel[0] == "" && currentTable.ColumnLabel.length == 1) {
 		var columnLabelsAreJustANumberSequence = false;
+		var columnLabels = [];
 
 		// do not take column labels from the first row if there is no first row or the data
 		// is a list (single row of data with no labels)
@@ -44,6 +46,8 @@ var makeColumnLabelsIfNeedBe = function(currentTable) {
 			}
 			columnLabels.push();
 		}
+		
+		currentTable.ColumnLabel = columnLabels;
 
 		shiftAllTableRowsUpByOneDiscardRowZero(currentTable);
 	} 
@@ -72,7 +76,6 @@ function AI(parserData) {
 	var AIdataStructure = [];
 
 	for (var tableNum = 0; tableNum < parserData.Data.length; tableNum++) {
-		var columnLabels = [];
 		var dataColumns = [];
 		var currentTable = parserData.Data[tableNum];
 		var cols = currentTable.Cols;
@@ -107,7 +110,7 @@ function AI(parserData) {
 				}
 			],
 			"Data" : {
-				"ColumnLabel" : columnLabels,
+				"ColumnLabel" : currentTable.ColumnLabel,
 				"Values" : currentTable.Values
 				// ColumnType will be set by the type checker later
 			}
