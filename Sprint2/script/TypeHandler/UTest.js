@@ -22,6 +22,21 @@ test("2.45 is a valid Float", function()
 	equal(obj.isValid, true, "obj.isValid == true");
 });
 
+test("-42.45 is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "-42.45"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -42.45, "obj.Val == -42.45");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+
 test("2 is a valid Float", function()
 {
 	var TH = new TypeHandler();
@@ -65,6 +80,20 @@ test("545 is a valid Integer", function()
 	
 	equal(true, true, "Raw Data:" + JSON.stringify(obj));
 	equal(obj.Val, 545, "obj.Val == 545");
+	equal(obj.Type, "Integer", "obj.isValid == Integer");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+test("-4545 is a valid Integer", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "-4545"
+	}	
+	TH.testType(obj, "Integer");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -4545, "obj.Val == -4545");
 	equal(obj.Type, "Integer", "obj.isValid == Integer");
 	equal(obj.isValid, true, "obj.isValid == true");
 });
@@ -189,6 +218,59 @@ test("June 24, 1986 3:00PM is a valid date", function()
 	notEqual(obj.Val, null, "obj.Val != null");
 	equal(obj.Type, "Date", "obj.isValid == Date");
 	equal(obj.isValid, true, "obj.isValid == true");
+});
+
+test("2001 is a valid date", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "2001"
+	}	
+	TH.testType(obj, "Date");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	notEqual(obj.Val, null, "obj.Val != null");
+	equal(obj.Type, "Date", "obj.isValid == Date");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+
+
+/*
+ *
+ */
+test("2001 is a valid date, float and int", function()
+{
+	var TH = new TypeHandler();
+
+	obj = TH.acceptingTypes("2001");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.length, 3, "Length 3");
+	//equal(obj.Type, "Date", "obj.isValid == Date");
+	//equal(obj.isValid, true, "obj.isValid == true");
+});
+
+test("4.999 is a valid date, float and int", function()
+{
+	var TH = new TypeHandler();
+
+	obj = TH.acceptingTypes("4.999");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.length, 3, "Length 3");
+	//equal(obj.Type, "Date", "obj.isValid == Date");
+	//equal(obj.isValid, true, "obj.isValid == true");
+});
+
+test("SampleTablePArset", function()
+{
+	var TH = new TypeHandler();
+
+	TH.processTable(sTbl);
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(sTbl));
+
 });
 
 
