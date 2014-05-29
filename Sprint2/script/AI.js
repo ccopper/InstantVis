@@ -65,12 +65,12 @@ var setTypes = function(datasets) {
 }
 
 
+// look at each dataset, see what column types it has and determine what groups of columns can be visualized
 var determineVisualizationsToRequest = function(AIdataStructure) {
 	var newAIdataStructure = []; 	// this will be the data from the AIdataStructure that has
 											// been expanded with more datasets assembled based on 
 											// column type
 
-	// look at each dataset, see what column types it has and determine what groups of columns can be visualized
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
 		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
 		var numberColumns = [];			// indexes of columns that contain numeric data
@@ -106,8 +106,30 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			}
 		}
 
+		// look for numeric vs numeric data
+		// make one of each of these graphs for each combo: Line, Bar, Scatter
+		var graphTypes = ["Line", "Bar", "Scatter"];
+		for (var independentVariableIndex = 0; independentVariableIndex < numberColumns.length; independentVariableIndex++) {
+			for (var dependentVariableIndex = 0; dependentVariableIndex < numberColumns.length; dependentVariableIndex++) {
+				if (independentVariableIndex != dependentVariableIndex) {
+					var dataColumnsToGraph = [numberColumns[dependentVariableIndex], numberColumns[independentVariableIndex]];
+					for (var graphType = 0; graphType < graphTypes.length; graphType++) {
+						visualizations.push(
+								{
+									"Type" : graphTypes[graphType],
+									"DataColumns" : dataColumnsToGraph
+								}
+							);
+					}
+				}
+			}
+		}
+
+									
+
 		currentDataset.Visualizations = visualizations;
 	}
+
 
 }
 
@@ -137,24 +159,6 @@ function AI(parserData) {
 		// assemble the object for the type checker, it is an array of the following, one
 		// for each data table
 		AIdataStructure.push( {
-			"Visualizations" : [
-				{
-					"Type" : "Line",
-					"DataColumns" : dataColumns
-				},
-				{
-					"Type" : "Bar",
-					"DataColumns" : dataColumns
-				},
-				{
-					"Type" : "Scatter",
-					"DataColumns" : dataColumns
-				},
-				{
-					"Type" : "Area",
-					"DataColumns" : dataColumns
-				}
-			],
 			"Data" : {
 				"ColumnLabel" : currentTable.ColumnLabel,
 				"Values" : currentTable.Values
