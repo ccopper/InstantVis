@@ -11,7 +11,7 @@ var shiftAllTableRowsUpByOneDiscardRowZero = function(currentTable) {
 
 	// do not try to adjust a table with only one or zero rows
 	if (totalOldRows > 1) {
-		for (var i = 0; i < totalOldRows - 1; i++) {
+		for (var i = 0; i < totalOldRows - 2; i++) {
 			for (var col = 0; col < colSize; col++) {
 				currentTable[i][col] = currentTable[i+1][col];
 			}
