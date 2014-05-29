@@ -27,6 +27,7 @@ function TypeHandler() {}
 TypeHandler.prototype.processTable = function(table)
 {
 	//Check for labels
+	
 	var hasLabels = true;
 	if(table.Data.ColumnLabel[0] == "")
 	{
@@ -39,6 +40,7 @@ TypeHandler.prototype.processTable = function(table)
 		var columnData = [];
 		for(var row in table.Data.Values)
 		{		
+			//Retrive the raw data and get the valid types for this data
 			var rawData = table.Data.Values[row][col];
 			columnData.push(this.acceptingTypes(rawData));
 		}
@@ -52,20 +54,23 @@ TypeHandler.prototype.processTable = function(table)
 			//Get the list of valid types
 			var vTypes = this.validTypes(columnData);
 			//convert all records
-
-			for(var row in table.Values)
-			{		
+			for(var row in table.Data.Values)
+			{	
+				//Fetch the record with highest precedence
 				var rec = columnData[row].filter(function(obj) 
 				{
-					return obj.Type == vTypes[0] && isValid;
+					return obj.Type == vTypes[0] && obj.isValid;
 				});
-				
-				table.Data.Values[col][row] = rec.Val;
+				//Only update if there was an applicable record
+				if(rec.length != 0)
+					table.Data.Values[row][col] = rec[0].Val;
 			}
+			//Update the type metadata
 			table.Data.ColumnType[col] = vTypes[0];
 		}
 		
 	}	
+
 }
 
 TypeHandler.prototype.validTypes = function(cData)
@@ -116,7 +121,7 @@ TypeHandler.prototype.acceptingTypes = function(rawVal)
  */
  TypeHandler.prototype.testType = function(obj,typeName)
  {
-	//
+	
 	var typeObj = this.TypeLibrary.Types.filter(function(typeIns) 
 	{
 		return typeIns.Name == typeName;
