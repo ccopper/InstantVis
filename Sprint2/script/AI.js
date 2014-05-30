@@ -159,6 +159,7 @@ function AI(parserData) {
 		var currentTable = parserData.Data[tableNum];
 		var cols = currentTable.Cols;
 		var rows = currentTable.Rows;
+		var columnType = [""];
 		
 		for (var col = 0; col < cols; col++) {
 			dataColumns.push(col); // set all columns to be graphed
@@ -169,11 +170,12 @@ function AI(parserData) {
 		
 		// assemble the object for the type checker, it is an array of the following, one
 		// for each data table
+
 		AIdataStructure.push( {
 			"Data" : {
 				"ColumnLabel" : currentTable.ColumnLabel,
-				"Values" : currentTable.Values
-				// ColumnType will be set by the type checker later
+				"Values" : currentTable.Values,
+				"ColumnType" : columnType
 			}
 		} );
 
