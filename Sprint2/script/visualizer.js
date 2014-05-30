@@ -134,11 +134,24 @@ Pie.prototype.draw = function(divId)
             var newDx = thisX * ratio;
             var newDy = thisY * ratio;
 
+            console.log("thisX: " + thisX);
+            console.log("thisY: " + thisY);
+
+            console.log("ratio: " + ratio);
+
+            console.log("newDx: " + newDx);
+            console.log("newDy: " + newDy);
+
             var lineStartX = thisX * ratio2;
             var lineStartY = thisY * ratio2;
 
             var lineEndX = thisX * ratio3;
             var lineEndY = thisY * ratio3;
+
+            console.log("lineStartX: " + lineStartX);
+            console.log("lineStartY: " + lineStartY);
+            console.log("lineEndX: " + lineEndX);
+            console.log("lineEndY: " + lineEndY);
 
             var labelLineData = [[lineStartX,lineStartY],[lineEndX,lineEndY]];
     
