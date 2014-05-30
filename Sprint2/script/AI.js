@@ -154,7 +154,13 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			}
 		}
 
-		AIdataStructure = newAIdataStructure; // replace the AIdataStructure with one that has undesirable datasets removed
+		// replace the AIdataStructure with one that has undesirable datasets removed
+		for (var i = 0; i < AIdataStructure.length; i++) {
+			AIdataStructure.pop();
+		}
+		for (var i = newAIdataStructure.length - 1; i >= 0; i--) {
+			AIdataStructure.push(newAIdataStructure[i]);
+		}
 	}
 
 }
