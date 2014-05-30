@@ -83,13 +83,16 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 												// remove the dataset as it is undesirable to have only string datasets
 		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) {
 			var colType = currentDataset.Data.ColumnType[currentColumn];
+			var nonStringFound = false;
 
 			if (colType == "Integer" || colType == "Float") {
 				numberColumns.push(currentColumn);
+				nonStringFound = true;
 			} else if (colType == "String") {
 				stringColumns.push(currentColumn);	
 			} else if (colType == "Date") {
 				dateColumns.push(currentColumn);
+				nonStringFound = true;
 			} else {
 				// the column has no type, this is no good, so no additional visualizations will be generated
 			}
@@ -97,7 +100,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
 
-		if (!((stringColumns.length != 0) && (dateColumns.length == 0) && (numberColumns.length == 0) )) { // not only string data was found
+		if (nonStringFound) { // not only string data was found
 
 			stringDateColumns = stringColumns.concat(dateColumns);
 
