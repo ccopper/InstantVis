@@ -66,8 +66,10 @@ var setTypes = function(datasets) {
 
 
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
+// remove some datasets if they contain all string data
 var determineVisualizationsToRequest = function(AIdataStructure) {
-	var removeTheseDatasets = []; 	// AIdataStructure indexes of datasets to remove (so they will not be visualized 
+	var newAIdataStructure = [];		// add datasets to keep (not all string data) to this array, it will later be
+												// used to replace the passed in AIdataStructure.
 
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
 		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
@@ -94,9 +96,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
 
-		if (stringColumnsFound == currentDataset.Data.Cols) { // only string data was found
-			removeTheseDatasets.push(currentDatasetIndex);
-		} else {
+		if (stringColumnsFound != currentDataset.Data.Cols) { // not only string data was found
 
 			// look for (string|date) and numeric sets, request a pie chart for them
 			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
@@ -135,35 +135,19 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			}
 
 			currentDataset.Visualizations = visualizations;
-
+			
+			newAIdataStructure.push(currentDataset);
 		}
 	}
 
-	// remove datasets that have been marked for deletion (so they will not be visualized)
-	if (removeTheseDatasets.length > 0) {
-		var newAIdataStructure = [];
-
-		for (var i = 0; i < removeTheseDatasets.length; i++) {
-			AIdataStructure[removeTheseDatasets[i]].removeThisDataset = true;
-		}
-
-		for (var i = 0; i < AIdataStructure.length; i++) {
-			if (AIdataStructure[i].removeThisDataset != true) {
-				newAIdataStructure.push(AIdataStructure[i]);
-			} else {
-				// this is a dataset to remove, so do not put it in the newAIdataStructure
-			}
-		}
-
-		// replace the AIdataStructure with one that has undesirable datasets removed
-		for (var i = 0; i < AIdataStructure.length; i++) {
-			AIdataStructure.pop();
-		}
-		for (var i = newAIdataStructure.length - 1; i >= 0; i--) {
-			AIdataStructure.push(newAIdataStructure[i]);
-		}
+	// remove the contents of the original AI data structure and replace them with 
+	// the contents of the new AI data structure (this one has some datasets removed).	
+	for (var i = 0; i < AIdataStructure.length; i++) {
+		AIdataStructure.pop();
 	}
-
+	for (var i = 0; i < newAIdataStructure.length; i++) {
+		AIdataStructure.push(newAIdataStructure[i]);
+	}
 }
  
 // rank visualizations for each dataset, the higher the rank, the better the AI thinks 
