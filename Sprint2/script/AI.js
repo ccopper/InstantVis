@@ -147,7 +147,12 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		}
 	}
 
-	return newAIdataStructure;
+	// remove the contents of the original AI data structure and replace them with 
+	// the contents of the new AI data structure (this one has some datasets removed).	
+	for (var i = 0; i < AIdataStructure; i++) {
+		AIdataStructure.pop();
+	}
+	AIdataStructure.concat(newAIdataStructure);
 }
  
 // rank visualizations for each dataset, the higher the rank, the better the AI thinks 
@@ -199,7 +204,7 @@ function AI(parserData) {
 
 	determineVisualizationsToRequest(AIdataStructure);
 	
-	AIdataStructure = rankVisualizations(AIdataStructure);
+	rankVisualizations(AIdataStructure);
 
 	console.log("AI produced this data: " + JSON.stringify(AIdataStructure));
 
