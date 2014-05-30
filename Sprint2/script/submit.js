@@ -70,10 +70,10 @@ function parseComplete(data)
 		return
 	}
 	
-	var cleanData = AI(data); // Call AI
+	tables = AI(data); // Call AI
 
 
-	numDataSets = cleanData.length;
+	numDataSets = tables.length;
 
 	$("#visualizationToolbox").show();
 	$("#userInputArea").slideUp();
@@ -81,7 +81,7 @@ function parseComplete(data)
 
 	for(var i=0; i<numDataSets; i++)
 	{
-		addTable(cleanData[i],i);
+		addTable(tables[i],i);
 	}
 
 }
