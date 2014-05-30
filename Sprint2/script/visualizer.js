@@ -1134,72 +1134,18 @@ function getVisualization(dataPackage,columnSet,type)
 
                 case "Area":
                     v = new Area(getData(columnSet, values), width, height);
-                    break;  
+                    break; 
+                case "Pie":
+                    v = new Pie(getData(columns, values), width, width);
+                    break; 
 
                 default:
                     // The type extracted from the data object did not match any of the defined visualization types.
-                    console.log("ERROR: Could not match visualization type with definition in visualizer.");
+                    console.log("ERROR: Could not match visualization type:'"+type+"'' with definition in visualizer.");
             }
             return v;
         }
     }
-}
-
-
-// Search through the provided data object to instantiate a list
-// containing each of the specified visualizations.
-function extractVisualizations(dataPackage) {
-
-	var height = 300;
-	var width = 650;
-
-	var visList = [];
-	var type = "";
-	var columns = [];
-
-	// Determine the total number of visualizations.
-	var numVisualizations = dataPackage.Visualizations.length;
-    var values = dataPackage.Data.Values;
-
-	// Iterate over each visualization.
-	for (var i = 0; i < numVisualizations; i++ ) {
-		type = dataPackage.Visualizations[i].Type;
-		columns = dataPackage.Visualizations[i].DataColumns;
-
-		// Instantiate a visualization of the appropriate type and append it to the list of visualizations.
-		switch(type) {
-			case "Line":
-				v = new Line(getData(columns, values), width, height, true);
-				visList.push(v);
-				break;
-
-			case "Bar":
-				v = new Bar(getData(columns, values), width, height);
-				visList.push(v);
-				break;
-
-			case "Scatter":
-				v = new Scatter(getData(columns, values), width, height);
-				visList.push(v);
-				break;	
-
-            case "Area":
-                v = new Area(getData(columns, values), width, height);
-                visList.push(v);
-                break; 
-
-            case "Pie":
-                v = new Pie(getData(columns, values), width, width);
-                visList.push(v);
-                break;
-
-			default:
-				// The type extracted from the data object did not match any of the defined visualization types.
-				console.log("ERROR: Could not match visualization type: '" + type + "'' with definition in visualizer.");
-		}
-	}
-
-	return visList;
 }
 
 /**
