@@ -94,8 +94,8 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
 
 				var colsInvolved = [];
-				colsInvolved.push(numericCurrentCol);
-				colsInvolved.push(stringDataCurrentCol);
+				colsInvolved.push(numberColumns[numericCurrentCol]);
+				colsInvolved.push(stringDateColumns[stringDataCurrentCol]);
 
 				visualizations.push(
 						{
