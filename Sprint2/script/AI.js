@@ -96,7 +96,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
 
-		if (stringColumnsFound != currentDataset.Data.Cols) { // not only string data was found
+		if (stringColumnsFound != stringDateColumns.length) { // not only string data was found
 
 			// look for (string|date) and numeric sets, request a pie chart for them
 			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
@@ -142,9 +142,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 	// remove the contents of the original AI data structure and replace them with 
 	// the contents of the new AI data structure (this one has some datasets removed).	
-	for (var i = 0; i < AIdataStructure.length; i++) {
-		AIdataStructure.pop();
-	}
+	AIdataStructure = [];
 	for (var i = 0; i < newAIdataStructure.length; i++) {
 		AIdataStructure.push(newAIdataStructure[i]);
 	}
