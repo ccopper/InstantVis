@@ -189,7 +189,7 @@ function getTableData() {
 
 		var trSelector;
 
-		if ($( $( currentTable ).find( 'tbody tr' ).size() == 0 ) ) {
+		if ($( $( currentTable ).find( 'tbody' ) ).length == 0 ) ) {
 			trSelector = 'tr';
 		} else {
 			trSelector = 'tbody tr';
