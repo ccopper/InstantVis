@@ -60,6 +60,7 @@ Pie.prototype.draw = function(divId)
 
     console.log("data: " + data);
     console.log("data.toString(): " + data.toString());
+    console.log("printArray(data): " + printArray(data));
 
     var color = d3.scale.category10();
 
