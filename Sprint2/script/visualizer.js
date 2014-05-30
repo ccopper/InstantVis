@@ -2,8 +2,167 @@
 
 var globalPadding = 25;
 
+function Pie(dataSet, width, height) 
+{
+    this.dataSet = dataSet;
+    this.width = width;
+    this.height = height;
+}
 
-function Area(dataSet, width, height) {
+Pie.prototype.draw = function(divId)
+{
+    var w = this.width;
+    var h = this.height;
+    var labelLinePadding = 20;
+    var outerRadius = (w - 2*80 - 2*labelLinePadding)/2;
+    var innerRadius = 0;
+    var labelRadius = outerRadius + labelLinePadding;
+    var highlightTextHeight = 15;
+
+    var centerX = (outerRadius + 80 + labelLinePadding);
+    var centerY = (outerRadius + 80 + labelLinePadding);
+
+    var numDataSets = this.dataSet[0].length;
+    var numValuesPerDataSet = this.dataSet.length;
+
+    var categories = [];
+    var data = [];
+    var dataTotal = 0;
+    var colors = [];
+
+    for (var j = 0; j < numValuesPerDataSet; j++) {
+        isDuplicate = false;
+        for (var t = 0; t < categories.length; t++) {
+            if (categories[t][0] == this.dataSet[j][0]) {
+                categories[t].push(j);
+                isDuplicate = true;
+            }
+        }
+        if (!isDuplicate) {
+            categories.push([this.dataSet[j][0], j]);
+            colors.push(randRGB(100,200));                   
+        }
+    }
+
+    var categoryTotal = 0;
+    for (var i = 0; i < categories.length; i++) {
+        categoryTotal = 0;
+        for (var j = 1; j < categories[i].length; j++) {
+            categoryTotal += this.dataSet[categories[i][j]][1];
+        }
+        data.push(categoryTotal);
+        dataTotal += categoryTotal;
+    }
+
+    var color = d3.scale.category10();
+
+    var arc = d3.svg.arc()
+                .innerRadius(innerRadius)
+                .outerRadius(outerRadius);
+
+    var pie = d3.layout.pie();
+
+    var line = d3.svg.line()
+        .x(function(d) { return d[0]; })
+        .y(function(d) { return d[1]; });
+
+    var svg = d3.select("#" + divId)
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+    var arcs = svg.selectAll("g.arc")
+                .data(pie(data))
+                .enter()
+                .append("g")
+                .attr("class", "arc")
+                .attr("transform", "translate(" + centerX + ", " + centerY + ")");
+                // .attr("transform", "translate(" + (outerRadius + legendHeight) + ", " + (outerRadius + globalPadding) + ")");
+
+    arcs.append("path")
+        .attr("fill", function(d, i) {
+            return colors[i];
+        })
+        .attr("d", arc)
+        .on("mouseover", function(d, i) {
+            this.setAttribute("fill", "orange");
+            svg.append("text")
+                .attr("id", "tooltip-text")
+                .attr("x", (centerX + arc.centroid(d)[0]))
+                .attr("y", (centerY + arc.centroid(d)[1]) + highlightTextHeight/2)
+                .attr("text-anchor", "middle")
+                .attr("text-family", "sans-serif")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .style("pointer-events", "none")
+                .text( function(d) {
+                    return Math.floor((data[i]/dataTotal)*10000)/100 + "%";
+            });
+            svg.append("text")
+                .attr("id", "tooltip-text2")
+                .attr("x", (centerX + arc.centroid(d)[0]))
+                .attr("y", (centerY + arc.centroid(d)[1]) - highlightTextHeight/2)
+                .attr("text-anchor", "middle")
+                .attr("text-family", "sans-serif")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .style("pointer-events", "none")
+                .text( function(d) {
+                    return data[i];
+            });
+        })
+        .on("mouseout", function(d, i) {
+            this.setAttribute("fill", colors[i]);
+            d3.select("#tooltip-text").remove();
+            d3.select("#tooltip-text2").remove();
+        });
+
+    arcs.append("text")
+        .attr("transform", function(d) {
+
+            var thisX = centerX - (centerX - arc.centroid(d)[0]);
+            var thisY = centerY - (centerY - arc.centroid(d)[1]);
+            var hyp = Math.sqrt(Math.pow(thisX, 2) + Math.pow(thisY, 2));
+            var ratio = labelRadius/hyp;
+            var ratio2 = (labelRadius*0.75)/hyp;
+            var ratio3 = (labelRadius-5)/hyp;
+
+            var newDx = thisX * ratio;
+            var newDy = thisY * ratio;
+
+            var lineStartX = thisX * ratio2;
+            var lineStartY = thisY * ratio2;
+
+            var lineEndX = thisX * ratio3;
+            var lineEndY = thisY * ratio3;
+
+            var labelLineData = [[lineStartX,lineStartY],[lineEndX,lineEndY]];
+    
+            arcs.append("path")
+                .attr("class", "label-line")
+                .attr("d", line(labelLineData));
+
+            return "translate(" + (newDx) + ", " + (newDy) + ")";
+        })
+        .attr("text-anchor", function(d) {
+            var centroidX = arc.centroid(d)[0];
+            if (centroidX >= 0) {
+                return "start";
+            } else if (Math.abs(centroidX) < outerRadius/10) {
+                return "middle";
+            }
+            return "end";
+        })
+        .attr("font-family", "sans-serif")
+        .attr("font-weight", "bold")
+        .style("pointer-events", "none")
+        .text(function(d, i) {
+            return categories[i][0];
+        });
+}
+
+function Area(dataSet, width, height) 
+{
     this.dataSet = dataSet;
     this.width = width;
     this.height = height;
@@ -67,6 +226,7 @@ Area.prototype.draw = function(divId)
         .datum(this.dataSet)
         .attr("class", "area")
         .attr("d", area);
+
 };
 
 function Scatter(dataSet, width, height) {
@@ -306,7 +466,7 @@ Scatter.prototype.draw = function(divId)
                 .attr("y", yText)
                 .style("pointer-events", "none")
                 .attr("display", "none")
-                .attr("text-anchor", "left")
+                .attr("text-anchor", "start")
                 .attr("font-family", "sans-serif")
                 .attr("font-size", highlightTextHeight)
                 .attr("font-weight", "bold")
@@ -867,50 +1027,72 @@ Bar.prototype.draw = function(divId) {
 function visualize(dataPackage, parentId) {
 
     // KEEP THIS FOR CONTINUAL TESTING PURPOSES DURING DEVELOPMENT...for now...
-	// var dataPackage = {		
-	// 	"Visualizations":		
-	// 		[{			
-	// 			"Type": "Bar",			
-	// 			"DataColumns": [0, 1]		
-	// 		},{			
-	// 			"Type": "Line",			
-	// 			"DataColumns": [0, 1, 2]		
-	// 		},{			
-	// 			"Type": "Scatter",			
-	// 			"DataColumns": [0, 1, 2, 3, 4, 5]		
-	// 		},{         
- //                "Type": "Area",          
+	// var dataPackage = {        
+ //        "Visualizations":       
+ //            [{          
+ //                "Type": "Pie",          
  //                "DataColumns": [0, 1]       
- //            }],		
-	// 	"Data":		
-	// 		{			
-	// 			"ColumnLabel": ["X", "Y"],			
-	// 			"ColumnType": ["Integer", "Integer"],			
-	// 			"Values":				
-	// 				[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
-	// 				[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
-	// 				[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
- //                    [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
- //                    [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
-	// 		}		
-	// 	};
+ //            }],     
+ //        "Data":     
+ //            {           
+ //                "ColumnLabel": ["X", "Y"],          
+ //                "ColumnType": ["String", "Integer"],           
+ //                "Values":               
+ //                    [["California", 2],                  
+ //                    ["Alaska", 1],               
+ //                    ["Kentucky", 4],               
+ //                    ["Ohio", 9],               
+ //                    ["Maine", 16],              
+ //                    ["Arizona", 25]]//,
+ //                    // ["Arizona", 12],
+ //                    // ["California", 7]]     
+ //            }       
+ //        };
+
+  //   {		
+		// "Visualizations":		
+		// 	[{			
+		// 		"Type": "Bar",			
+		// 		"DataColumns": [0, 1]		
+		// 	},{			
+		// 		"Type": "Line",			
+		// 		"DataColumns": [0, 1, 2]		
+		// 	},{			
+		// 		"Type": "Scatter",			
+		// 		"DataColumns": [0, 1, 2, 3, 4, 5]		
+		// 	},{         
+  //               "Type": "Area",          
+  //               "DataColumns": [0, 1]       
+  //           }],		
+		// "Data":		
+		// 	{			
+		// 		"ColumnLabel": ["X", "Y"],			
+		// 		"ColumnType": ["Integer", "Integer"],			
+		// 		"Values":				
+		// 			[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+		// 			[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+		// 			[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+  //                   [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+  //                   [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+		// 	}		
+		// };
 
 	// Get a list of visualization objects based on the provided data.
 	var visualizations = extractVisualizations(dataPackage);
@@ -967,7 +1149,12 @@ function extractVisualizations(dataPackage) {
             case "Area":
                 v = new Area(getData(columns, values), width, height);
                 visList.push(v);
-                break;  
+                break; 
+
+            case "Pie":
+                v = new Pie(getData(columns, values), width, width);
+                visList.push(v);
+                break;
 
 			default:
 				// The type extracted from the data object did not match any of the defined visualization types.
