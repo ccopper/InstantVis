@@ -156,27 +156,48 @@ TypeHandler.prototype.TypeLibrary =
 		{
 			"Name": "Integer",
 			"Parent": "Float",
+			"DefaultVal": function() { return 0.0; },
 			"accept": function (obj)
 			{
-				regEx = /^\-?[\d]+$/;
+				regEx = /^([^\d\-]*)(\-?[\d]+)(\D*)$/;
 				obj["Type"] = "Integer";
+				if(!regEx.test(obj.RawVal.trim()))
+				{
+					obj["isValid"] = false;
+					obj["Val"] = this.DefaultVal();
+					return
+				}
+				var rexec = regEx.exec(obj.RawVal.trim());
+				//console.log(rexec)
 				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				obj["Val"] = parseInt(obj.RawVal.trim());
+				obj["Val"] = parseInt(rexec[2].trim());
+				obj["MetaData"] = rexec[1].trim() + rexec[rexec.length-1].trim()
 			}
 		},
 		{
 			"Name": "Float",
 			"Parent": "String",
+			"DefaultVal": function() { return 0; },
 			"accept": function (obj)
 			{
-				regEx = /^\-?[\d]+(\.[\d]*)?$/;
+				var regEx = /^([^\d\-]*)(\-?(([\d]+(\.[\d]*)?)|(\.[\d]+)))(\D*)$/;
 				obj["Type"] = "Float";
+				if(!regEx.test(obj.RawVal.trim()))
+				{
+					obj["isValid"] = false;
+					obj["Val"] = this.DefaultVal();
+					return
+				}
+				var rexec = regEx.exec(obj.RawVal.trim());
+				//console.log(rexec)
 				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				obj["Val"] = parseFloat(obj.RawVal.trim());
+				obj["Val"] = parseFloat(rexec[2].trim());
+				obj["MetaData"] = rexec[1].trim() + rexec[rexec.length-1].trim()
 			}
 		},{
 			"Name": "Date",
 			"Parent": "String",
+			"DefaultVal": function() { return new Date("now"); },
 			"accept": function (obj)
 			{
 				var d = Date.parse(obj.RawVal.trim());

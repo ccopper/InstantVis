@@ -127,6 +127,81 @@ test("2. is a valid Float", function()
 	equal(obj.Type, "Float", "obj.isValid == Float");
 	equal(obj.isValid, true, "obj.isValid == true");
 });
+
+test("2. M is a valid Float w/units", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "2. M"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 2.0, "obj.Val == 2.0");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+	equal(obj.MetaData, "M", "obj.MetaData == M");
+});
+test("-.2M is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "-.2M"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -0.2, "obj.Val == -0.2");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+	equal(obj.MetaData, "M", "obj.MetaData == M");
+});
+test("$5.99 is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "$5.99"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 5.99, "obj.Val == 5.99");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+	equal(obj.MetaData, "$", "obj.MetaData == $");
+});
+test("51.1% is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "51.1%"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 51.1, "obj.Val == 51.1");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+	equal(obj.MetaData, "%", "obj.MetaData == $");
+});
+test("one is an invalid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "one"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, false, "obj.isValid == true");
+
+});
 /*
  *	Integer Test
  */
@@ -158,6 +233,65 @@ test("-4545 is a valid Integer", function()
 	equal(obj.Type, "Integer", "obj.isValid == Integer");
 	equal(obj.isValid, true, "obj.isValid == true");
 });
+test("-4.75 is not a valid Integer", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "-4.75"
+	}	
+	TH.testType(obj, "Integer");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 0, "obj.Val == -4.75");
+	equal(obj.Type, "Integer", "obj.isValid == Integer");
+	equal(obj.isValid, false, "obj.isValid == false");
+});
+
+test("one is not a valid Integer", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "one"
+	}	
+	TH.testType(obj, "Integer");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Type, "Integer", "obj.Type == Integer");
+	equal(obj.isValid, false, "obj.isValid == false");
+});
+test("51m is a valid Integer", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "51m"
+	}	
+	TH.testType(obj, "Integer");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 51, "obj.Val == 51");
+	equal(obj.Type, "Integer", "obj.Type == Integer");
+	equal(obj.isValid, true, "obj.isValid == true");
+	equal(obj.MetaData, "m", "obj.isValid == m");
+});
+test("$51 is a valid Integer", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "$51"
+	}	
+	TH.testType(obj, "Integer");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 51, "obj.Val == 51");
+	equal(obj.Type, "Integer", "obj.Type == Integer");
+	equal(obj.isValid, true, "obj.isValid == true");
+	equal(obj.MetaData, "$", "obj.isValid == $");
+});
+
 /*
  *	Date Test
  */
