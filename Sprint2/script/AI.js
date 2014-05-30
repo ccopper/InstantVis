@@ -74,6 +74,8 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
 		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
 		var numberColumns = [];			// indexes of columns that contain numeric data
+		var stringColumns = [];
+		var dateColumns = [];
 		var currentDataset = AIdataStructure[currentDatasetIndex];
 		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
 
@@ -85,10 +87,9 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			if (colType == "Integer" || colType == "Float") {
 				numberColumns.push(currentColumn);
 			} else if (colType == "String") {
-				stringColumnsFound = stringColumnsFound + 1;
-				stringDateColumns.push(currentColumn);	
+				stringColumns.push(currentColumn);	
 			} else if (colType == "Date") {
-				stringDateColumns.push(currentColumn);
+				dateColumns.push(currentColumn);
 			} else {
 				// the column has no type, this is no good, so no additional visualizations will be generated
 			}
@@ -96,7 +97,9 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
 
-		if (stringColumnsFound != stringDateColumns.length) { // not only string data was found
+		if (!((stringColumns.length != 0) && (dateColumns.length == 0) && (numberColumns.length == 0) )) { // not only string data was found
+
+			stringDateColumns = stringColumns.concat(dateColumns);
 
 			// look for (string|date) and numeric sets, request a pie chart for them
 			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
