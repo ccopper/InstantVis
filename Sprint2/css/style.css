@@ -31,7 +31,8 @@
 	/*width: 100%;*/
 	margin-left: auto;
 	margin-right: auto;
-	display: inline;
+	display: inline-block;
+	background-color: red;
 	/*overflow-x: scroll;*/
 }
 
