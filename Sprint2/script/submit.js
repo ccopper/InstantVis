@@ -1,4 +1,14 @@
-$(document).ready(function(){
+
+$(document).ready(readyFunction);
+	
+
+function readyFunction()
+{
+	if(typeof d3 == "undefined")
+	{	
+		nonRecoverableError("<h3>Failed to load d3!<br>Try again later.</h3>"); 
+		return;
+	}
 	$("#submitButton").mousedown(function()
 	{
 		$(this).css("border-style", "ridge");
@@ -17,7 +27,7 @@ $(document).ready(function(){
 			submitForm();
 		}
 	});
-});
+}
 
 function submitForm()
 {
@@ -51,10 +61,7 @@ function parseComplete(data)
 	// Check if the request failed
 	if(data.Status == 0)
 	{
-		$("#resultsMessage").html("<h3>No Usable Tables Found</h3>");
-		$("#loadingContent").hide();
-		$("#resultsMessage").fadeIn(500);
-
+		nonRecoverableError("<h3>No tables found<br>Refresh and try again</h3>");
 		return
 	}
 	
@@ -87,4 +94,13 @@ function showResults()
 	}
 
 	$("#loadingContent").hide();//style.display = "none";
+}
+
+
+function nonRecoverableError(errMessage)
+{
+	$("#resultsMessage").html(errMessage);
+	$("#graphArea").children().hide();
+	$("#resultsMessage").fadeIn(500);
+	
 }
