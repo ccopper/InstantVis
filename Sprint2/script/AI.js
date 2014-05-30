@@ -94,6 +94,10 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		for (var i = 0; i < currentDataset.Cols; i++) {
 			numberColumns.push(i);
 		}
+		// DEBUG code ends here
+		//******************** 		
+
+		
 
 		// look for (string|date) and numeric sets, request a pie chart for them
 		for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
@@ -148,6 +152,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
  */
 function AI(parserData) {
 	var AIdataStructure = [];
+	AIdataStructure = Object(AIdataStructure);
 
 	for (var tableNum = 0; tableNum < parserData.Data.length; tableNum++) {
 		var dataColumns = [];
