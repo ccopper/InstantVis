@@ -199,11 +199,14 @@ function AI(parserData) {
 
 	// remove empty visualizations
 	for (var i = 0; i < AIdataStructure.length; i++) {
-		if (AIdataStructure[i].Visualizations == []) {
+		if (AIdataStructure[i].Visualizations.length == 0) {
 			AIdataStructure.splice(i, 1);
 		}
 	}
-
+	
+	
+	
+	
 	console.log("AI produced this data: " + JSON.stringify(AIdataStructure));
 
 	return AIdataStructure;

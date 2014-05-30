@@ -22,6 +22,7 @@
 function TypeHandler() {}
  
 /**
+ *		Processs a table (converts columns, checks for headers and metadata)
  *
  */
 TypeHandler.prototype.processTable = function(table)
@@ -89,7 +90,10 @@ TypeHandler.prototype.processTable = function(table)
 	}	
 
 }
-
+/**
+ *
+ *
+ */
 TypeHandler.prototype.validTypes = function(cData)
 {
 	var vTypes = this.TypeLibrary.Precedence.slice(0);
