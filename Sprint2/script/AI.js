@@ -68,8 +68,6 @@ var setTypes = function(datasets) {
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
 // remove some datasets if they contain all string data
 var determineVisualizationsToRequest = function(AIdataStructure) {
-	var newAIdataStructure = [];		// add datasets to keep (not all string data) to this array, it will later be
-												// used to replace the passed in AIdataStructure.
 
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
 		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
@@ -142,17 +140,12 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			}
 
 			currentDataset.Visualizations = visualizations;
-			
-			newAIdataStructure.push(currentDataset);
+
+		} else {
+			AIdataStructure.splice(currentDatasetIndex, 1); // remove the undesirable dataset
 		}
 	}
 
-	// remove the contents of the original AI data structure and replace them with 
-	// the contents of the new AI data structure (this one has some datasets removed).	
-	for (var i = 0; i < AIdataStructure; i++) {
-		AIdataStructure.pop();
-	}
-	AIdataStructure.concat(newAIdataStructure);
 }
  
 // rank visualizations for each dataset, the higher the rank, the better the AI thinks 
