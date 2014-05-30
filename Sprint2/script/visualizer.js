@@ -15,12 +15,13 @@ Pie.prototype.draw = function(divId)
     var w = this.width;
     var h = this.height;
     var labelLinePadding = 20;
+    var sidePadding = 150;
     var outerRadius = (w - 2*80 - 2*labelLinePadding)/2;
     var innerRadius = 0;
     var labelRadius = outerRadius + labelLinePadding;
     var highlightTextHeight = 15;
 
-    var centerX = (outerRadius + 80 + labelLinePadding);
+    var centerX = (outerRadius + 80 + labelLinePadding + sidePadding);
     var centerY = (outerRadius + 80 + labelLinePadding);
 
     console.log("centerX: " + centerX);
@@ -87,7 +88,7 @@ Pie.prototype.draw = function(divId)
 
     var svg = d3.select("#" + divId)
             .append("svg")
-            .attr("width", w)
+            .attr("width", w + 2*sidePadding)
             .attr("height", h);
 
     var arcs = svg.selectAll("g.arc")
@@ -127,7 +128,7 @@ Pie.prototype.draw = function(divId)
                 .attr("font-weight", "bold")
                 .style("pointer-events", "none")
                 .text( function(d) {
-                    return data[i];
+                    return Math.floor(data[i]*10000)/100;
             });
         })
         .on("mouseout", function(d, i) {
@@ -1221,7 +1222,7 @@ function getData(columns, values)
     for (var i = 0; i < data.length; i++) {
         printArray(data[i]);
     }
-    
+
     return data;
 }
 
