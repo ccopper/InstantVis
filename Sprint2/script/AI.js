@@ -139,6 +139,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		}
 	}
 
+	// remove datasets that have been marked for deletion (so they will not be visualized)
 	if (removeTheseDatasets.length > 0) {
 		var newAIdataStructure = [];
 
@@ -163,6 +164,18 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		}
 	}
 
+}
+ 
+// rank visualizations for each dataset, the higher the rank, the better the AI thinks 
+// the visualized data will look.
+// TODO: make this have smarts to it, right now it just ranks by liking the first one most
+var rankVisualizations = function(AIdataStructure) {
+	for (var datasetIndex; datasetIndex < AIdataStructure.length; datasetIndex++) {
+		for (var v = 0; v < AIdataStructure[datasetIndex].Visualizations.length; v++) {
+			AIdataStructure[datasetIndex].Visualizations[v].Score = 
+				AIdataStructure[datasetIndex].Visualizations.length - v;
+		}
+	}
 }
 
 
@@ -204,6 +217,8 @@ function AI(parserData) {
 
 	determineVisualizationsToRequest(AIdataStructure);
 	
+	rankVisualizations(AIdataStructure);
+
 	console.log("AI produced this data: " + JSON.stringify(AIdataStructure));
 
 	return AIdataStructure;
