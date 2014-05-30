@@ -192,11 +192,10 @@ function getTableData() {
 
 		var trSelector = ['tbody tr', 'tr'];
 
-		if ( $( currentTable ).find( 'tbody' ).length == 0 ) {
-			currentRowData = ["-----"];
-		} else {
+		for (var i = 0; i < trSelector.length; i++) {
+			var dataAdded = false;
 			// iterate over each <tr> table row
-			$( $( currentTable ).find( trSelector ) ).each( function(currentRowIndex, currentRow) {
+			$( $( currentTable ).find( trSelector[i] ) ).each( function(currentRowIndex, currentRow) {
 				var currentRowData = [];
 
 				// pick out each <td> table data element and make a new TableDataElement for that data	
@@ -205,10 +204,16 @@ function getTableData() {
 					tableDataElement.setData( $( currentData ).text());
 					currentRowData.push(tableDataElement);
 				});
-
-				tableData.addDataRow(currentRowData);
+				
+				if (currentRowData.length > 0) {
+					dataAdded = true;
+					tableData.addDataRow(currentRowData);
+				}
 
 			});
+			if (dataAdded) {
+				break;
+			}
 		}
 		tableData.calcDimensions();
 		allTableData.addTable(tableData);
