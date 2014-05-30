@@ -926,6 +926,7 @@ Bar.prototype.draw = function(divId) {
 		xValues[i] = this.dataSet[i][0];
 		yValues[i] = this.dataSet[i][1];		
 	}
+    numBars = d3.max(xValues);
 
 	//Width and height
     var w = this.width;
