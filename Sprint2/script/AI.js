@@ -86,18 +86,8 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			}
 		}
 
+		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
 
-		/*********************		
-		 * DEBUG CODE:
-		 * making all columns of type Integer
-		 */
-		for (var i = 0; i < currentDataset.Cols; i++) {
-			numberColumns.push(i);
-		}
-		// DEBUG code ends here
-		//******************** 		
-
-		
 
 		// look for (string|date) and numeric sets, request a pie chart for them
 		for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
@@ -164,6 +154,7 @@ function AI(parserData) {
 		// for each data table
 
 		AIdataStructure.push( {
+			"Visualizations" : [],
 			"Data" : {
 				"Rows" : currentTable.Rows,
 				"Cols" : currentTable.Cols,
