@@ -11,6 +11,7 @@ function Pie(dataSet, width, height)
 
 Pie.prototype.draw = function(divId)
 {
+    console.log("Drawing Pie Chart ------------------------");
     var w = this.width;
     var h = this.height;
     var labelLinePadding = 20;
@@ -21,6 +22,9 @@ Pie.prototype.draw = function(divId)
 
     var centerX = (outerRadius + 80 + labelLinePadding);
     var centerY = (outerRadius + 80 + labelLinePadding);
+
+    console.log("centerX: " + centerX);
+    console.log("centerY: " + centerY);
 
     var numDataSets = this.dataSet[0].length;
     var numValuesPerDataSet = this.dataSet.length;
@@ -159,6 +163,8 @@ Pie.prototype.draw = function(divId)
         .text(function(d, i) {
             return categories[i][0];
         });
+
+        console.log("Finished Drawing Pie Chart ---------------------------");
 }
 
 function Area(dataSet, width, height) 
