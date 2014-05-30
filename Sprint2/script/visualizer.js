@@ -654,8 +654,6 @@ Bar.prototype.draw = function(divId) {
     	.attr("d", xAxisLine(xAxisLineCoords)); 
 };
 
-
-
 function visualize(dataPackage, parentId) {
 
     // KEEP THIS FOR CONTINUAL TESTING PURPOSES DURING DEVELOPMENT...for now...
@@ -716,6 +714,45 @@ function visualize(dataPackage, parentId) {
 	}
 
 	return;
+}
+
+function getVisualization(dataPackage,columnSet,type)
+{
+    var height = 300;
+    var width = 650;
+    for(var i = 0; i < dataPackage.Visualizations.length; i++)
+    {
+        var visType = dataPackage.Visualizations[i].Type;
+        var visColumnSet = dataPackage.Visualizations[i].DataColumns;
+        var values = dataPackage.Data.Values;
+        if(arraysAreEqual(columnSet,visColumnSet) && type == visType)
+        {
+            var v = NaN;
+            // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
+            switch(type) {
+                case "Line":
+                    v = new Line(getData(columnSet, values), width, height, true);
+                    break;
+
+                case "Bar":
+                    v = new Bar(getData(columnSet, values), width, height);
+                    break;
+
+                case "Scatter":
+                    v = new Scatter(getData(columnSet, values), width, height);
+                    break;  
+
+                case "Area":
+                    v = new Area(getData(columnSet, values), width, height);
+                    break;  
+
+                default:
+                    // The type extracted from the data object did not match any of the defined visualization types.
+                    console.log("ERROR: Could not match visualization type with definition in visualizer.");
+            }
+            return v;
+        }
+    }
 }
 
 
@@ -812,19 +849,24 @@ function getData(columns, values)
  *  @param {int} height             The height of the new <div>
  *
  */
-function createDiv(parentId, newDivId, width, height) {
+function createDiv(parentId, newDivId, width, height,className) {
 	//Find parent and append new div with id specified by newDivId
 	var parentDiv = document.getElementById(parentId);
 	if(!parentDiv){
 		console.log("ERROR: Could not find parent " + parentId + ". No child added.")
 		return false;
 	}
-	var newDiv = document.createElement('div');
+	if(!/(\d+(%|px)|)/.test(width) || !/(\d+(%|px)|)/.test(height))
+    {
+        console.log("ERROR: Invalid width or height. Must specify px or %.")
+        return false;
+    }
+    var newDiv = document.createElement('div');
 	newDiv.setAttribute('id',newDivId);
-	newDiv.setAttribute('class','visualization');
-	newDiv.style.width= width+"px";
-	newDiv.style.height= height+"px";
-	newDiv.style.display = "none";
+	newDiv.setAttribute('class',className);
+	newDiv.style.width= width;
+	newDiv.style.height= height;
+	// newDiv.style.display = "none";
 	parentDiv.appendChild(newDiv);
 	return true;
 }

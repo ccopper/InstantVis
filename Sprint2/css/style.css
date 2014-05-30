@@ -5,6 +5,54 @@
 	margin-right: auto;
 }
 
+#instructions
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 400px;
+}
+
+#visualizationToolbox
+{
+	width: 100%;
+	height: 100%;
+	display: none;
+	/*background-color: red;*/
+}
+
+#visualizationContainer
+{
+	width: 100%;
+	margin-left: 15%;
+}
+
+#visualization
+{
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	/*overflow-x: scroll;*/
+}
+
+#tableSelectionSideBar
+{
+	position: absolute;
+	float: left;
+	background-color: gray;
+	width: 15%;
+	height: 100%;
+	min-height:100%;
+	/*overflow-y: scroll;*/
+}
+
+#visTypeSelection
+{
+	float: right;
+	background-color: #446699;
+	width: 85%;
+	height: 60px;
+}
+
 #form
 {
 	margin-left: auto;
@@ -53,16 +101,6 @@ input[type="text"]{
 	color: black;
 }
 
-.visualization
-{
-	margin-left: auto;
-	margin-right: auto;
-	border-width: 1px;
-	border-radius: 0px;
-	border-style: solid;
-	margin-bottom: 10px;
-	padding: 0px;
-}
 
 #instructions
 {
@@ -102,6 +140,52 @@ input[type="text"]{
 	font-size: 15px;
 	color: red;
 }
+
+.tableEntry
+{
+	background-color: #003399;
+	color: white;
+	border-style: groove;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+	display:inline-block;
+	cursor: pointer;
+}
+
+.columnSetEntry
+{
+	background-color: #141B27;
+	border-style: groove;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+	text-align: center;
+	display: none;
+}
+
+.visualization
+{
+	margin-left: auto;
+	margin-right: auto;
+	border-width: 1px;
+	border-radius: 0px;
+	border-style: solid;
+	margin-bottom: 10px;
+	padding: 0px;
+}
+
+.visIcon
+{
+	float: left;
+	margin-top: 2px;
+	margin-left: 5px;
+	margin-right: 5px;
+	border-style: groove;
+	cursor: pointer;
+}
+
 
 .x-axis path
 {

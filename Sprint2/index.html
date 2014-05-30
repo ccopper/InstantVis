@@ -15,37 +15,33 @@
 		<div id="logo">
 			<img src="images/Logo.png" alt="InstaVis">
 		</div>
-		<div id="graphArea">
+		<div id="userInputArea">
+			<div id="instructions">
+				<p>Enter a URL below to receive visualizations based on the data located at the web page.</p>
+				<p><small><small>Note: No data from the data source will be saved on our server.</small></small></p>
+			</div>
 			<div id="form">
-				<div id="instructions"> Enter a URL below to receive visualizations based on the data located at the web page.</div>
+				<input id="urlTextbox" type="text">
 				<br>
-				<div id="disclaimer"> Note: No data from the data source will be saved on our server. </div>
-				<br>
-				
-					<input id="urlTextbox" type="text">
-					<br>
-					<div id="submissionNotification"> </div>
-					<div id="submitButton">
-						<h2>Visualize</h2>
-					</div>
-				
-				<br>
+				<div id="submissionNotification"> </div>
+				<div id="submitButton">
+					<h2>Visualize</h2>
+				</div>
 			</div>
+		</div>
 
-			<div id="resultsMessage">
-				Below are visualizations generated based on the data found at:
-				<br>
-				<br>
-					<div id="reprintUrl"> [Insert URL] </div>
-				<br>
-				<br>
+
+		<center><button id="testButton" onclick="loadToolbox()">Load Toolbox</button></center>
+
+
+		<div id="visualizationToolbox">
+			<div id="tableSelectionSideBar">
 			</div>
-
-			<div id="visArea">
+			<div id ="visTypeSelection">
 			</div>
-
-			<div id="loadingContent">
-				<img src="images/Loading.gif" alt="Loading...">
+			<div id="visualizationContainer">
+				<div id="options">
+				</div>
 			</div>
 		</div>
 	</body>
