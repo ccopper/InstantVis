@@ -27,7 +27,7 @@ function TypeHandler() {}
 TypeHandler.prototype.processTable = function(table)
 {
 	//Check for labels
-	
+	table.Data["MetaData"] = []
 	var hasLabels = true;
 	if(table.Data.ColumnLabel[0] == "")
 	{
@@ -39,7 +39,12 @@ TypeHandler.prototype.processTable = function(table)
 		//Get all types
 		var columnData = [];
 		for(var row in table.Data.Values)
-		{		
+		{	
+			//Populate an empty metadata array
+			if(typeof table.Data.MetaData[row] == "undefined")
+			{
+				table.Data.MetaData[row] = [];
+			}
 			//Retrive the raw data and get the valid types for this data
 			var rawData = table.Data.Values[row][col];
 			columnData.push(this.acceptingTypes(rawData));
@@ -62,8 +67,12 @@ TypeHandler.prototype.processTable = function(table)
 					return obj.Type == vTypes[0] && obj.isValid;
 				});
 				//Only update if there was an applicable record
+				table.Data.MetaData[row][col] = "";
 				if(rec.length != 0)
+				{
 					table.Data.Values[row][col] = rec[0].Val;
+					table.Data.MetaData[row][col] = rec[0].MetaData;
+				}
 			}
 			//Update the type metadata
 			table.Data.ColumnType[col] = vTypes[0];
@@ -116,6 +125,27 @@ TypeHandler.prototype.acceptingTypes = function(rawVal)
 	
  };
 
+TypeHandler.prototype.DefaultEntry = function()
+{
+	var vTypes = []
+	for(var x in this.TypeLibrary.Types)
+	{
+		if(this.TypeLibrary.Types[x].Name == this.TypeLibrary.Default)
+			continue;
+		var obj = 
+		{
+			"RawVal": "",
+			"isValid": true,
+			"MetaData": ""
+		};
+		onj["Val"] = this.TypeLibrary.Types[x].DefaultVal()
+		vTypes.push(obj);		
+	}
+	
+	return vTypes;
+}
+ 
+ 
 /**
  *
  */
@@ -180,6 +210,7 @@ TypeHandler.prototype.TypeLibrary =
 			"DefaultVal": function() { return 0; },
 			"accept": function (obj)
 			{
+				
 				var regEx = /^([^\d\-]*)(\-?(([\d]+(\.[\d]*)?)|(\.[\d]+)))(\D*)$/;
 				obj["Type"] = "Float";
 				if(!regEx.test(obj.RawVal.trim()))
@@ -203,7 +234,7 @@ TypeHandler.prototype.TypeLibrary =
 				var d = Date.parse(obj.RawVal.trim());
 				
 				obj["Type"] = "Date";
-				
+				obj["MetaData"] = "";
 				//Verify that the date is valid
 				if (d == null)
 				{
