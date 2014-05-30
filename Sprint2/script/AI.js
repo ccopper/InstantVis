@@ -152,23 +152,15 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
  */
 function AI(parserData) {
 	var AIdataStructure = [];
-	AIdataStructure = Object(AIdataStructure);
 
 	for (var tableNum = 0; tableNum < parserData.Data.length; tableNum++) {
 		var dataColumns = [];
 		var currentTable = parserData.Data[tableNum];
-		var cols = currentTable.Cols;
-		var rows = currentTable.Rows;
 		var columnType = [""];
 		
-		for (var col = 0; col < cols; col++) {
-			dataColumns.push(col); // set all columns to be graphed
-		}
-		
 		makeColumnLabelsIfNeedBe(currentTable);
-
 		
-		// assemble the object for the type checker, it is an array of the following, one
+		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
 
 		AIdataStructure.push( {
@@ -183,10 +175,8 @@ function AI(parserData) {
 
 	}
 
-	for (var i = 0; i < AIdataStructure.length; i++) {
-		setTypes(AIdataStructure[i]); // have the type checker assign column type to each column in each table
-	}
-	
+	setTypes(AIdataStructure); // have the type checker assign column type to each column in each table
+
 	console.log("TypeHandler produced this data: " + JSON.stringify(AIdataStructure));
 
 	determineVisualizationsToRequest(AIdataStructure);
