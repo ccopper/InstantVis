@@ -173,6 +173,8 @@ function AI(parserData) {
 
 		AIdataStructure.push( {
 			"Data" : {
+				"Rows" : currentTable.Rows,
+				"Cols" : currentTable.Cols,
 				"ColumnLabel" : currentTable.ColumnLabel,
 				"Values" : currentTable.Values,
 				"ColumnType" : columnType
