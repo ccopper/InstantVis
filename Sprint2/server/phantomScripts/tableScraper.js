@@ -24,6 +24,10 @@ function TableData() {
 			console.log("Table dimensions do not make sense, number of rows and columns might be wrong!");
 		}
 	}
+	
+	this.hasColumnLabel = function() {
+		return (! (this._columnLabel[0] == "" && this._columnLabel.length == 1) );
+	}
 
 	this.addDataRow = function(dataRow) {
 		this._data.push(dataRow);
@@ -159,50 +163,53 @@ function getTableData() {
 		// look for table heading data, collect it if it exists
 		// this will look for all theads in the table, so if the table is malformed and
 		// there are numerous theads, the last one encountered will be the column headings
-		$( $( currentTable ).find( 'thead' ) ).each( function(currentTableHeadIndex,
-					currentTableHead) {
-			
-			var currentTableHeadData = [];
 
-			$( currentTableHead ).find( 'th' ).each( function(currentTableHeadColumnIndex,
-						currentTableHeadColumn) {
-
-				currentTableHeadData.push( $( currentTableHeadColumn ).text() );
-			});
-
-
-			var dataFound = false;	// set true if any of the table headings contain data
-			for (var i = 0; i < currentTableHeadData.length; i++) {
-				if (currentTableHeadData[i] != undefined &&
-					 currentTableHeadData[i] != "") {
-					dataFound = true;
-					break;
-				}
-			}
-			
-			if (dataFound) {
-				tableData.setColumnLabel(currentTableHeadData);
-			}
-
-		});
-
-
-		var trSelector = 'tbody tr';
-
-		// iterate over each <tr> table row
-		$( $( currentTable ).find( trSelector ) ).each( function(currentRowIndex, currentRow) {
-			var currentRowData = [];
+		var tableHeadOuter = ['thead', 'tr'];
+		var tableHeadInner = ['th', 'th'];
 		
-			// pick out each <td> table data element and make a new TableDataElement for that data	
-			$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) {
-				var tableDataElement = new TableDataElement();
-				tableDataElement.setData( $( currentData ).text());
-				currentRowData.push(tableDataElement);
+		for (var i = 0; i < tableHeadOuter.length; i++) {
+			$( $( currentTable ).find( tableHeadOuter[i]) ).each( function(currentTableHeadIndex,
+					currentTableHead) {
+
+					var currentTableHeadData = [];
+
+					$( currentTableHead ).find( tableHeadInner[i] ).each( function(currentTableHeadColumnIndex,
+							currentTableHeadColumn) {
+
+								currentTableHeadData.push( $( currentTableHeadColumn ).text() );
+							});
+
+					if (currentTableHeadData.length > 0) {
+						tableData.setColumnLabel(currentTableHeadData);
+					}
+
+				});
+			if (tableData.hasColumnLabel()) {
+				break;
+			}
+		}
+
+
+		var trSelector = ['tbody tr', 'tr'];
+
+		if ( $( currentTable ).find( 'tbody' ).length == 0 ) {
+			currentRowData = ["-----"];
+		} else {
+			// iterate over each <tr> table row
+			$( $( currentTable ).find( trSelector ) ).each( function(currentRowIndex, currentRow) {
+				var currentRowData = [];
+
+				// pick out each <td> table data element and make a new TableDataElement for that data	
+				$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) {
+					var tableDataElement = new TableDataElement();
+					tableDataElement.setData( $( currentData ).text());
+					currentRowData.push(tableDataElement);
+				});
+
+				tableData.addDataRow(currentRowData);
+
 			});
-
-			tableData.addDataRow(currentRowData);
-
-		});
+		}
 		tableData.calcDimensions();
 		allTableData.addTable(tableData);
 	});
