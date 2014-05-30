@@ -134,6 +134,9 @@ Pie.prototype.draw = function(divId)
             var newDx = thisX * ratio;
             var newDy = thisY * ratio;
 
+            console.log("arc.centroid(d)[0]: " + arc.centroid(d)[0]);
+            console.log("arc.centroid(d)[1]: " + arc.centroid(d)[1]);
+
             console.log("thisX: " + thisX);
             console.log("thisY: " + thisY);
 
