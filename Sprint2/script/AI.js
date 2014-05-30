@@ -74,7 +74,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		var currentDataset = AIdataStructure[currentDatasetIndex];
 		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
 
-		for (var currentColumn = 0; currentColumn < currentDataset.Cols; currentColumn++) {
+		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) {
 			var colType = new String(currentDataset.Data.ColumnType[currentColumn]);
 
 			if (colType.Equals("Integer") || colType.Equals("Float")) {
