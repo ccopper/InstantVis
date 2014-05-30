@@ -1195,7 +1195,7 @@ function extractVisualizations(dataPackage) {
 
 			default:
 				// The type extracted from the data object did not match any of the defined visualization types.
-				console.log("ERROR: Could not match visualization type with definition in visualizer.");
+				console.log("ERROR: Could not match visualization type: '" + type + "'' with definition in visualizer.");
 		}
 	}
 
