@@ -67,6 +67,7 @@ var setTypes = function(datasets) {
 
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
 var determineVisualizationsToRequest = function(AIdataStructure) {
+	var removeTheseDatasets = []; 	// AIdataStructure indexes of datasets to remove (so they will not be visualized 
 
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
 		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
@@ -74,12 +75,17 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		var currentDataset = AIdataStructure[currentDatasetIndex];
 		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
 
+		var stringColumnsFound = 0;	// how many columns are only strings, if this number matches the number of columns, 
+												// remove the dataset as it is undesirable to have only string datasets
 		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) {
 			var colType = currentDataset.Data.ColumnType[currentColumn];
 
 			if (colType == "Integer" || colType == "Float") {
 				numberColumns.push(currentColumn);
-			} else if (colType == "String" || colType == "Date") {
+			} else if (colType == "String") {
+				stringColumnsFound = stringColumnsFound + 1;
+				stringDateColumns.push(currentColumn);	
+			} else if (colType == "Date") {
 				stringDateColumns.push(currentColumn);
 			} else {
 				// the column has no type, this is no good, so no additional visualizations will be generated
@@ -88,48 +94,68 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
 
+		if (stringColumnsFound == currentDataset.Data.Cols) { // only string data was found
+			removeTheseDatasets.push(currentDatasetIndex);
+		} else {
 
-		// look for (string|date) and numeric sets, request a pie chart for them
-		for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
-			for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
+			// look for (string|date) and numeric sets, request a pie chart for them
+			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
+				for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
 
-				var colsInvolved = [];
-				colsInvolved.push(numberColumns[numericCurrentCol]);
-				colsInvolved.push(stringDateColumns[stringDataCurrentCol]);
+					var colsInvolved = [];
+					colsInvolved.push(numberColumns[numericCurrentCol]);
+					colsInvolved.push(stringDateColumns[stringDataCurrentCol]);
 
-				visualizations.push(
-						{
-							"Type" : "Pie",
-							"DataColumns" : colsInvolved
-						}
-					);
-			}
-		}
-
-		// look for numeric vs numeric data
-		// make one of each of these graphs for each combo: Line, Bar, Scatter
-		var graphTypes = ["Line", "Bar", "Scatter"];
-		for (var independentVariableIndex = 0; independentVariableIndex < numberColumns.length; independentVariableIndex++) {
-			for (var dependentVariableIndex = 0; dependentVariableIndex < numberColumns.length; dependentVariableIndex++) {
-				if (independentVariableIndex != dependentVariableIndex) {
-					var dataColumnsToGraph = [numberColumns[dependentVariableIndex], numberColumns[independentVariableIndex]];
-					for (var graphType = 0; graphType < graphTypes.length; graphType++) {
-						visualizations.push(
-								{
-									"Type" : graphTypes[graphType],
-									"DataColumns" : dataColumnsToGraph
-								}
+					visualizations.push(
+							{
+								"Type" : "Pie",
+								"DataColumns" : colsInvolved
+							}
 							);
+				}
+			}
+
+			// look for numeric vs numeric data
+			// make one of each of these graphs for each combo: Line, Bar, Scatter
+			var graphTypes = ["Line", "Bar", "Scatter"];
+			for (var independentVariableIndex = 0; independentVariableIndex < numberColumns.length; independentVariableIndex++) {
+				for (var dependentVariableIndex = 0; dependentVariableIndex < numberColumns.length; dependentVariableIndex++) {
+					if (independentVariableIndex != dependentVariableIndex) {
+						var dataColumnsToGraph = [numberColumns[dependentVariableIndex], numberColumns[independentVariableIndex]];
+						for (var graphType = 0; graphType < graphTypes.length; graphType++) {
+							visualizations.push(
+									{
+										"Type" : graphTypes[graphType],
+										"DataColumns" : dataColumnsToGraph
+									}
+									);
+						}
 					}
 				}
 			}
+
+			currentDataset.Visualizations = visualizations;
+
 		}
-
-									
-
-		currentDataset.Visualizations = visualizations;
 	}
 
+	if (removeTheseDatasets.length > 0) {
+		var newAIdataStructure = [];
+
+		for (var i = 0; i < removeTheseDatasets.length; i++) {
+			AIdataStructure[removeTheseDatasets[i]].removeThisDataset = true;
+		}
+
+		for (var i = 0; i < AIdataStructure.length; i++) {
+			if (AIdataStructure[i].removeThisDataset != true) {
+				newAIdataStructure.push(AIdataStructure[i]);
+			} else {
+				// this is a dataset to remove, so do not put it in the newAIdataStructure
+			}
+		}
+
+		AIdataStructure = newAIdataStructure; // replace the AIdataStructure with one that has undesirable datasets removed
+	}
 
 }
 
