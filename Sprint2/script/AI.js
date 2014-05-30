@@ -170,7 +170,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 // the visualized data will look.
 // TODO: make this have smarts to it, right now it just ranks by liking the first one most
 var rankVisualizations = function(AIdataStructure) {
-	for (var datasetIndex; datasetIndex < AIdataStructure.length; datasetIndex++) {
+	for (var datasetIndex = 0; datasetIndex < AIdataStructure.length; datasetIndex++) {
 		for (var v = 0; v < AIdataStructure[datasetIndex].Visualizations.length; v++) {
 			AIdataStructure[datasetIndex].Visualizations[v].Score = 
 				AIdataStructure[datasetIndex].Visualizations.length - v;
@@ -212,8 +212,6 @@ function AI(parserData) {
 	}
 
 	setTypes(AIdataStructure); // have the type checker assign column type to each column in each table
-
-	console.log("TypeHandler produced this data: " + JSON.stringify(AIdataStructure));
 
 	determineVisualizationsToRequest(AIdataStructure);
 	
