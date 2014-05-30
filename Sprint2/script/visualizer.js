@@ -58,6 +58,9 @@ Pie.prototype.draw = function(divId)
         dataTotal += categoryTotal;
     }
 
+    console.log("data: " + data);
+    console.log("data.toString(): " + data.toString());
+
     var color = d3.scale.category10();
 
     var arc = d3.svg.arc()
@@ -1051,26 +1054,26 @@ function visualize(dataPackage, parentId) {
 
     // KEEP THIS FOR CONTINUAL TESTING PURPOSES DURING DEVELOPMENT...for now...
 // var dataPackage = {
- // "Visualizations":
- // [{
- // "Type": "Pie",
- // "DataColumns": [0, 1]
- // }],
- // "Data":
- // {
- // "ColumnLabel": ["X", "Y"],
- // "ColumnType": ["String", "Integer"],
- // "Values":
- // [["California", 2],
- // ["Alaska", 1],
- // ["Kentucky", 4],
- // ["Ohio", 9],
- // ["Maine", 16],
- // ["Arizona", 25]]//,
- // // ["Arizona", 12],
- // // ["California", 7]]
- // }
- // };
+//  "Visualizations":
+//  [{
+//  "Type": "Pie",
+//  "DataColumns": [0, 1]
+//  }],
+//  "Data":
+//  {
+//  "ColumnLabel": ["X", "Y"],
+//  "ColumnType": ["String", "Integer"],
+//  "Values":
+//  [["California", 2],
+//  ["Alaska", 1],
+//  ["Kentucky", 4],
+//  ["Ohio", 9],
+//  ["Maine", 16],
+//  ["Arizona", 25]]//,
+//  // ["Arizona", 12],
+//  // ["California", 7]]
+//  }
+//  };
 
   // {
 // "Visualizations":
