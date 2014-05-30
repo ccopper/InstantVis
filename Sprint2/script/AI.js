@@ -141,10 +141,8 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 			currentDataset.Visualizations = visualizations;
 
-		} else {
-			AIdataStructure.splice(currentDatasetIndex, 1); // remove the undesirable dataset
 		}
-	}
+	}	
 
 }
  
@@ -198,6 +196,13 @@ function AI(parserData) {
 	determineVisualizationsToRequest(AIdataStructure);
 	
 	rankVisualizations(AIdataStructure);
+
+	// remove empty visualizations
+	for (var i = 0; i < AIdataStructure.length; i++) {
+		if (AIdataStructure[i].Visualizations == []) {
+			AIdataStructure.splice(i, 1);
+		}
+	}
 
 	console.log("AI produced this data: " + JSON.stringify(AIdataStructure));
 
