@@ -235,3 +235,10 @@ input[type="text"]{
 {
 	stroke: black;
 }
+
+.label-line
+{
+	fill: none;
+	stroke: black;
+	shape-rendering: geometricPrecision;
+}
