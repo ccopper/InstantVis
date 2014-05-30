@@ -63,6 +63,44 @@
 				["9",		"4.01.2013"]]
 		}	
 	};
+ 	var sTbl4 =
+	{	
+		"Data":
+		{
+			"ColumnLabel": ["X", "Y"],
+			"ColumnType": [],
+			"Values":
+				[["0",		"1"],	
+				["1",		"1"],
+				["2",		""],
+				["3",		"55"],
+				["4",		"14"],
+				["5",		""],
+				["6",		"3"],
+				["7",		"7"],
+				["8",		""],
+				["9",		"4"]]
+		}	
+	};
+	 var sTbl5 =
+	{	
+		"Data":
+		{
+			"ColumnLabel": [""],
+			"ColumnType": [],
+			"Values":
+				[["Index",	"Data"],	
+				["1",		"1"],
+				["2",		"5"],
+				["3",		"55"],
+				["4",		"14"],
+				["5",		"6"],
+				["6",		"3"],
+				["7",		"7"],
+				["8",		"4"],
+				["9",		"4"]]
+		}	
+	};
  
  
 /*
@@ -491,6 +529,35 @@ test("SampleTableParse 3 (Integer, Date)", function()
 	equal(true, true, "Raw Data:" + JSON.stringify(sTbl3));
 	equal(sTbl3.Data.ColumnType[0], "Integer", "Col 0 is Integer");
 	equal(sTbl3.Data.ColumnType[1], "Date", "Col 1 is Date");
+	
+});
+
+test("SampleTableParse 4 (Integer, Integer) With Empty Fields", function()
+{
+	var TH = new TypeHandler();
+
+	TH.processTable(sTbl4);
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(sTbl4));
+	equal(sTbl4.Data.ColumnType[0], "Integer", "Col 0 is Integer");
+	equal(sTbl4.Data.ColumnType[1], "Integer", "Col 1 is Integer");
+	equal(sTbl4.Data.Values[2][1], 0, "Empty string replaced");
+	equal(sTbl4.Data.Values[5][1], 0, "Empty string replaced");
+	equal(sTbl4.Data.Values[8][1], 0, "Empty string replaced");
+	
+});
+
+test("SampleTableParse 5 (Integer, Integer) with headers", function()
+{
+	var TH = new TypeHandler();
+
+	TH.processTable(sTbl5);
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(sTbl5));
+	equal(sTbl5.Data.ColumnType[0], "Integer", "Col 0 is Integer");
+	equal(sTbl5.Data.ColumnType[1], "Integer", "Col 1 is Integer");
+	equal(sTbl5.Data.ColumnLabel[0], "Index", "Header 0 is Index");
+	equal(sTbl5.Data.ColumnLabel[1], "Data", "Header 1 is Data");
 	
 });
 

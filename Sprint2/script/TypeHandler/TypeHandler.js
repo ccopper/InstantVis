@@ -48,35 +48,43 @@ TypeHandler.prototype.processTable = function(table)
 			//Retrive the raw data and get the valid types for this data
 			var rawData = table.Data.Values[row][col];
 			columnData.push(this.acceptingTypes(rawData));
-		}
+		}		
+
 		//Check for labels
 		if(!hasLabels)
 		{
+			var header = columnData.splice(0,1);
+			var hType = this.validTypes(header);
+			var cTypes = this.validTypes(columnData);
 			
+			if(hType[0] == "String" && hType[0] != cTypes[0])
+			{
+				table.Data.ColumnLabel = table.Data.Values.splice(0,1)[0]
+				hasLabels = true				
+			}			
+		} 
 			
-		} else
-		{
-			//Get the list of valid types
-			var vTypes = this.validTypes(columnData);
-			//convert all records
-			for(var row in table.Data.Values)
-			{	
-				//Fetch the record with highest precedence
-				var rec = columnData[row].filter(function(obj) 
-				{
-					return obj.Type == vTypes[0] && obj.isValid;
-				});
-				//Only update if there was an applicable record
-				table.Data.MetaData[row][col] = "";
-				if(rec.length != 0)
-				{
-					table.Data.Values[row][col] = rec[0].Val;
-					table.Data.MetaData[row][col] = rec[0].MetaData;
-				}
+		//Get the list of valid types
+		var vTypes = this.validTypes(columnData);
+		//convert all records
+		for(var row in table.Data.Values)
+		{	
+			//Fetch the record with highest precedence
+			var rec = columnData[row].filter(function(obj) 
+			{
+				return obj.Type == vTypes[0] && obj.isValid;
+			});
+			//Only update if there was an applicable record
+			table.Data.MetaData[row][col] = "";
+			if(rec.length != 0)
+			{
+				table.Data.Values[row][col] = rec[0].Val;
+				table.Data.MetaData[row][col] = rec[0].MetaData;
 			}
-			//Update the type metadata
-			table.Data.ColumnType[col] = vTypes[0];
 		}
+		//Update the type metadata
+		table.Data.ColumnType[col] = vTypes[0];
+		
 		
 	}	
 
@@ -108,6 +116,13 @@ TypeHandler.prototype.validTypes = function(cData)
 TypeHandler.prototype.acceptingTypes = function(rawVal)
 {
 	var vTypes = []
+
+	if(rawVal == "")
+	{
+		
+		return this.DefaultEntry();
+	}
+	
 	for(var x in this.TypeLibrary.Types)
 	{
 		if(this.TypeLibrary.Types[x].Name == this.TypeLibrary.Default)
@@ -138,7 +153,8 @@ TypeHandler.prototype.DefaultEntry = function()
 			"isValid": true,
 			"MetaData": ""
 		};
-		onj["Val"] = this.TypeLibrary.Types[x].DefaultVal()
+		obj["Type"] = this.TypeLibrary.Types[x].Name
+		obj["Val"] = this.TypeLibrary.Types[x].DefaultVal();
 		vTypes.push(obj);		
 	}
 	
@@ -186,7 +202,7 @@ TypeHandler.prototype.TypeLibrary =
 		{
 			"Name": "Integer",
 			"Parent": "Float",
-			"DefaultVal": function() { return 0.0; },
+			"DefaultVal": function() { return 0; },
 			"accept": function (obj)
 			{
 				regEx = /^([^\d\-]*)(\-?[\d]+)(\D*)$/;
@@ -194,7 +210,7 @@ TypeHandler.prototype.TypeLibrary =
 				if(!regEx.test(obj.RawVal.trim()))
 				{
 					obj["isValid"] = false;
-					obj["Val"] = this.DefaultVal();
+					obj["Val"] = 0;
 					return
 				}
 				var rexec = regEx.exec(obj.RawVal.trim());
@@ -207,7 +223,7 @@ TypeHandler.prototype.TypeLibrary =
 		{
 			"Name": "Float",
 			"Parent": "String",
-			"DefaultVal": function() { return 0; },
+			"DefaultVal": function() { return 0.0; },
 			"accept": function (obj)
 			{
 				
@@ -216,7 +232,7 @@ TypeHandler.prototype.TypeLibrary =
 				if(!regEx.test(obj.RawVal.trim()))
 				{
 					obj["isValid"] = false;
-					obj["Val"] = this.DefaultVal();
+					obj["Val"] = 0.0;
 					return
 				}
 				var rexec = regEx.exec(obj.RawVal.trim());
@@ -228,7 +244,7 @@ TypeHandler.prototype.TypeLibrary =
 		},{
 			"Name": "Date",
 			"Parent": "String",
-			"DefaultVal": function() { return new Date("now"); },
+			"DefaultVal": function() { return new Date(); },
 			"accept": function (obj)
 			{
 				var d = Date.parse(obj.RawVal.trim());
