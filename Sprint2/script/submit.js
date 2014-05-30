@@ -75,13 +75,14 @@ function parseComplete(data)
 
 	numDataSets = cleanData.length;
 
-	for (var i = 0; i < numDataSets; i++) {
-	visualize(cleanData[i],"visArea");
+	$("#visualizationToolbox").show();
+	$("#userInputArea").slideUp();
+	$("#testButton").hide();
+
+	for(var i=0; i<numDataSets; i++)
+	{
+		addTable(cleanData[i],i);
 	}
-
-	// visualize(0, "visArea");
-
-	showResults();
 
 }
 
@@ -99,6 +100,7 @@ function showResults()
 	}
 
 	$("#loadingContent").hide();//style.display = "none";
+
 }
 
 
