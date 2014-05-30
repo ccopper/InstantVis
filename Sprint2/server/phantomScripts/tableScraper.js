@@ -187,8 +187,16 @@ function getTableData() {
 		});
 
 
+		var trSelector;
+
+		if ($( $( currentTable ).find( 'tbody tr' ).size() == 0 ) ) {
+			trSelector = 'tr';
+		} else {
+			trSelector = 'tbody tr';
+		}
+
 		// iterate over each <tr> table row
-		$( $( currentTable ).find( 'tbody tr' ) ).each( function(currentRowIndex, currentRow) {
+		$( $( currentTable ).find( trSelector ) ).each( function(currentRowIndex, currentRow) {
 			var currentRowData = [];
 		
 			// pick out each <td> table data element and make a new TableDataElement for that data	
