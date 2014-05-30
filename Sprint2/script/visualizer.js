@@ -34,6 +34,11 @@ Pie.prototype.draw = function(divId)
     var dataTotal = 0;
     var colors = [];
 
+    console.log("this.dataSet");
+    for (var i = 0; i < this.dataSet.length; i++) {
+        printArray(this.dataSet[i]);
+    }
+
     for (var j = 0; j < numValuesPerDataSet; j++) {
         isDuplicate = false;
         for (var t = 0; t < categories.length; t++) {
@@ -48,6 +53,11 @@ Pie.prototype.draw = function(divId)
         }
     }
 
+    console.log("categories:");
+    for (var i = 0; i < categories.length; i++) {
+        printArray(categories[i]);
+    }
+
     var categoryTotal = 0;
     for (var i = 0; i < categories.length; i++) {
         categoryTotal = 0;
@@ -60,7 +70,8 @@ Pie.prototype.draw = function(divId)
 
     console.log("data: " + data);
     console.log("data.toString(): " + data.toString());
-    console.log("printArray(data): " + printArray(data));
+    console.log("printArray(data): ");
+    printArray(data);
 
     var color = d3.scale.category10();
 
