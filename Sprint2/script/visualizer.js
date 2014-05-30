@@ -124,6 +124,9 @@ Pie.prototype.draw = function(divId)
     arcs.append("text")
         .attr("transform", function(d) {
 
+            console.log("d: " + d);
+            console.log("d.toString(): " + d.toString());
+
             var thisX = centerX - (centerX - arc.centroid(d)[0]);
             var thisY = centerY - (centerY - arc.centroid(d)[1]);
             var hyp = Math.sqrt(Math.pow(thisX, 2) + Math.pow(thisY, 2));
