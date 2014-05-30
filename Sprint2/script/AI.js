@@ -81,9 +81,10 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 		var stringColumnsFound = 0;	// how many columns are only strings, if this number matches the number of columns, 
 												// remove the dataset as it is undesirable to have only string datasets
+		var nonStringFound = false;
+
 		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) {
 			var colType = currentDataset.Data.ColumnType[currentColumn];
-			var nonStringFound = false;
 
 			if (colType == "Integer" || colType == "Float") {
 				numberColumns.push(currentColumn);
