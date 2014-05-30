@@ -187,13 +187,7 @@ function getTableData() {
 		});
 
 
-		var trSelector;
-
-		if ($( currentTable.find( 'tbody' ) ).length == 0 ) ) {
-			trSelector = 'tr';
-		} else {
-			trSelector = 'tbody tr';
-		}
+		var trSelector = 'tbody tr';
 
 		// iterate over each <tr> table row
 		$( $( currentTable ).find( trSelector ) ).each( function(currentRowIndex, currentRow) {
