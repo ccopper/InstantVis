@@ -75,11 +75,11 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
 
 		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) {
-			var colType = new String(currentDataset.Data.ColumnType[currentColumn]);
+			var colType = currentDataset.Data.ColumnType[currentColumn];
 
-			if (colType.Equals("Integer") || colType.Equals("Float")) {
+			if (colType == "Integer" || colType == "Float") {
 				numberColumns.push(currentColumn);
-			} else if (colType.Equals("String") || colType.Equals("Data")) {
+			} else if (colType == "String" || colType == "Date") {
 				stringDateColumns.push(currentColumn);
 			} else {
 				// the column has no type, this is no good, so no additional visualizations will be generated
