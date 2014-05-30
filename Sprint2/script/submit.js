@@ -212,8 +212,8 @@ function loadToolbox()
 function addTable(table,id)
 {
 	createDiv('tableSelectionSideBar','table'+id,"90%","",'tableEntry')
-	$("#table"+i).text("Table: "+id);
-	$("#table"+i).click(tableClickHandler);
+	$("#table"+id).text("Table: "+id);
+	$("#table"+id).click(tableClickHandler);
 	var columnSets = []
 	var numVisualizations = table.Visualizations.length;
 	for(j=0; j<numVisualizations; j++)
