@@ -1180,7 +1180,7 @@ function getVisualization(dataPackage,columnSet,type)
                     v = new Area(getData(columnSet, values), width, height);
                     break; 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), width, width);
+                    v = new Pie(getData(columnSet, values), height, height);
                     break; 
 
                 default:
