@@ -1203,6 +1203,8 @@ function getData(columns, values)
     var numRows = values.length;
     var numColumns = columns.length;
 
+    console.log("getData results:");
+
     // For every row in values...
     for (var j = 0; j < numRows; j++) {
         // Create a new row to add to the extracted dataset.
@@ -1216,6 +1218,10 @@ function getData(columns, values)
         data.push(row);
     }
 
+    for (var i = 0; i < data.length; i++) {
+        printArray(data[i]);
+    }
+    
     return data;
 }
 
