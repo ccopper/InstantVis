@@ -752,6 +752,8 @@ Line.prototype.draw = function (divId) {
     for (var i = 1; i < numDataSets; i++) {
         data = getData([0,i],this.dataSet);
 
+        data.sort(function(a, b) { return a[0] - b[0]; });
+
         if (numDataSets <= 2) {
             colors[i-1] = "black";
         }
