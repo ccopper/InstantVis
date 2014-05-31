@@ -1,0 +1,245 @@
+#logo
+{
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#instructions
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 400px;
+}
+
+#visualizationToolbox
+{
+	width: 100%;
+	height: 100%;
+	display: none;
+	/*background-color: red;*/
+}
+
+#visualizationContainer
+{
+	width: 100%;
+	margin-left: 15%;
+}
+
+.visualization
+{
+	/*width: 100%;*/
+	margin-left: auto;
+	margin-right: auto;
+	display: inline-block;
+	/*overflow-x: scroll;*/
+}
+
+#tableSelectionSideBar
+{
+	position: absolute;
+	float: left;
+	background-color: white;
+	width: 15%;
+	height: 100%;
+	min-height:100%;
+	/*overflow-y: scroll;*/
+}
+
+#visTypeSelection
+{
+	float: right;
+	background-color: white;
+	width: 85%;
+	height: 60px;
+}
+
+#form
+{
+	margin-left: auto;
+	margin-right: auto;
+	width: 400px;
+}
+
+#submitButton
+{
+	margin-top: 25px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 150px;
+	height: 40px;
+	/*background: #246894;*/
+	background: black;
+	color: #FFFFFF;
+	border-radius:5px;
+	border-style: groove;
+	cursor: pointer;
+
+}
+
+#submitButton h2 {
+	text-align: center;
+	vertical-align: middle;
+	line-height: 5px;
+}
+
+input[type="text"]{
+	width: 400px;
+	height: 40px;
+	background: rgb(230, 230, 230);
+	border-color: black;
+	font-size: 20px;
+}
+
+.hover
+{
+	width: 400px;
+}
+
+#graphArea{
+	margin-left: auto;
+	margin-right: auto;
+	color: black;
+}
+
+
+#instructions
+{
+	text-align: center;
+	font-family: "Helvetica";
+	font-size: 20px;
+}
+
+#resultsMessage
+{
+	display: none;
+	text-align: center;
+	font-family: "Helvetica";
+	font-size: 20px;
+}
+
+#loadingContent
+{
+	display: none;
+	text-align: center;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+#disclaimer
+{
+	text-align: center;
+	font-family:  "Helvetica";
+	font-size: 15px;
+}
+
+#submissionNotification
+{
+	height: 17px;
+	text-align: center;
+	font-family: "Helvetica";
+	font-size: 15px;
+	color: red;
+}
+
+.tableEntry
+{
+	background-color: #003399;
+	color: white;
+	border-style: groove;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+	display:inline-block;
+	cursor: pointer;
+}
+
+.columnSetEntry
+{
+	background-color: #141B27;
+	border-style: groove;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+	text-align: center;
+	display: none;
+}
+
+.visualization
+{
+	margin-left: 5px;
+	margin-right: auto;
+	border-width: 1px;
+	border-radius: 0px;
+	border-style: solid;
+	margin-bottom: 10px;
+	padding: 0px;
+}
+
+.visIcon
+{
+	float: left;
+	margin-top: 2px;
+	margin-left: 5px;
+	margin-right: 5px;
+	border-style: groove;
+	cursor: pointer;
+}
+
+
+.x-axis path
+{
+	fill: none;
+	stroke: none;
+	shape-rendering: crispEdges;
+}
+
+.axis path,
+.axis line,
+.y-axis path,
+.y-axis line,
+.x-axis line 
+{
+	fill: none;
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+
+.axis text,
+.x-axis text, 
+.y-axis text
+{
+	font-family: sans-serif;
+	font-size: 11px;
+}
+
+.line 
+{
+	fill: none;
+	stroke: black;
+}
+
+.area
+{
+	fill: rgb(67, 127, 238);
+	stroke: none;
+}
+
+.overlay 
+{
+  fill: none;
+  pointer-events: all;
+}
+
+.guideline
+{
+	stroke: black;
+}
+
+.label-line
+{
+	fill: none;
+	stroke: black;
+	shape-rendering: geometricPrecision;
+}
