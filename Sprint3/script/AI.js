@@ -2,57 +2,6 @@
  * to the visualizer.
  */
 
-// remove the 0th row from a table, shift all the others up by one
-// helpful when the column labels have been extracted from the first 
-// row of values  
-var shiftAllTableRowsUpByOneDiscardRowZero = function(currentTable) {
-	var totalOldRows = currentTable.Rows;
-	var colSize = currentTable.Cols;
-
-	// do not try to adjust a table with only one or zero rows
-	if (totalOldRows > 1) {
-		for (var i = 0; i < totalOldRows - 1; i++) {
-			for (var col = 0; col < colSize; col++) {
-				currentTable.Values[i][col] = currentTable.Values[i+1][col];
-			}
-		}
-		currentTable.Rows = currentTable.Rows - 1; // to account for the now removed 0th row
-	}
-
-}
-
-var makeColumnLabelsIfNeedBe = function(currentTable) {
-	
-
-	// if the column labels appear to be unpopulated, take the data from the first
-	// row and make column labels out of them
-	if (currentTable.ColumnLabel[0] == "" && currentTable.ColumnLabel.length == 1) {
-		var columnLabelsAreJustANumberSequence = false;
-		var columnLabels = [];
-
-		// do not take column labels from the first row if there is no first row or the data
-		// is a list (single row of data with no labels)
-		if (currentTable.Values.length > 1) {
-			columnLabelsAreJustANumberSequence = true;
-		}
-
-
-		var currentLabel;
-		for (var colLabelIndex = 0; colLabelIndex < currentTable.Cols; colLabelIndex++) {
-			if (columnLabelsAreJustANumberSequence) {
-				currentLabel = "" + colLabelIndex; // force the labels to be strings
-			} else {
-				currentLabel =	"" + currentTable.Values[0][colLabelIndex];
-			}
-			columnLabels.push();
-		}
-		
-		currentTable.ColumnLabel = columnLabels;
-
-		shiftAllTableRowsUpByOneDiscardRowZero(currentTable);
-	} 
-
-}
 
 var setTypes = function(datasets) {
 
@@ -172,8 +121,6 @@ function AI(parserData) {
 		var dataColumns = [];
 		var currentTable = parserData.Data[tableNum];
 		var columnType = [""];
-		
-		makeColumnLabelsIfNeedBe(currentTable);
 		
 		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
