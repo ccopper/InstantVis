@@ -124,7 +124,25 @@
 			["12:00AM",		"",		"",		"",			"",		"",		"",		""]]
 		}
 	}
- 
+ 	var sTbl7 =
+	{	
+		"Data":
+		{
+			"ColumnLabel": ["X", "Y"],
+			"ColumnType": [],
+			"Values":
+				[["0",	"0",	"1"],	
+				["0",	"0",	"1"],
+				["0",	"1",	"1"],
+				["0",	"1", 	"1"],
+				["0",	"2",	"2"],
+				["1",	"2", 	"2"],
+				["1",	"3",	"2"],
+				["1",	"2",	"3"],
+				["1",	"4",	"4"],
+				["1",	"4",	"4"]]
+		}	
+	};
  
 /*
  *	Float Test
@@ -373,4 +391,15 @@ test("SampleTableParse 6 (Chatfield data) with headers", function()
 	
 });
 
+test("SampleTableParse 7  Uniqueness", function()
+{
+	var TH = new TypeHandler();
 
+	TH.processTable(sTbl7);
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(sTbl7));
+	equal(sTbl7.Data.ColumnUnique[0], 0.2, "Col 0 is 0.2");
+	equal(sTbl7.Data.ColumnUnique[1], 0.5, "Col 1 is 0.5");
+	equal(sTbl7.Data.ColumnUnique[2], 0.4, "Col 2 is 0.4");
+	
+});
