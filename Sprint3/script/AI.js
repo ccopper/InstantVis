@@ -19,10 +19,8 @@ var setTypes = function(datasets) {
 var determineVisualizationsToRequest = function(AIdataStructure) {
 
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
-		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
 		var numberColumns = [];			// indexes of columns that contain numeric data
-		var stringColumns = [];
-		var dateColumns = [];
+		var stringColumns = [];			// contains indexes of columns that contain string data
 		var currentDataset = AIdataStructure[currentDatasetIndex];
 		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
 
@@ -38,26 +36,20 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 				nonStringFound = true;
 			} else if (colType == "String") {
 				stringColumns.push(currentColumn);	
-			} else if (colType == "Date") {
-				dateColumns.push(currentColumn);
-				nonStringFound = true;
 			} else {
+				console.log("AI found column with no type!");
 				// the column has no type, this is no good, so no additional visualizations will be generated
 			}
 		}
 
-		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
-
 		if (nonStringFound) { // not only string data was found
 
-			stringDateColumns = stringColumns.concat(dateColumns);
-
 			// look for (string|date) and numeric sets, request a pie chart for them
-			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
+			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringColumns.length; stringDataCurrentCol++) {
 				for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
 
 					var colsInvolved = [];
-					colsInvolved.push(stringDateColumns[stringDataCurrentCol]);
+					colsInvolved.push(stringColumns[stringDataCurrentCol]);
 					colsInvolved.push(numberColumns[numericCurrentCol]);
 
 					visualizations.push(
