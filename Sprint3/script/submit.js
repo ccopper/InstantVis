@@ -9,11 +9,14 @@ $(document).ready(readyFunction);
 
 function readyFunction()
 {
-	if(typeof d3 == "undefined")
-	{	
-		nonRecoverableError("<h3>Failed to load d3!<br>Try again later.</h3>"); 
-		return;
+	var urlParams = getURLParams()
+	
+	if(typeof urlParams["URL"] != "undefined")
+	{
+		 $("#urlTextbox").val(urlParams["URL"]);
+		 submitForm();
 	}
+	
 	$("#submitButton").mousedown(function()
 	{
 		$(this).css("border-style", "ridge");
@@ -33,6 +36,22 @@ function readyFunction()
 		}
 	});
 }
+
+function getURLParams()
+{
+	var match,
+		pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query  = window.location.search.substring(1);
+
+    urlParams = {};
+    while (match = search.exec(query))
+       urlParams[decode(match[1])] = decode(match[2]);
+	   
+	return urlParams
+}
+
 
 function submitForm()
 {
