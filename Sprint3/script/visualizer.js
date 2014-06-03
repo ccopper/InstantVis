@@ -1641,7 +1641,7 @@ function visualize(dataPackage, parentId) {
     return;
 }
 
-function getVisualization(dataPackage,columnSet,type)
+function getVisualization(dataPackage,type)
 {
     var height = 300;
     var pieWidth = height*1.5;
@@ -1649,10 +1649,10 @@ function getVisualization(dataPackage,columnSet,type)
     for(var i = 0; i < dataPackage.Visualizations.length; i++)
     {
         var visType = dataPackage.Visualizations[i].Type;
-        var visColumnSet = dataPackage.Visualizations[i].DataColumns;
+        var columnSet = dataPackage.Visualizations[i].DataColumns;
         var values = dataPackage.Data.Values;
-        var labels = dataPackage.Data.ColumnLabel;
-        if(arraysAreEqual(columnSet,visColumnSet) && type == visType)
+        console.log('Checking '+visType+' with supplied '+type);
+        if(type == visType)
         {
             var v = NaN;
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
