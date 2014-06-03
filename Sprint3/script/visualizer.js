@@ -2,6 +2,221 @@
 
 var globalPadding = 25;
 
+function Bubble(dataSet, labels, width, height) {
+    this.dataSet = dataSet;
+    console.log("Bubble dataSet: " + this.dataSet.toString());
+    this.labels = labels;
+    this.width = width;
+    this.height = height;
+}
+
+Bubble.prototype.draw = function(divId) 
+{
+
+    var margin = {top: 50, right: 40, bottom: 40, left: 55};
+
+    var w = this.width;
+    var h = this.height;
+    var padding = 20;
+    var colors = [];
+    var highlightRadius = 6;
+    var defaultRadius = 3;
+    var highlightTextHeight = 12;
+    var highlightTextPadding = 2;
+    var highlightRectPadding = 6;
+    var highlightRectFillColor = "rgb(225,225,225)";
+    var highlightRectHeight = highlightTextHeight + highlightTextPadding * 2;
+    var highlightRectWidth;
+    var characterWidth = 6;
+    var data = [];
+    var dataPoints = [];
+
+    var xAxisLabelPaddingBottom = 2;
+    var titleLabelHeight = margin.top/3;
+    var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
+    var yAxisLabelPaddingLeft = 2;
+    var axisLabelHeight = 15;
+
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    var title = yAxisLabel + " vs. " + xAxisLabel;
+
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
+
+    var rightGraphBoundary = width;//w - margin.right;    
+
+    var numDataSets = this.dataSet[0].length;
+    var numValuesPerDataSet = this.dataSet.length;
+
+    // Determine the maximum Y value for the datasets.
+    var maxY = 0;
+    for (var j = 0; j < numValuesPerDataSet; j++) {
+        if (this.dataSet[j][1] > maxY) {
+            maxY = this.dataSet[j][1];
+        }
+    }
+    
+
+    console.log("MaxY: " + maxY);
+
+    var numXAxisTicks = numValuesPerDataSet;
+    var numYAxisTicks = height/15;
+
+    var multiset = false;
+    multiset = (numDataSets > 2) ? true : false;
+
+    var xScale = d3.scale.linear()
+                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .range([0, width]);
+
+    var yScale = d3.scale.linear()
+                        .domain([0, maxY])
+                        .range([height, 0])
+                        .clamp(true);
+
+    var rScale = d3.scale.linear()
+                        .domain([0, d3.max(this.dataSet, function(d) {return d[2]; })])
+                        .range([defaultRadius, 10]);
+
+    if (numValuesPerDataSet > 25) {
+        numXAxisTicks = 25;
+    }
+
+    var xAxis = d3.svg.axis()
+                    .scale(xScale)
+                    .orient("bottom")
+                    .ticks(numXAxisTicks);
+
+    var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient("left")
+                    .ticks(numYAxisTicks);
+
+    var base = d3.select("#" + divId)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+    var svg = base.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    var line = d3.svg.line()
+        .x(function(d) { return d[0]; })
+        .y(function(d) { return d[1]; });
+
+    var color = randRGB(50,200);
+    var highlightColor = "orange";
+
+    // Draw the x-axis.
+    svg.append("g")
+        .attr({
+            class: "axis",
+            transform: "translate(0," + (height) + ")"
+            })
+        .attr("width", width)
+        .call(xAxis); 
+
+    // Draw the y-axis.
+    svg.append("g")
+        .attr("height", height)
+        .attr({
+            class: "y-axis",
+            transform: "translate(" + 0 + ",0)"
+            })
+        .call(yAxis);
+
+    base.append("text")
+        .attr("class", "x-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", h - xAxisLabelPaddingBottom)
+        .text(xAxisLabel);
+
+    base.append("text")
+        .attr("class", "y-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("y", h/2)
+        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .text(yAxisLabel);
+
+    base.append("text")
+        .attr("class", "title")
+        .attr("text-anchor", "middle")
+        .attr("font-size", titleLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
+        .text(title);    
+
+    svg.selectAll("circle")
+        .data(this.dataSet)
+        .enter()
+        .append("circle")
+        .attr("cx", function(d) { return xScale(d[0]); })
+        .attr("cy", function(d) { return yScale(d[1]); })
+        .attr("r", function(d) { return rScale(d[2]); })
+        .attr("fill", color)
+        .on("mouseover", function(d) {
+            this.setAttribute("fill", highlightColor);
+            var x = Math.floor(this.getAttribute("cx")*100)/100;
+            var y = Math.floor(this.getAttribute("cy")*100)/100;
+            var r = Math.floor(this.getAttribute("r")*100)/100;
+            var ind = d[0];
+            var dep = d[1];
+            var rad = d[2];
+            var labelText =  ind + ", " + dep + ": " + rad;
+            var length = labelText.length;
+            var rectWidth = length*characterWidth;
+            
+
+            var rightEdge = x + r + highlightRectPadding + rectWidth;
+
+            if (rightEdge > width) {
+                var lineData = [[x - r, y], [x - r - highlightRectPadding, y]];
+                var rectX = x - r - highlightRectPadding - rectWidth;
+            } else {
+                var lineData = [[x + r, y], [x + r + highlightRectPadding, y]];
+                var rectX = x + r + highlightRectPadding;
+            }
+
+            var textX = rectX + highlightTextPadding;
+
+            svg.append("path")
+                .attr("id", "bubble-line-label")
+                .style("stroke", color)
+                .attr("d", line(lineData));
+            svg.append("rect")
+                .attr("id", "bubble-rect-label")
+                .attr("x", rectX)
+                .attr("y", y - (highlightTextHeight + 2*highlightTextPadding)/2)
+                .attr("width", rectWidth)
+                .attr("height", highlightTextHeight + 2*highlightTextPadding)
+                .attr("fill", highlightRectFillColor)
+                .style("stroke", color);
+            svg.append("text")
+                .attr("id", "bubble-text-label")
+                .attr("x", textX)
+                .attr("y", y + highlightTextHeight/3)
+                .attr("font-size", highlightTextHeight)
+                .attr("font-family", "sans-serif")
+                .attr("font-weight", "bold")
+                .text(labelText);
+        })
+        .on("mouseout", function() {
+            this.setAttribute("fill", color);
+            svg.selectAll("#bubble-text-label").remove();
+            svg.selectAll("#bubble-rect-label").remove();  
+            svg.selectAll("#bubble-line-label").remove();  
+        });
+}
+
+
 function Pie(dataSet, width, height) 
 {
     this.dataSet = dataSet;
@@ -1266,7 +1481,11 @@ function getVisualization(dataPackage,columnSet,type)
 
                 case "Pie":
                     v = new Pie(getData(columnSet, values), height, height);
-                    break; 
+                    break;
+
+                case "Bubble":
+                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), width, height);
+                    break;
 
                 default:
                     // The type extracted from the data object did not match any of the defined visualization types.
