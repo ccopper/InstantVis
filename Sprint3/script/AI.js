@@ -13,6 +13,15 @@ var setTypes = function(datasets) {
 
 }
 
+var determineVisualizationScore = function(dataset, columnsToUse) {
+	var score = 0;
+
+	for (var i = 0; i < columnsToUse.length; i++) {
+		score = score + dataset.Data.ColumnUnique[columnsToUse[i]];
+	}
+
+	return score;
+}
 
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
 // remove some datasets if they contain all string data
@@ -68,14 +77,17 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 					}
 				);
 
+				var columnsToUse = [
+						numberColumns[0],
+						numericColumnsSorted.pop(),
+						numericColumnsSorted.pop()
+					];
+
 				visualizations.push(
 					{
 						"Type" : "Bubble",
-						"DataColumns" : [
-							numberColumns[0],
-							numericColumnsSorted.pop(),
-							numericColumnsSorted.pop()
-						]
+						"DataColumns" : columnsToUse,
+						"Score" : determineVisualizationScore(currentDataset, columnsToUse)
 					}
 				);
 			}
