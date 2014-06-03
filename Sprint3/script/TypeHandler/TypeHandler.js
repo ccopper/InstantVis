@@ -27,8 +27,8 @@ function TypeHandler() {}
  */
 TypeHandler.prototype.processTable = function(table)
 {
+	table.Data.ColumnUnique = []
 	//Check for labels
-	table.Data["MetaData"] = []
 	var hasLabels = true;
 	if(table.Data.ColumnLabel[0] == "")
 	{
@@ -39,13 +39,9 @@ TypeHandler.prototype.processTable = function(table)
 	{
 		//Get all types
 		var columnData = [];
+		var setData = new SimpleSet();
 		for(var row in table.Data.Values)
 		{	
-			//Populate an empty metadata array
-			if(typeof table.Data.MetaData[row] == "undefined")
-			{
-				table.Data.MetaData[row] = [];
-			}
 			//Retrive the raw data and get the valid types for this data
 			var rawData = table.Data.Values[row][col];
 			columnData.push(this.acceptingTypes(rawData));
@@ -80,16 +76,18 @@ TypeHandler.prototype.processTable = function(table)
 				return obj.Type == vTypes[0] && obj.isValid;
 			});
 			//Only update if there was an applicable record
-			table.Data.MetaData[row][col] = "";
 			if(rec.length != 0)
 			{
 				table.Data.Values[row][col] = rec[0].Val;
-				table.Data.MetaData[row][col] = rec[0].MetaData;
+				setData.add(rec[0].Val);
+			} else
+			{
+				setData.add(table.Data.Values[row][col]);
 			}
 		}
 		//Update the type metadata
 		table.Data.ColumnType[col] = vTypes[0];
-		
+		table.Data.ColumnUnique[col] = setData.getUniqueCount() / table.Data.Values.length;
 		
 	}	
 
@@ -248,5 +246,33 @@ TypeHandler.prototype.TypeLibrary =
 			}
 		}]
  };
+ 
+function SimpleSet() 
+{
+	this.Store = {};
+	this.UniqueCount = 0;
+}
+ 
+SimpleSet.prototype.add = function(entry)
+{
+	if(typeof this.Store[entry] == "undefined")
+	{
+		this.Store[entry] = 0;
+		this.UniqueCount++
+	} else
+	{
+		this.Store[entry]++;
+	}
+};
+ 
+SimpleSet.prototype.getUniqueCount = function()
+{
+	return this.UniqueCount;
+};
+ 
+ 
+ 
+ 
+ 
  
  
