@@ -96,7 +96,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 								
 
 			//
-			// pie chart default
+			// pie, tree, and bar chart default
 			//
 			
 
@@ -122,15 +122,18 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 							mostUniqueNumericColumn = numberColumns[numericCurrentCol];
 					}
 				}
-
-				visualizations.push(
-					{
-						"Type" : "Pie",
-						"DataColumns" : [mostUniqueStringColumn, mostUniqueNumericColumn],
-						"Score" : determineVisualizationScore(currentDataset, [mostUniqueStringColumn,
-							mostUniqueNumericColumn])
-					}
-				);
+				
+				var chartsToRequest = ["Pie", "Bar", "Tree"];
+				for (var c = 0; c < chartsToRequest.length; c++) {
+					visualizations.push(
+						{
+							"Type" : chartsToRequest[c],
+							"DataColumns" : [mostUniqueStringColumn, mostUniqueNumericColumn],
+							"Score" : determineVisualizationScore(currentDataset, [mostUniqueStringColumn,
+								mostUniqueNumericColumn])
+						}
+					);
+				}
 			}
 
 			//
