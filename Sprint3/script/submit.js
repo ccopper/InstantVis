@@ -74,6 +74,7 @@ function parseComplete(data)
 	$("#testButton").hide();
 	$("#visualizationToolbox").show();
 	$("#visualizationToolbox").height($(window).height()-$('#toolBar').height()+40);
+	$("#loadingContent").slideUp();
 
 
 	for(var i=0; i<numDataSets; i++)
@@ -247,10 +248,16 @@ function visTypeClickHandler(event)
 		console.log('Creating new visualization div for '+visDivId);
 		createDiv('visualizationContainer',visDivId,"","",'visualization');
 		var visualization = getVisualization(tables[currentTable],visType);
-		visualization.draw(visDivId);
-		$('#'+visDivId).show();
-		$('#'+visDivId).siblings().hide();
-		$('#options').show();
+		if(!visualization)
+		{
+			console.log('Could not find visualization for div: '+visDivId)
+		}else{
+			visualization.draw(visDivId);
+			$('#'+visDivId).show();
+			$('#'+visDivId).siblings().hide();
+			$('#options').show();	
+		}
+		
 	}	
 }
 
@@ -308,7 +315,10 @@ function getGraphTypes(tableNumber)
 
 	for(var i = 0; i < currentTable.Visualizations.length; i++)
 	{
-		graphTypes.push(currentTable.Visualizations[i].Type);
+		if(!arrayContains(graphTypes,currentTable.Visualizations[i].Type))
+		{
+			graphTypes.push(currentTable.Visualizations[i].Type);
+		}
 	}
 
 	return graphTypes;
@@ -321,6 +331,22 @@ function printArray(array)
 	{
 		console.log('\t'+i+': '+array[i]);
 	}
+}
+
+function arrayContains(array,element)
+{
+	if(array.length == 0)
+	{
+		return false;
+	}
+	for(var i = 0; i < array.length; i++)
+	{
+		if(array[i]==element)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 
