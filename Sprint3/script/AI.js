@@ -54,8 +54,10 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 		if (nonStringFound) { // not only string data was found
 
 			// find default columns to be used with each applicable visualization type
-
+			
+			//
 			// bubble chart
+			//
 			if (numberColumns.length >= 3) { // need at least 3 numeric columns for bubble chart
 				var numericColumnsSorted = [];
 				// gather the numeric columns found, but exclude the first one found
@@ -93,23 +95,42 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			}
 								
 
-			// look for string and numeric sets, request a pie chart for them
-			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringColumns.length; stringDataCurrentCol++) {
-				for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
+			//
+			// pie chart default
+			//
+			
 
-					var colsInvolved = [];
-					colsInvolved.push(stringColumns[stringDataCurrentCol]);
-					colsInvolved.push(numberColumns[numericCurrentCol]);
+			// look for string and numeric sets
 
-					visualizations.push(
-							{
-								"Type" : "Pie",
-								"DataColumns" : colsInvolved
-							}
-							);
+			// find most unique string column
+			var mostUniqueStringColumn = stringColumns[0];
+			for (var stringDataCurrentCol = 1; stringDataCurrentCol < stringColumns.length; stringDataCurrentCol++) {
+				if (currentDataset.Data.ColumnUnique[stringColumns[stringDataCurrentCol]] > 
+						currentDataset.Data.ColumnUnique[mostUniqueStringColumn]) {
+					mostUniqueStringColumn = stringDataCurrentCol;
+				}
+			}
+			
+			// find most unique numeric column
+			var mostUniqueNumericColumn = numberColumns[0];
+			for (var numericCurrentCol = 1; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
+				if (currentDataset.Data.ColumnUnique[numberColumns[numericCurrentCol]] > 
+						currentDataset.Data.ColumnUnique[mostUniqueNumericColumn]) {
+
+						mostUniqueNumericColumn = numericCurrentCol;
 				}
 			}
 
+			visualizations.push(
+				{
+					"Type" : "Pie",
+					"DataColumns" : [mostUniqueStringColumn, mostUniqueNumericColumn],
+					"Score" : determineVisualizationScore(currentDataset, [mostUniqueStringColumn,
+						mostUniqueNumericColumn])
+				}
+			);
+
+			//
 			// look for numeric vs numeric data
 			// make one of each of these graphs for each combo: Line, Bar, Scatter
 			var graphTypes = ["Line", "Bar", "Scatter"];
