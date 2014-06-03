@@ -74,6 +74,7 @@ function submitForm()
 
 	parseHTML(url, parseComplete);
 
+	// SWAP THESE V ^
 
 	// parseComplete("kldhdjkshg");
 
@@ -91,6 +92,105 @@ function parseComplete(data)
 	
 	tables = AI(data); // Call AI
 
+	// SWAP THESE V ^
+
+	// tables = [{
+	// 		 	"Visualizations":
+	// 		 		[{
+	// 		 			"Type": "Pie",
+	// 		 			"DataColumns": [0, 1]
+	// 		 		}],
+	// 		 	"Data":
+	// 		 		{
+	// 		 			"ColumnLabel": ["X", "Y"],
+	// 		 			"ColumnType": ["String", "Integer"],
+	// 		 			"Values":
+	// 		 				[["California", 2],
+	// 						 ["Alaska", 1],
+	// 						 ["Kentucky", 4],
+	// 						 ["Ohio", 9],
+	// 						 ["Maine", 16],
+	// 						 ["Arizona", 25]]//,
+	// 						 // ["Arizona", 12],
+	// 						 // ["California", 7]]
+	// 				 }
+	// 		},
+	// 		{
+	// 			"Visualizations":
+	// 				[{
+	// 					"Type": "Bar",
+	// 					"DataColumns": [0, 1]
+	// 				},{
+	// 					"Type": "Line",
+	// 					"DataColumns": [0, 1, 2]
+	// 				},{
+	// 					"Type": "Scatter",
+	// 					"DataColumns": [0, 1, 2, 3, 4, 5]
+	// 				},{
+	// 		  			"Type": "Area",
+	// 		  			"DataColumns": [0, 1]
+	// 		  		}],
+	// 			"Data":
+	// 				{
+	// 					"ColumnLabel": ["Superfluous Values", "Some Other Thang"],
+	// 					"ColumnType": ["Integer", "Integer"],
+	// 					"Values":
+	// 						[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[1, 1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[2, 4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[3, 9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[4, 16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[5, 25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[6, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[7, 21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[8, 23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[9, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						[21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]
+	// 						// [22, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [23, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [24, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [25, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [26, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [27, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [28, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [29, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [30, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [31, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [32, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [33, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [34, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [35, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [36, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [37, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [38, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [39, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [40, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [41, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [42, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [43, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [44, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [45, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [46, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [47, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [48, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [49, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [50, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [51, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [52, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
+	// 						// [53, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]
+	// 				}
+	// 		}];
 
 	numDataSets = tables.length;
 

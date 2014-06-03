@@ -35,10 +35,10 @@ Pie.prototype.draw = function(divId)
     var dataTotal = 0;
     var colors = [];
 
-    console.log("this.dataSet");
-    for (var i = 0; i < this.dataSet.length; i++) {
-        printArray(this.dataSet[i]);
-    }
+    // console.log("this.dataSet");
+    // for (var i = 0; i < this.dataSet.length; i++) {
+    //     printArray(this.dataSet[i]);
+    // }
 
     for (var j = 0; j < numValuesPerDataSet; j++) {
         isDuplicate = false;
@@ -54,10 +54,10 @@ Pie.prototype.draw = function(divId)
         }
     }
 
-    console.log("categories:");
-    for (var i = 0; i < categories.length; i++) {
-        printArray(categories[i]);
-    }
+    // console.log("categories:");
+    // for (var i = 0; i < categories.length; i++) {
+    //     printArray(categories[i]);
+    // }
 
     var categoryTotal = 0;
     for (var i = 0; i < categories.length; i++) {
@@ -69,10 +69,10 @@ Pie.prototype.draw = function(divId)
         dataTotal += categoryTotal;
     }
 
-    console.log("data: " + data);
-    console.log("data.toString(): " + data.toString());
-    console.log("printArray(data): ");
-    printArray(data);
+    // console.log("data: " + data);
+    // console.log("data.toString(): " + data.toString());
+    // console.log("printArray(data): ");
+    // printArray(data);
 
     var color = d3.scale.category10();
 
@@ -270,8 +270,9 @@ Area.prototype.draw = function(divId)
 
 };
 
-function Scatter(dataSet, width, height) {
+function Scatter(dataSet, labels, width, height) {
 	this.dataSet = dataSet;
+    this.labels = labels;
 	this.width = width;
 	this.height = height;
 }
@@ -279,7 +280,7 @@ function Scatter(dataSet, width, height) {
 Scatter.prototype.draw = function(divId) 
 {
 
-	// TODO: Make the number of ticks on an axis somehow dynamic.
+    var margin = {top: 50, right: 40, bottom: 40, left: 55};
 
     var w = this.width;
     var h = this.height;
@@ -296,15 +297,23 @@ Scatter.prototype.draw = function(divId)
     var data = [];
     var dataPoints = [];
 
+    var xAxisLabelPaddingBottom = 2;
+    var titleLabelHeight = margin.top/3;
+    var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
+    var yAxisLabelPaddingLeft = 2;
+    var axisLabelHeight = 15;
+
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    var title = yAxisLabel + " vs. " + xAxisLabel;
+
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
+
+    var rightGraphBoundary = width;//w - margin.right;    
+
     var numDataSets = this.dataSet[0].length;
     var numValuesPerDataSet = this.dataSet.length;
-
-    var multiset = false;
-    multiset = (numDataSets > 2) ? true : false;
-
-    var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([globalPadding, w - globalPadding]);
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
@@ -316,33 +325,46 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
+    var numXAxisTicks = numValuesPerDataSet;
+    var numYAxisTicks = height/15;
+
+    var multiset = false;
+    multiset = (numDataSets > 2) ? true : false;
+
+    var xScale = d3.scale.linear()
+                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .range([0, width]);
+
     var yScale = d3.scale.linear()
                         .domain([0, maxY])
-                        .range([h - globalPadding, globalPadding])
+                        .range([height, 0])
                         .clamp(true);
-
-    // var yScale = d3.scale.linear()
-    //                     .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
-    //                     .range([h - globalPadding, globalPadding]);
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
                         .range([2, 5]);
 
+    if (numValuesPerDataSet > 25) {
+        numXAxisTicks = 25;
+    }
+
     var xAxis = d3.svg.axis()
                     .scale(xScale)
                     .orient("bottom")
-                    .ticks(5);
+                    .ticks(numXAxisTicks);
 
     var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient("left")
-                    .ticks(5);
+                    .ticks(numYAxisTicks);
 
-    var svg = d3.select("#" + divId)
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
+    var base = d3.select("#" + divId)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+    var svg = base.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
     var line = d3.svg.line()
         .x(function(d) { return d[0]; })
@@ -352,17 +374,47 @@ Scatter.prototype.draw = function(divId)
     svg.append("g")
         .attr({
             class: "axis",
-            transform: "translate(0," + (h-globalPadding) + ")"
+            transform: "translate(0," + (height) + ")"
             })
-        .call(xAxis);
+        .attr("width", width)
+        .call(xAxis); 
 
     // Draw the y-axis.
     svg.append("g")
+        .attr("height", height)
         .attr({
             class: "y-axis",
-            transform: "translate(" + globalPadding + ",0)"
+            transform: "translate(" + 0 + ",0)"
             })
         .call(yAxis);
+
+    base.append("text")
+        .attr("class", "x-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", h - xAxisLabelPaddingBottom)
+        .text(xAxisLabel);
+
+    base.append("text")
+        .attr("class", "y-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("y", h/2)
+        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .text(yAxisLabel);
+
+    base.append("text")
+        .attr("class", "title")
+        .attr("text-anchor", "middle")
+        .attr("font-size", titleLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
+        .text(title);    
 
 
     function mousemove() {
@@ -449,7 +501,7 @@ Scatter.prototype.draw = function(divId)
             var highlightLineData = [[pointX+highlightRadius,pointY],[pointX+2*highlightRadius,pointY]]; 
             var color = colors[i-1];
             highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
-            if (xRectPosition + highlightRectWidth > w-globalPadding) {
+            if (xRectPosition + highlightRectWidth > width) {
                 highlightLineData = [[pointX-2*highlightRadius, pointY],[pointX-highlightRadius, pointY]];
                 xRectPosition = pointX - 2*highlightRadius - highlightRectWidth;
                 xTextPosition = xRectPosition + highlightTextPadding;
@@ -522,11 +574,11 @@ Scatter.prototype.draw = function(divId)
     }
 
     svg.append("rect")
-        .attr("x", globalPadding - defaultRadius)
-        .attr("y", globalPadding - defaultRadius)
+        .attr("x", -defaultRadius)
+        .attr("y", -defaultRadius)
         .attr("class", "overlay")
-        .attr("width", w-(2*globalPadding)+2*defaultRadius)
-        .attr("height", h-(2*globalPadding)+2*defaultRadius)
+        .attr("width", width+2*defaultRadius)
+        .attr("height", height+2*defaultRadius)
         .on("mouseout", function() {
             // Clear the graph area.
             svg.selectAll(".circle-highlight").attr("display", "none");
@@ -550,8 +602,9 @@ Scatter.prototype.draw = function(divId)
  *  @param Boolean showPoints       Whether or not points should be displayed on the lines.
  *
  */
-function Line(dataSet, width, height, showPoints) {
+function Line(dataSet, labels, width, height, showPoints) {
 	this.dataSet = dataSet;
+    this.labels = labels;
 	this.width = width;
 	this.height = height;
     this.showPoints = showPoints; // Boolean (show points?)
@@ -559,10 +612,10 @@ function Line(dataSet, width, height, showPoints) {
 
 Line.prototype.draw = function (divId) {
 
-	// TODO: Make the number of ticks on an axis somehow dynamic.
+    var margin = {top: 50, right: 40, bottom: 40, left: 55};
+
     var w = this.width;
     var h = this.height;
-    var rightGraphBoundary = w - globalPadding;
     var defaultRadius = 3;
     var highlightRadius = 6;
     var highlightLineWidth = highlightRadius;
@@ -579,17 +632,23 @@ Line.prototype.draw = function (divId) {
     var characterWidth = 6;
     var highlightTextExternalPadding = highlightRadius;
     var highlightRectFillColor = "rgb(225,225,225)";
+    var xAxisLabelPaddingBottom = 2;
+    var titleLabelHeight = margin.top/3;
+    var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
+    var yAxisLabelPaddingLeft = 2;
+    var axisLabelHeight = 15;
+
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    var title = yAxisLabel + " vs. " + xAxisLabel;
+
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
+
+    var rightGraphBoundary = width;    
 
     var numDataSets = this.dataSet[0].length;
     var numValues = this.dataSet.length;
-
-    var multiline = false;
-    multiline = (numDataSets > 2) ? true : false;
-
-    var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([globalPadding, w - globalPadding])
-                 .clamp(true);
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
@@ -601,20 +660,35 @@ Line.prototype.draw = function (divId) {
         }
     }
 
+    var numXAxisTicks = numValues;
+    var numYAxisTicks = height/15;
+
+    var multiline = false;
+    multiline = (numDataSets > 2) ? true : false;
+
+    var xScale = d3.scale.linear()
+                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .range([0, width])
+                 .clamp(true);
+
     var yScale = d3.scale.linear()
                         .domain([0, maxY])
-                        .range([h - globalPadding, globalPadding])
+                        .range([height, 0])
                         .clamp(true);
+
+    if (numValues > 25) {
+        numXAxisTicks = 25;
+    }
 
     var xAxis = d3.svg.axis()
                     .scale(xScale)
                     .orient("bottom")
-                    .ticks(5);
+                    .ticks(numXAxisTicks);
 
     var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient("left")
-                    .ticks(5);
+                    .ticks(numYAxisTicks);
 
     var line = d3.svg.line()
             .x(function(d) { return xScale(d[0]); })
@@ -625,17 +699,20 @@ Line.prototype.draw = function (divId) {
             .y(function(d) { return d[1]; }); 
 
     // Use the given <div> as the drawing area. This <svg> will contain all of the visualization elements.
-    var svg = d3.select("#" + divId)
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
+    var base = d3.select("#" + divId)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+    var svg = base.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
     // Setup the guideline.
     var focus = svg.append("g")
           .attr("class", "focus")
           .style("display", "none");
     
-    var lineData = [ [0, globalPadding], [0, h-globalPadding] ];
+    var lineData = [ [0, 0], [0, height] ];
     
     focus.append("path")
         .attr("class", "guideline")
@@ -647,7 +724,7 @@ Line.prototype.draw = function (divId) {
         var mouseX = d3.mouse(this)[0];
 
         // Move the guideline to align with the mouse movement.
-        if (mouseX >= globalPadding) {
+        if (mouseX >= 0) {    
             focus.attr("transform", "translate(" + mouseX + "," + 0 + ")");
         }
 
@@ -733,26 +810,48 @@ Line.prototype.draw = function (divId) {
 
     // Display the x-axis.
     svg.append("g")
-        .attr({
-            class: "axis",
-            transform: "translate(0," + (h-globalPadding) + ")"
-            })
-        .attr("width", w-2*globalPadding)
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + (height) + ")")
+        .attr("width", width)
         .call(xAxis);
 
-    // Display the y-axis.
+
+    // Display the y-axis. 
     svg.append("g")
-        .attr({
-            class: "y-axis",
-            transform: "translate(" + globalPadding + ",0)"
-            })
+        .attr("height", height)
+        .attr("class", "y-axis")
         .call(yAxis); 
-    
+
+    base.append("text")
+        .attr("class", "x-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", h - xAxisLabelPaddingBottom)
+        .text(xAxisLabel);
+
+    base.append("text")
+        .attr("class", "y-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("y", h/2)
+        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .text(yAxisLabel);
+
+    base.append("text")
+        .attr("class", "title")
+        .attr("text-anchor", "middle")
+        .attr("font-size", titleLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
+        .text(title);    
 
     for (var i = 1; i < numDataSets; i++) {
         data = getData([0,i],this.dataSet);
-
-        // data.sort(function(a, b) { return a[0] - b[0]; });
 
         if (numDataSets <= 2) {
             colors[i-1] = "black";
@@ -808,6 +907,10 @@ Line.prototype.draw = function (divId) {
                 
                 var rightHighlightEdge = pointX+highlightRadius+highlightTextExternalPadding+highlightRectWidth;
 
+                console.log("width: " + width);
+                console.log("RGB: " + rightGraphBoundary);
+                console.log("RHE: " + rightHighlightEdge);
+
                 var overRightEdge = false;
                 if (rightHighlightEdge >= rightGraphBoundary) {
                     overRightEdge = true;
@@ -856,7 +959,7 @@ Line.prototype.draw = function (divId) {
         var newTextY = dataPoints[d][2][1];
 
         if (multiline) {
-            newRectY = globalPadding+(count*(highlightRectHeight+2));
+            newRectY = (count*(highlightRectHeight+2));
             newTextY = newRectY + highlightTextHeight;
         }
 
@@ -887,36 +990,37 @@ Line.prototype.draw = function (divId) {
     }
 
     // Detect mouse motion in the graph area.
-    //if (multiline) {
-        svg.append("rect")
-            .attr("x", globalPadding-1)
-            .attr("y", globalPadding-1)
-            .attr("class", "overlay")
-            .attr("width", w-(2*globalPadding)+2)
-            .attr("height", h-(2*globalPadding)+2)
-            .on("mouseover", function() { 
-              focus.style("display", null); 
-            })
-            .on("mouseout", function() {
-                // Clear the graph area.
-                focus.style("display", "none");
-                svg.selectAll(".circle-highlight").attr("display", "none");
-                svg.selectAll(".line-highlight").attr("display", "none");
-                svg.selectAll(".text-highlight").attr("display", "none");
-                svg.selectAll(".rect-highlight").attr("display", "none");
-            })
-            .on("mousemove", mousemove);
-    //}
+    svg.append("rect")
+        .attr("x", -1)
+        .attr("y", -1)
+        .attr("class", "overlay")
+        .attr("width", width+2)
+        .attr("height", height+2)
+        .on("mouseover", function() { 
+          focus.style("display", null); 
+        })
+        .on("mouseout", function() {
+            // Clear the graph area.
+            focus.style("display", "none");
+            svg.selectAll(".circle-highlight").attr("display", "none");
+            svg.selectAll(".line-highlight").attr("display", "none");
+            svg.selectAll(".text-highlight").attr("display", "none");
+            svg.selectAll(".rect-highlight").attr("display", "none");
+        })
+        .on("mousemove", mousemove);
    
 };
 
-function Bar (dataSet, width, height) {
+function Bar (dataSet, labels, width, height) {
 	this.dataSet = dataSet;
+    this.labels = labels;
 	this.width = width;
 	this.height = height;
 }
 
 Bar.prototype.draw = function(divId) {
+
+    var margin = {top: 50, right: 40, bottom: 40, left: 55};
 
 	xValues = [];
 	yValues = [];
@@ -928,6 +1032,7 @@ Bar.prototype.draw = function(divId) {
 	}
     numBars = d3.max(xValues);
 
+
 	//Width and height
     var w = this.width;
     var h = this.height;
@@ -935,19 +1040,35 @@ Bar.prototype.draw = function(divId) {
     var highlightTextPadding = 2;
     var padding = 20;
     var barPadding = 5;
-    var barWidth = ((w - 2*globalPadding) / numBars) - barPadding;
+    
+    var xAxisLabelPaddingBottom = 2;
+    var titleLabelHeight = margin.top/3;
+    var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
+    var yAxisLabelPaddingLeft = 2;
+    var axisLabelHeight = 15;
+
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    var title = yAxisLabel + " vs. " + xAxisLabel;
+
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
+
+    var numYAxisTicks = height/15;
+
+    var barWidth = (width / numBars) - barPadding;
 
     var fillColor = randRGB(100, 200);
     var highlightColor = randRGB(100, 200);
 
     var xScale = d3.scale.linear()
-    				.domain([0, d3.max(xValues)])
-    				.range([globalPadding + barPadding, w - (globalPadding + barPadding + barWidth)]);
+                    .domain([0, d3.max(xValues)])
+                    .range([0, width - barPadding - barWidth]);    
 
     var yScale = d3.scale.linear()
                     .domain([0, d3.max(yValues)])
-                    .range([h - globalPadding, globalPadding]);
- 
+                    .range([height, 0]);
+
  	var xAxis = d3.svg.axis()
  					.scale(xScale)
  					.orient("bottom")
@@ -956,21 +1077,23 @@ Bar.prototype.draw = function(divId) {
  	var yAxis = d3.svg.axis()
  					.scale(yScale)
  					.orient("left")
- 					.ticks(5);
+ 					.ticks(numYAxisTicks);
 
     var unscaledLine = d3.svg.line()
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; });                    
 
- 	var xAxisLineCoords = [[globalPadding,h-globalPadding],[w-globalPadding,h-globalPadding]];
+    var xAxisLineCoords = [[0, height], [width, height]];
 
  	var xAxisLine = d3.svg.line(xAxisLineCoords);
 
     //Create SVG element
-    var svg = d3.select("#" + divId)
+    var base = d3.select("#" + divId)
                 .append("svg")
-                .attr("width", w)
-                .attr("height", h);
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+    var svg = base.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	//Create bars
     svg.selectAll("rect")
@@ -984,9 +1107,9 @@ Bar.prototype.draw = function(divId) {
 	        return (yScale(d[1]));
 	    })
 	    .attr("width", barWidth)
-	    .attr("height", function(d) {
-	        return h - yScale(d[1]) - globalPadding;
-	    })
+        .attr("height", function(d) {
+            return height - yScale(d[1]);
+        })
 	    .attr("fill", function(d) {
 	        return fillColor;
 	    })
@@ -996,7 +1119,7 @@ Bar.prototype.draw = function(divId) {
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
             var yTextPosition = yPosition + highlightTextHeight;
-            if (yTextPosition > h - globalPadding) {
+            if (yTextPosition > height) {
                 yTextPosition = yPosition - highlightTextPadding;
             }
             svg.append("text")
@@ -1011,7 +1134,7 @@ Bar.prototype.draw = function(divId) {
                 .attr("fill", "black")
                 .text(d[1]);
 
-            var barLineData = [ [globalPadding,yPosition], [w-globalPadding,yPosition] ];
+            var barLineData = [ [0, yPosition], [width, yPosition] ];
 
             svg.append("path")
                 .attr("class", "bar-line")
@@ -1047,107 +1170,67 @@ Bar.prototype.draw = function(divId) {
 
     // Create x-axis
     svg.append("g")
-    	.attr({
-    		class: "x-axis",
-    		"transform": "translate(" + (barWidth/2) + "," + (h - globalPadding) + ")"
-    	})
-    	.call(xAxis);
+        .attr({
+            class: "x-axis",
+            "transform": "translate(" + (barWidth/2) + "," + height + ")"
+        })
+        .call(xAxis);
 
    	// Create y-axis
     svg.append("g")
-    	.attr({
-    		class: "y-axis",
-    		"transform": "translate(" + globalPadding + ",0)"
-    	})
-    	.call(yAxis);
+        .attr({
+            class: "y-axis",
+            "transform": "translate(" + 0 + ",0)"
+        })
+        .call(yAxis);
 
 	svg.append("path")
     	.attr("class", "line")
-    	.attr("d", xAxisLine(xAxisLineCoords)); 
+    	.attr("d", xAxisLine(xAxisLineCoords));
+
+    base.append("text")
+        .attr("class", "x-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", h - xAxisLabelPaddingBottom)
+        .text(xAxisLabel);
+
+    base.append("text")
+        .attr("class", "y-label")
+        .attr("text-anchor", "middle")
+        .attr("font-size", axisLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("y", h/2)
+        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .text(yAxisLabel);
+
+    base.append("text")
+        .attr("class", "title")
+        .attr("text-anchor", "middle")
+        .attr("font-size", titleLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
+        .text(title);     
 };
 
 function visualize(dataPackage, parentId) {
 
-    // KEEP THIS FOR CONTINUAL TESTING PURPOSES DURING DEVELOPMENT...for now...
-// var dataPackage = {
-//  "Visualizations":
-//  [{
-//  "Type": "Pie",
-//  "DataColumns": [0, 1]
-//  }],
-//  "Data":
-//  {
-//  "ColumnLabel": ["X", "Y"],
-//  "ColumnType": ["String", "Integer"],
-//  "Values":
-//  [["California", 2],
-//  ["Alaska", 1],
-//  ["Kentucky", 4],
-//  ["Ohio", 9],
-//  ["Maine", 16],
-//  ["Arizona", 25]]//,
-//  // ["Arizona", 12],
-//  // ["California", 7]]
-//  }
-//  };
+    // Get a list of visualization objects based on the provided data.
+    var visualizations = extractVisualizations(dataPackage);
 
-  // {
-// "Visualizations":
-// [{
-// "Type": "Bar",
-// "DataColumns": [0, 1]
-// },{
-// "Type": "Line",
-// "DataColumns": [0, 1, 2]
-// },{
-// "Type": "Scatter",
-// "DataColumns": [0, 1, 2, 3, 4, 5]
-// },{
-  // "Type": "Area",
-  // "DataColumns": [0, 1]
-  // }],
-// "Data":
-// {
-// "ColumnLabel": ["X", "Y"],
-// "ColumnType": ["Integer", "Integer"],
-// "Values":
-// [[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [1, 1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [2, 4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [3, 9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [4, 16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [5, 25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [6, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [7, 21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [8, 23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-// [9, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [13, 6, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [14, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [16, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [18, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [19, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [20, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],
-  // [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]
-// }
-// };
+    // For each visualization object, create a new <div> element to contain it, then draw the visualization.
+    var numVisualizations = visualizations.length;
+    for (var i = 0; i < numVisualizations; i++) {
+        divId = "vis" + i;
+        createDiv(parentId, divId, visualizations[i].width, visualizations[i].height);
+        visualizations[i].draw(divId);
+    }
 
-// Get a list of visualization objects based on the provided data.
-var visualizations = extractVisualizations(dataPackage);
-
-// For each visualization object, create a new <div> element to contain it, then draw the visualization.
-var numVisualizations = visualizations.length;
-for (var i = 0; i < numVisualizations; i++) {
-divId = "vis" + i;
-createDiv(parentId, divId, visualizations[i].width, visualizations[i].height);
-visualizations[i].draw(divId);
-}
-
-return;
+    return;
 }
 
 function getVisualization(dataPackage,columnSet,type)
@@ -1159,26 +1242,28 @@ function getVisualization(dataPackage,columnSet,type)
         var visType = dataPackage.Visualizations[i].Type;
         var visColumnSet = dataPackage.Visualizations[i].DataColumns;
         var values = dataPackage.Data.Values;
+        var labels = dataPackage.Data.ColumnLabel;
         if(arraysAreEqual(columnSet,visColumnSet) && type == visType)
         {
             var v = NaN;
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
             switch(type) {
                 case "Line":
-                    v = new Line(getData(columnSet, values), width, height, true);
+                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), width, height, true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), width, height);
+                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), width, height);
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), width, height);
+                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), width, height);
                     break;  
 
                 case "Area":
                     v = new Area(getData(columnSet, values), width, height);
                     break; 
+
                 case "Pie":
                     v = new Pie(getData(columnSet, values), height, height);
                     break; 
@@ -1207,8 +1292,6 @@ function getData(columns, values)
     var numRows = values.length;
     var numColumns = columns.length;
 
-    console.log("getData results:");
-
     // For every row in values...
     for (var j = 0; j < numRows; j++) {
         // Create a new row to add to the extracted dataset.
@@ -1222,11 +1305,16 @@ function getData(columns, values)
         data.push(row);
     }
 
-    for (var i = 0; i < data.length; i++) {
-        printArray(data[i]);
-    }
-
     return data;
+}
+
+function getLabels(columns, labels)
+{
+    var labelSet = [];
+    for (var i = 0; i < columns.length; i++) {
+        labelSet.push(labels[i]);
+    }
+    return labelSet;
 }
 
 /**
