@@ -192,18 +192,6 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 }
  
-// rank visualizations for each dataset, the higher the rank, the better the AI thinks 
-// the visualized data will look.
-// TODO: make this have smarts to it, right now it just ranks by liking the first one most
-var rankVisualizations = function(AIdataStructure) {
-	for (var datasetIndex = 0; datasetIndex < AIdataStructure.length; datasetIndex++) {
-		for (var v = 0; v < AIdataStructure[datasetIndex].Visualizations.length; v++) {
-			AIdataStructure[datasetIndex].Visualizations[v].Score = 
-				AIdataStructure[datasetIndex].Visualizations.length - v;
-		}
-	}
-}
-
 
 /**
  * Take raw parser data and return a data object to be used by the visualizer.
@@ -239,8 +227,6 @@ function AI(parserData) {
 
 	determineVisualizationsToRequest(AIdataStructure);
 	
-	rankVisualizations(AIdataStructure);
-
 	// remove empty visualizations
 	for (var i = 0; i < AIdataStructure.length; i++) {
 		if (AIdataStructure[i].Visualizations.length == 0) {
