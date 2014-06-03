@@ -44,7 +44,44 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 		if (nonStringFound) { // not only string data was found
 
-			// look for (string|date) and numeric sets, request a pie chart for them
+			// find default columns to be used with each applicable visualization type
+
+			// bubble chart
+			if (numberColumns.length >= 3) { // need at least 3 numeric columns for bubble chart
+				var numericColumnsSorted = [];
+				// gather the numeric columns found, but exclude the first one found
+				// as that will be the independent variable (the first data col in the
+				// visualization request).
+				for (var i = 1; i < numberColumns.length; i++) {
+					numericColumnsSorted.push(numberColumns[i]);
+				}
+				// sort the columns based on their ColumnUnique score, the highest score goes at the end
+				// of the array
+				numericColumnsSorted.sort(function(a, b) {
+						if (currentDataset.Data.ColumnUnique[a] > currentDataSet.Data.ColumnUnique[b]) {
+							return 1; // put a after b because a has a higher score
+						} else if (currentDataset.Data.ColumnUnique[a] < currentDataset.Data.ColumnUnique[b]) {
+							return -1;
+						} else {
+							return 0; // they are equal
+						}
+					}
+				);
+
+				visualizations.push(
+					{
+						"Type" : "Bubble",
+						"DataColumns" : [
+							numberColumns[0],
+							numericColumnsSorted.pop(),
+							numericColumnsSorted.pop()
+						]
+					}
+				);
+			}
+								
+
+			// look for string and numeric sets, request a pie chart for them
 			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringColumns.length; stringDataCurrentCol++) {
 				for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
 
