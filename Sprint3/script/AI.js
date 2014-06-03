@@ -58,7 +58,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 				// sort the columns based on their ColumnUnique score, the highest score goes at the end
 				// of the array
 				numericColumnsSorted.sort(function(a, b) {
-						if (currentDataset.Data.ColumnUnique[a] > currentDataSet.Data.ColumnUnique[b]) {
+						if (currentDataset.Data.ColumnUnique[a] > currentDataset.Data.ColumnUnique[b]) {
 							return 1; // put a after b because a has a higher score
 						} else if (currentDataset.Data.ColumnUnique[a] < currentDataset.Data.ColumnUnique[b]) {
 							return -1;
