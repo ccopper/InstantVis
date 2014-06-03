@@ -43,26 +43,7 @@
 				["9","Ten"]]
 		}	
 	};
-	//Sample table data 2 (Int, Date)
-	var sTbl3 =
-	{	
-		"Data":
-		{
-			"ColumnLabel": ["X", "Y"],
-			"ColumnType": [],
-			"Values":
-				[["0",		"5-29-2014"],	
-				["1",		"5:00 PM"],
-				["2",		"16:00"],
-				["3",		"Aug 6, 1988"],
-				["4",		"2014"],
-				["5",		"5-29-2014 3:00PM"],
-				["6",		"Aug 4, 1944 23:00"],
-				["7",		"tomorrow"],
-				["8",		"next friday"],
-				["9",		"4.01.2013"]]
-		}	
-	};
+
  	var sTbl4 =
 	{	
 		"Data":
@@ -101,6 +82,48 @@
 				["9",		"4"]]
 		}	
 	};
+	var sTbl6 =
+	{
+
+		"Data":
+		{
+			"ColumnLabel": [""],
+			"ColumnType": [],
+			"Values": 
+			[["*Hour(MST)",
+			"O3 \nPPB ",
+			"PM2.5 \n µg/m3 ",
+			"RD \ndeg  ",
+			"RS  \nmph    ",
+			"TEMP  \ndegF   ",
+			"WD  \ndeg    ",
+			"WS  \nmph    "],
+			["1:00 AM",		"26",	"1",	"180.0",	"4.1",	"54",	"179",	"4"],
+			["2:00 AM",		"29",	"2",	"177.8",	"4.0",	"55",	"175",	"5"],
+			["3:00 AM",		"33",	"3",	"250.4",	"2.8",	"57",	"251",	"4"],
+			["4:00 AM",		"30",	"3",	"316.9",	"0.0",	"55",	"347",	"2"],
+			["5:00 AM",		"27",	"2",	"214.3",	"1.0",	"53",	"214",	"3"],
+			["6:00 AM",		"30",	"3",	"178.3",	"6.3",	"57",	"183",	"7"],
+			["7:00 AM",		"38",	"0",	"173.0",	"9.4",	"65",	"173",	"9"],
+			["8:00 AM",		"42",	"2",	"173.8",	"8.9",	"71",	"176",	"9"],
+			["9:00 AM",		"46",	"5",	"20.0",		"10.0",	"74",	"18",	"10"],
+			["10:00 AM",	"50",	"4",	"36.4",		"10.0",	"74",	"36",	"10"],
+			["11:00AM",		"55",	"1",	"40.6",		"8.1",	"77",	"42",	"8"],
+			["12:00 PM",	"60",	"-",	"19.5",		"4.0",	"81",	"22",	"5"],
+			["1:00 PM",		"60",	"2",	"350.5",	"6.0",	"81",	"347",	"7"],
+			["2:00 PM",		"64",	"1",	"23.4",		"7.8",	"81",	"23",	"8"],
+			["3:00 PM",		"62",	"3",	"26.8",		"7.3",	"80",	"25",	"8"],
+			["4:00 PM",		"59",	"2",	"37.2",		"6.1",	"79",	"39",	"6"],
+			["5:00 PM",		"60",	"4",	"75.2",		"3.9",	"81",	"74",	"4"],
+			["6:00 PM",		"56",	"11",	"318.3",	"2.2",	"78",	"304",	"3"],
+			["7:00 PM",		"56",	"11",	"52.2",		"4.7",	"77",	"51",	"5"],
+			["8:00 PM",		"46",	"19",	"233.5",	"1.8",	"69",	"245",	"3"],
+			["9:00 PM",		"42",	"16",	"0.5",		"11.1",	"64",	"347",	"11"],
+			["10:00 PM",	"43",	"5",	"15.7",		"8.8",	"61",	"18",	"9"],
+			["11:00 PM",	"46",	"1",	"18.2",		"6.5",	"60",	"16",	"6"],
+			["12:00AM",		"",		"",		"",			"",		"",		"",		""]]
+		}
+	}
  
  
 /*
@@ -165,67 +188,35 @@ test("2. is a valid Float", function()
 	equal(obj.Type, "Float", "obj.isValid == Float");
 	equal(obj.isValid, true, "obj.isValid == true");
 });
+test(".2 is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": ".2"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, .2, "obj.Val == .2");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+test("-.2 is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "-.2"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -.2, "obj.Val == -.2");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
 
-test("2. M is a valid Float w/units", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "2. M"
-	}	
-	TH.testType(obj, "Float");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.Val, 2.0, "obj.Val == 2.0");
-	equal(obj.Type, "Float", "obj.isValid == Float");
-	equal(obj.isValid, true, "obj.isValid == true");
-	equal(obj.MetaData, "M", "obj.MetaData == M");
-});
-test("-.2M is a valid Float", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "-.2M"
-	}	
-	TH.testType(obj, "Float");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.Val, -0.2, "obj.Val == -0.2");
-	equal(obj.Type, "Float", "obj.isValid == Float");
-	equal(obj.isValid, true, "obj.isValid == true");
-	equal(obj.MetaData, "M", "obj.MetaData == M");
-});
-test("$5.99 is a valid Float", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "$5.99"
-	}	
-	TH.testType(obj, "Float");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.Val, 5.99, "obj.Val == 5.99");
-	equal(obj.Type, "Float", "obj.isValid == Float");
-	equal(obj.isValid, true, "obj.isValid == true");
-	equal(obj.MetaData, "$", "obj.MetaData == $");
-});
-test("51.1% is a valid Float", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "51.1%"
-	}	
-	TH.testType(obj, "Float");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.Val, 51.1, "obj.Val == 51.1");
-	equal(obj.Type, "Float", "obj.isValid == Float");
-	equal(obj.isValid, true, "obj.isValid == true");
-	equal(obj.MetaData, "%", "obj.MetaData == $");
-});
 test("one is an invalid Float", function()
 {
 	var TH = new TypeHandler();
@@ -299,202 +290,22 @@ test("one is not a valid Integer", function()
 	equal(obj.Type, "Integer", "obj.Type == Integer");
 	equal(obj.isValid, false, "obj.isValid == false");
 });
-test("51m is a valid Integer", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "51m"
-	}	
-	TH.testType(obj, "Integer");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.Val, 51, "obj.Val == 51");
-	equal(obj.Type, "Integer", "obj.Type == Integer");
-	equal(obj.isValid, true, "obj.isValid == true");
-	equal(obj.MetaData, "m", "obj.isValid == m");
-});
-test("$51 is a valid Integer", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "$51"
-	}	
-	TH.testType(obj, "Integer");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.Val, 51, "obj.Val == 51");
-	equal(obj.Type, "Integer", "obj.Type == Integer");
-	equal(obj.isValid, true, "obj.isValid == true");
-	equal(obj.MetaData, "$", "obj.isValid == $");
-});
-
-/*
- *	Date Test
- */
-test("foo is an invalid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "foo"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.Val, null, "obj.Val == null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, false, "obj.isValid == false");
-});
-
-test("Aug 6, 1984 is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "Aug 6, 1984"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
-test("3:00 PM is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "3:00 PM"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
-test("15:00 is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "15:00"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
-test("06/24/1986 is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "06/24/1986"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
-test("06/24/1986 3:00PM is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "06/24/1986"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
-test("June 24, 1986 3:00PM is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "06/24/1986"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
-test("June 24, 1986 3:00PM is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "06/24/1986"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
-test("2001 is a valid date", function()
-{
-	var TH = new TypeHandler();
-	var obj = 
-	{
-		"RawVal": "2001"
-	}	
-	TH.testType(obj, "Date");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	notEqual(obj.Val, null, "obj.Val != null");
-	equal(obj.Type, "Date", "obj.isValid == Date");
-	equal(obj.isValid, true, "obj.isValid == true");
-});
-
 
 /*
  *
  */
-test("2001 is a valid date, float and int", function()
+test("2001 is a valid float and int", function()
 {
 	var TH = new TypeHandler();
 
 	obj = TH.acceptingTypes("2001");
 	
 	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.length, 3, "Length 3");
+	equal(obj.length, 2, "Length 2");
 	//equal(obj.Type, "Date", "obj.isValid == Date");
 	//equal(obj.isValid, true, "obj.isValid == true");
 });
 
-test("4.999 is a valid date, float and int", function()
-{
-	var TH = new TypeHandler();
-
-	obj = TH.acceptingTypes("4.999");
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(obj));
-	equal(obj.length, 3, "Length 3");
-	//equal(obj.Type, "Date", "obj.isValid == Date");
-	//equal(obj.isValid, true, "obj.isValid == true");
-});
 
 test("SampleTableParse 1 (Float, Integer)", function()
 {
@@ -520,17 +331,7 @@ test("SampleTableParse 2 (Float, String)", function()
 	
 });
 
-test("SampleTableParse 3 (Integer, Date)", function()
-{
-	var TH = new TypeHandler();
 
-	TH.processTable(sTbl3);
-	
-	equal(true, true, "Raw Data:" + JSON.stringify(sTbl3));
-	equal(sTbl3.Data.ColumnType[0], "Integer", "Col 0 is Integer");
-	equal(sTbl3.Data.ColumnType[1], "Date", "Col 1 is Date");
-	
-});
 
 test("SampleTableParse 4 (Integer, Integer) With Empty Fields", function()
 {
@@ -558,6 +359,17 @@ test("SampleTableParse 5 (Integer, Integer) with headers", function()
 	equal(sTbl5.Data.ColumnType[1], "Integer", "Col 1 is Integer");
 	equal(sTbl5.Data.ColumnLabel[0], "Index", "Header 0 is Index");
 	equal(sTbl5.Data.ColumnLabel[1], "Data", "Header 1 is Data");
+	
+});
+
+test("SampleTableParse 6 (Chatfield data) with headers", function()
+{
+	var TH = new TypeHandler();
+
+	TH.processTable(sTbl6);
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(sTbl6));
+
 	
 });
 

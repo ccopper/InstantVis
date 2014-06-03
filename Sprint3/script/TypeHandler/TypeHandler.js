@@ -58,12 +58,16 @@ TypeHandler.prototype.processTable = function(table)
 			var hType = this.validTypes(header);
 			var cTypes = this.validTypes(columnData);
 			
-			if(hType[0] == "String" && hType[0] != cTypes[0])
+			if(hType[0] != cTypes[0])
 			{
+
 				table.Data.ColumnLabel = table.Data.Values.splice(0,1)[0]
 				hasLabels = true				
-			}			
-		} 
+			} else
+			{
+				columnData.splice(0,0, header[0])
+			}
+		}
 			
 		//Get the list of valid types
 		var vTypes = this.validTypes(columnData);
@@ -198,7 +202,6 @@ TypeHandler.prototype.TypeLibrary =
 	[ 
 		"Integer",
 		"Float",
-		"Date",
 		"String"
 	],
 	"Types": 
@@ -209,7 +212,7 @@ TypeHandler.prototype.TypeLibrary =
 			"DefaultVal": function() { return 0; },
 			"accept": function (obj)
 			{
-				regEx = /^([^\d\-]*)(\-?[\d]+)(\D*)$/;
+				regEx = /^(\-?\d*)$/;
 				obj["Type"] = "Integer";
 				if(!regEx.test(obj.RawVal.trim()))
 				{
@@ -217,11 +220,10 @@ TypeHandler.prototype.TypeLibrary =
 					obj["Val"] = 0;
 					return
 				}
-				var rexec = regEx.exec(obj.RawVal.trim());
-				//console.log(rexec)
 				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				obj["Val"] = parseInt(rexec[2].trim());
-				obj["MetaData"] = rexec[1].trim() + rexec[rexec.length-1].trim()
+				var pVal = parseInt(obj.RawVal.trim());
+				obj["Val"] = isNaN(pVal)? 0 : pVal;
+				
 			}
 		},
 		{
@@ -231,7 +233,7 @@ TypeHandler.prototype.TypeLibrary =
 			"accept": function (obj)
 			{
 				
-				var regEx = /^([^\d\-]*)(\-?(([\d]+(\.[\d]*)?)|(\.[\d]+)))(\D*)$/;
+				var regEx = /^(\-?\d*(\.?\d*)?)$/;
 				obj["Type"] = "Float";
 				if(!regEx.test(obj.RawVal.trim()))
 				{
@@ -239,32 +241,10 @@ TypeHandler.prototype.TypeLibrary =
 					obj["Val"] = 0.0;
 					return
 				}
-				var rexec = regEx.exec(obj.RawVal.trim());
-				//console.log(rexec)
+
 				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				obj["Val"] = parseFloat(rexec[2].trim());
-				obj["MetaData"] = rexec[1].trim() + rexec[rexec.length-1].trim()
-			}
-		},{
-			"Name": "Date",
-			"Parent": "String",
-			"DefaultVal": function() { return new Date(); },
-			"accept": function (obj)
-			{
-				var d = Date.parse(obj.RawVal.trim());
-				
-				obj["Type"] = "Date";
-				obj["MetaData"] = "";
-				//Verify that the date is valid
-				if (d == null)
-				{
-					obj["isValid"] = false;
-					obj["Val"] = null;
-				} else
-				{
-					obj["isValid"] = true;
-					obj["Val"] = d;
-				}
+				var pVal = parseFloat(obj.RawVal.trim());
+				obj["Val"] = isNaN(pVal)? 0 : pVal;
 			}
 		}]
  };
