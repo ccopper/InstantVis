@@ -109,7 +109,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 					if (currentDataset.Data.ColumnUnique[stringColumns[stringDataCurrentCol]] > 
 							currentDataset.Data.ColumnUnique[mostUniqueStringColumn]) {
-						mostUniqueStringColumn = stringDataCurrentCol;
+						mostUniqueStringColumn = stringColumns[stringDataCurrentCol];
 					}
 				}
 				
@@ -119,7 +119,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 					if (currentDataset.Data.ColumnUnique[numberColumns[numericCurrentCol]] > 
 							currentDataset.Data.ColumnUnique[mostUniqueNumericColumn]) {
 
-							mostUniqueNumericColumn = numericCurrentCol;
+							mostUniqueNumericColumn = numberColumns[numericCurrentCol];
 					}
 				}
 
@@ -136,21 +136,53 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			//
 			// look for numeric vs numeric data
 			// make one of each of these graphs for each combo: Line, Bar, Scatter
-			var graphTypes = ["Line", "Bar", "Scatter"];
-			for (var independentVariableIndex = 0; independentVariableIndex < numberColumns.length; independentVariableIndex++) {
-				for (var dependentVariableIndex = 0; dependentVariableIndex < numberColumns.length; dependentVariableIndex++) {
-					if (independentVariableIndex != dependentVariableIndex) {
-						var dataColumnsToGraph = [numberColumns[dependentVariableIndex], numberColumns[independentVariableIndex]];
-						for (var graphType = 0; graphType < graphTypes.length; graphType++) {
-							visualizations.push(
-									{
-										"Type" : graphTypes[graphType],
-										"DataColumns" : dataColumnsToGraph
-									}
-									);
+			if (numberColumns.length >= 2) {
+				var graphTypes = ["Line", "Scatter"];
+				var indepententVariableColumn;
+				var dependentVariableColumn;
+				var hasTwoDependentVariables = false;
+
+				if (numberColumns.length > 2) {
+					hasTwoDependentVariables = true;
+				}
+
+				// find independent variable
+				// select the leftmost numeric column to be the independent variable
+				indepententVariableColumn = numberColumns[0];
+
+				// find dependent variable
+				// select the most unique numeric column that is not the independent variable
+				var mostUniqueDependentColumn = numberColumns[1];
+				if (hasTwoDependentVariables) { // select a second dependent variable
+					var secondMostUniqueDependentColumn = numberColumns[2];
+				}
+				for (var i = 1; i < numberColumns.length; i++) {
+					if (currentDataset.Data.ColumnUnique[numberColumns[i]] > 
+							currentDataset.Data.ColumnUnique[mostUniqueDependentColumn]) {
+
+						if (hasTwoDependentVariables) {
+							secondMostUniqueDependentColumn = mostUniqueDependentColumn;
 						}
+						mostUniqueDependentColumn = numberColumns[i];
 					}
 				}
+
+				var dataColumnsToGraph = [];
+				dataColumnsToGraph.push(indepententVariableColumn);
+				dataColumnsToGraph.push(mostUniqueDependentColumn);
+				if (hasTwoDependentVariables) {
+					dataColumnsToGraph.push(secondMostUniqueDependentColumn);
+				}
+				for (var graphType = 0; graphType < graphTypes.length; graphType++) {
+					visualizations.push(
+						{
+							"Type" : graphTypes[graphType],
+							"DataColumns" : dataColumnsToGraph,
+							"Score" : determineVisualizationScore(currentDataset, dataColumnsToGraph)
+						}
+					);
+				}
+
 			}
 
 			currentDataset.Visualizations = visualizations;
