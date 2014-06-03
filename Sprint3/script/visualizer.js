@@ -1785,6 +1785,3 @@ d3.selection.prototype.moveToFront = function() {
     });
 };
 
-// function adjustRect(text) {
-//     var boundingBox = text.getBBox();
-// }
