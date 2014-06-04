@@ -1651,7 +1651,7 @@ function getVisualization(dataPackage,type)
         var visType = dataPackage.Visualizations[i].Type;
         var columnSet = dataPackage.Visualizations[i].DataColumns;
         var values = dataPackage.Data.Values;
-        var lables = dataPackage.Data.ColumnLabel;
+        var labels = dataPackage.Data.ColumnLabel;
         console.log('Checking '+visType+' with supplied '+type);
         if(type == visType)
         {
