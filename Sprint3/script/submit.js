@@ -81,8 +81,10 @@ function parseComplete(data)
 	{
 		addTable(tables[i],i);
 	}
+
 	//Load first visualization
 	tableSelectHandler(0);
+	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
 }
 
@@ -367,11 +369,16 @@ function getURLParams()
 }
 
 
-function submitForm()
+function submitForm(urlToParse)
 {
-
-	var url = $("#urlTextbox").val();
-
+	var url = NaN;
+	if(urlToParse)
+	{
+		url = urlToParse;
+	}else{
+		url = $("#urlTextbox").val();	
+	}
+	
 	url = url.trim();
 
 	if (url == "")
