@@ -101,34 +101,37 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			
 
 			// look for string and numeric sets
+			if (stringColumns.length > 0 && numberColumns.length > 0) {
+				// find most unique string column
+				var mostUniqueStringColumn = stringColumns[0];
+				for (var stringDataCurrentCol = 1; stringDataCurrentCol < stringColumns.length; 
+						stringDataCurrentCol++) {
 
-			// find most unique string column
-			var mostUniqueStringColumn = stringColumns[0];
-			for (var stringDataCurrentCol = 1; stringDataCurrentCol < stringColumns.length; stringDataCurrentCol++) {
-				if (currentDataset.Data.ColumnUnique[stringColumns[stringDataCurrentCol]] > 
-						currentDataset.Data.ColumnUnique[mostUniqueStringColumn]) {
-					mostUniqueStringColumn = stringDataCurrentCol;
+					if (currentDataset.Data.ColumnUnique[stringColumns[stringDataCurrentCol]] > 
+							currentDataset.Data.ColumnUnique[mostUniqueStringColumn]) {
+						mostUniqueStringColumn = stringDataCurrentCol;
+					}
 				}
+				
+				// find most unique numeric column
+				var mostUniqueNumericColumn = numberColumns[0];
+				for (var numericCurrentCol = 1; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
+					if (currentDataset.Data.ColumnUnique[numberColumns[numericCurrentCol]] > 
+							currentDataset.Data.ColumnUnique[mostUniqueNumericColumn]) {
+
+							mostUniqueNumericColumn = numericCurrentCol;
+					}
+				}
+
+				visualizations.push(
+					{
+						"Type" : "Pie",
+						"DataColumns" : [mostUniqueStringColumn, mostUniqueNumericColumn],
+						"Score" : determineVisualizationScore(currentDataset, [mostUniqueStringColumn,
+							mostUniqueNumericColumn])
+					}
+				);
 			}
-			
-			// find most unique numeric column
-			var mostUniqueNumericColumn = numberColumns[0];
-			for (var numericCurrentCol = 1; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
-				if (currentDataset.Data.ColumnUnique[numberColumns[numericCurrentCol]] > 
-						currentDataset.Data.ColumnUnique[mostUniqueNumericColumn]) {
-
-						mostUniqueNumericColumn = numericCurrentCol;
-				}
-			}
-
-			visualizations.push(
-				{
-					"Type" : "Pie",
-					"DataColumns" : [mostUniqueStringColumn, mostUniqueNumericColumn],
-					"Score" : determineVisualizationScore(currentDataset, [mostUniqueStringColumn,
-						mostUniqueNumericColumn])
-				}
-			);
 
 			//
 			// look for numeric vs numeric data
