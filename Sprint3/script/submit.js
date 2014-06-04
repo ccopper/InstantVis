@@ -51,7 +51,7 @@ function tableSelectHandler(event)
 	graphTypes.unshift("Table");
 	loadVisTypeIcons(graphTypes);
 	//Load first visualization
-	visTypeClickHandler(tables[0].Visualizations[0].Type);
+	visTypeClickHandler(tables[0].Visualizations[0].Type+'_icon');
 }
 
 
@@ -250,7 +250,7 @@ function visTypeClickHandler(event)
 		var visualization = getVisualization(tables[currentTable],visType);
 		if(!visualization)
 		{
-			console.log('Could not find visualization for div: '+visDivId)
+			console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
 		}else{
 			visualization.draw(visDivId);
 			$('#'+visDivId).show();
