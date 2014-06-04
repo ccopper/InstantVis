@@ -109,6 +109,16 @@ function parseComplete(data)
 
 	numDataSets = tables.length;
 
+	if(numDataSets==0)
+	{
+		$("#submissionNotification").text("No meaningful data found. Please try again.");
+		$("#urlTextbox").val("");
+		$("#form").fadeIn(0);
+		$("#loadingContent").hide();
+		$("#examples").show();
+		return;
+	}
+
 	$("#userInputArea").slideUp();
 	$("#logo").hide();
 	$("#testButton").hide();
