@@ -71,6 +71,7 @@ function submitForm()
 
 	$("#form").fadeOut(0);
 	$("#loadingContent").show();//style.display = "inline";
+	$("#userInputArea").slideUp();
 
 
 	parseHTML(url, parseComplete);
