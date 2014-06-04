@@ -1649,6 +1649,7 @@ function getVisualization(dataPackage,columnSet,type)
     for(var i = 0; i < dataPackage.Visualizations.length; i++)
     {
         var visType = dataPackage.Visualizations[i].Type;
+        console.log('Checking '+visType+' with supplied '+type);
         if(type == visType)
         {
             var v = NaN;
