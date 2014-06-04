@@ -248,10 +248,16 @@ function visTypeClickHandler(event)
 		console.log('Creating new visualization div for '+visDivId);
 		createDiv('visualizationContainer',visDivId,"","",'visualization');
 		var visualization = getVisualization(tables[currentTable],visType);
-		visualization.draw(visDivId);
-		$('#'+visDivId).show();
-		$('#'+visDivId).siblings().hide();
-		$('#options').show();
+		if(!visualization)
+		{
+			console.log('Could not find visualization for div: '+visDivId)
+		}else{
+			visualization.draw(visDivId);
+			$('#'+visDivId).show();
+			$('#'+visDivId).siblings().hide();
+			$('#options').show();	
+		}
+		
 	}	
 }
 
