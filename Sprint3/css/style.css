@@ -5,6 +5,40 @@
 	margin-right: auto;
 }
 
+#toolBar
+{
+	height: 100px;
+	width: 100%;
+	background-color: #001942
+	display: inline;
+}
+
+#tableSelectionControls
+{
+	float: right;
+	display: inline;
+	width: 200px;
+	margin-right: 5px;
+}
+
+#tableSelectorText
+{
+	color: white;
+}
+
+#tableSelector
+{
+	position: absolute;
+	margin-top: 20px;
+
+}
+
+#tableSelectionBox
+{
+	height: 75px;
+	width: 200px;
+}
+
 #instructions
 {
 	margin-left: auto;
@@ -17,13 +51,43 @@
 	width: 100%;
 	height: 100%;
 	display: none;
-	/*background-color: red;*/
+	background-color: #0A1429;
+}
+
+#iconContainer
+{
+	display: inline-block;
+	overflow-x: auto;
+}
+
+#iconContainer img
+{
+	margin-bottom:25px;
+	margin-right: 5px;
+	cursor: pointer;
+}
+
+#smallLogo
+{
+	margin: 5px;
 }
 
 #visualizationContainer
 {
-	width: 85%;
-	margin-left: 15%;
+	width: 50%;
+	height: 90%;
+	float: left;
+	background-color: #0033CC;
+	overflow-y: auto;
+}
+
+#tableContainer
+{
+	width: 50%;
+	height: 90%;
+	float: right;
+	background-color: #0066CC;
+	overflow-y: auto;
 }
 
 .visualization
@@ -33,17 +97,6 @@
 	margin-right: auto;
 	display: inline-block;
 	/*overflow-x: scroll;*/
-}
-
-#tableSelectionSideBar
-{
-	position: absolute;
-	float: left;
-	background-color: white;
-	width: 15%;
-	height: 100%;
-	min-height:100%;
-	/*overflow-y: scroll;*/
 }
 
 #visTypeSelection
@@ -91,18 +144,6 @@ input[type="text"]{
 	font-size: 20px;
 }
 
-.hover
-{
-	width: 400px;
-}
-
-#graphArea{
-	margin-left: auto;
-	margin-right: auto;
-	color: black;
-}
-
-
 #instructions
 {
 	text-align: center;
@@ -142,32 +183,17 @@ input[type="text"]{
 	color: red;
 }
 
-.tableEntry
-{
-	background-color: #003399;
-	color: white;
-	border-style: groove;
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 5px;
-	display:inline-block;
-	cursor: pointer;
-}
 
-.columnSetEntry
+.iconBorder
 {
-	background-color: #141B27;
-	border-style: groove;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 5px;
-	text-align: center;
-	display: none;
+	border: solid white;
+	border-radius: 3px;
 }
 
 .visualization
 {
+	background-color: white;
+	margin-top: 5px;
 	margin-left: 5px;
 	margin-right: auto;
 	border-width: 1px;
@@ -176,6 +202,7 @@ input[type="text"]{
 	margin-bottom: 10px;
 	padding: 0px;
 }
+
 
 .visIcon
 {
@@ -187,6 +214,19 @@ input[type="text"]{
 	cursor: pointer;
 }
 
+.divider
+{
+	height: 90%;
+	width: 2px;
+	background-color: white;
+	margin: 5px;
+	display: inline-block;
+}
+
+.hover
+{
+	width: 400px;
+}
 
 .x-axis path
 {

@@ -1,6 +1,7 @@
 
 //Global reference to table data
 var tables = [];
+var currentTable = 0;
 //Global reference to table column sets. [[[1,2],[2,3]],[[4,5],[1,2]]]
 var tableColumnSets = [];
 
@@ -32,6 +33,26 @@ function readyFunction()
 			submitForm();
 		}
 	});
+	$("#tableSelectionBox").change(tableSelectHandler);
+}
+
+function tableSelectHandler(event)
+{
+	var tableNumber = NaN;
+	if(typeof(event)=='number')
+	{
+		tableNumber = event;
+	}else{
+		tableNumber = $(this).val();
+	}
+	currentTable = tableNumber;
+	console.log('Table Selected: '+ tableNumber);
+	//Load icons for table
+	var graphTypes = getGraphTypes(tableNumber);
+	graphTypes.unshift("Table");
+	loadVisTypeIcons(graphTypes);
+	//Load first visualization
+	visTypeClickHandler(tables[0].Visualizations[0].Type);
 }
 
 function submitForm()
@@ -75,135 +96,165 @@ function parseComplete(data)
 
 	numDataSets = tables.length;
 
-	$("#visualizationToolbox").show();
 	$("#userInputArea").slideUp();
+	$("#logo").hide();
 	$("#testButton").hide();
+	$("#visualizationToolbox").show();
+	$("#visualizationToolbox").height($(window).height()-$('#toolBar').height()+40);
+
 
 	for(var i=0; i<numDataSets; i++)
 	{
 		addTable(tables[i],i);
 	}
-
+	//Load first visualization
+	tableSelectHandler(0);
 }
 
-function showResults()
+function loadToolbox()
 {
+	$("#userInputArea").slideUp();
+	$("#logo").hide();
+	$("#testButton").hide();
+	$("#visualizationToolbox").show();
+	$("#visualizationToolbox").height($(window).height()-$('#toolBar').height()+40);
 
-	// Display results message.
-	$("#resultsMessage").fadeIn(500);
+	var table1 = {		
+ 		"Visualizations":		
+ 			[{			
+ 				"Type": "Bar",			
+ 				"DataColumns": [0, 1]		
+ 			},{			
+ 				"Type": "Line",			
+ 				"DataColumns": [0, 1, 2, 3]		
+ 			},{			
+ 				"Type": "Scatter",			
+ 				"DataColumns": [0, 1]		
+ 			},{         
+                 "Type": "Area",          
+                 "DataColumns": [0, 1]       
+             }],		
+ 		"Data":		
+ 			{			
+ 				"ColumnLabel": ["X", "Y"],			
+ 				"ColumnType": ["Integer", "Integer"],			
+ 				"Values":				
+ 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+ 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [11, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [13, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [14, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [18, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [19, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [20, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+ 			}		
+ 		};
+ 
+ 	var table2 = {		
+ 		"Visualizations":		
+ 			[{			
+ 				"Type": "Bar",			
+ 				"DataColumns": [0, 1]		
+ 			},{			
+ 				"Type": "Line",			
+ 				"DataColumns": [0, 1, 2, 3]		
+ 			},{			
+ 				"Type": "Scatter",			
+ 				"DataColumns": [0, 1]		
+ 			},{         
+                 "Type": "Area",          
+                 "DataColumns": [0, 1]       
+             }],		
+ 		"Data":		
+ 			{		
+ 				"Caption": "2014 Rain Fall",	
+ 				"ColumnLabel": ["X", "Y"],			
+ 				"ColumnType": ["Integer", "Integer"],			
+ 				"Values":				
+ 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+ 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[9,	19, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [12, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [13, 7, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [14, 9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [15, 12, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [17, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [18, 3, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [19, 4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [20, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [21, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+ 			}		
+ 		};
+ 	tables = [table1,table2];
 
-	// Display all of the visualizations.
-	var visDivs = $("#visArea").children();
-	var numVis = visDivs.length;
-	for (var i = 0; i < numVis; i++) {
-		$("#vis" + i).fadeIn(500);
+ 	for(var i=0; i<tables.length; i++)
+	{
+		addTable(tables[i],i);
 	}
 
-	$("#loadingContent").hide();//style.display = "none";
-
+	//Load first visualization
+	tableSelectHandler(0);
 }
 
-function addTable(table,id)
+
+function addTable(table,tableNumber)
 {
-	createDiv('tableSelectionSideBar','table'+id,"90%","",'tableEntry')
-	$("#table"+id).text("Table: "+id);
-	$("#table"+id).click(tableClickHandler);
-	var columnSets = []
-	var numVisualizations = table.Visualizations.length;
-	for(j=0; j<numVisualizations; j++)
+	//If the table has a name, insert it instead of 'table: #'
+	var tableName = 'Table ' + tableNumber;
+	if(tables[tableNumber].Data.Caption)
 	{
-		if(!arrayContainsSubArray(columnSets,table.Visualizations[j].DataColumns))
-		{
-			columnSets.push(table.Visualizations[j].DataColumns);
-		}
+		tableName = tables[tableNumber].Data.Caption;
 	}
-	tableColumnSets.push([columnSets]);
-	for(j=0; j<columnSets.length; j++)
-	{
-		createDiv('table'+id,'table_'+id+'_columnSet'+j,"20%","",'columnSetEntry');
-		$('#table_'+id+'_columnSet'+j).text(j);
-		$('#table_'+id+'_columnSet'+j).click(columnSetClickHandler);
-	}
-
+	$('#tableSelectionBox').append('<option value="'+tableNumber+'">'+tableName+'</option>');
 }
 
 
-function tableClickHandler(event)
-{
-	var callerId = event.target.id;
-	//Do not handle column set clicks
-	if(!/table\d+/.test(callerId))
-	{
-		return;
-	}
-	var tableNumber = parseInt(callerId.substring(5));
-	var columnSet = tableColumnSets[tableNumber][0][0];
-	var visType = tables[tableNumber].Visualizations[0].Type;
-
-	console.log(callerId+' clicked.')
-	//If opening a different table, clear all visualizations
-	if(!$('#'+$('#'+callerId).children()[0].id).is(':visible'))
-	{
-		$('#visualizationContainer').children().hide();
-	}
-	//Collapse other open tables
-	var children = $('#'+callerId).parent().children();
-	for(childIndex = 0; childIndex < children.length; childIndex++)
-	{
-		if(children[childIndex].id != callerId)
-		{
-			collapseTable(children[childIndex].id);
-		}else{
-			expandTable(children[childIndex].id);
-		}
-	}
-	var columnSetId = $('#'+callerId).children()[0].id;
-	loadVisTypeIcons(getGraphTypes(columnSetId),columnSetId);
-	//Automatically draw first table and load vis options
-	visTypeClickHandler('table_'+tableNumber+'_columnSet0'+'_'+visType);
-	//getVisualization(tables[tableNumber],columnSet,visType).draw('visualization');
-}
-
-function columnSetClickHandler(event)
-{
-	var iconId = NaN;
-	//This function can be called by an event or by another function
-	//The parameter may be either a string or an event
-	if(typeof(event)=='string')
-	{
-		iconId = event;
-	} else{
-		iconId = event.target.id;
-	}
-	console.log('Column set click: '+iconId);
-	$('#visualization').empty();
-	//Draw first graph type automatically
-	var tableNumber = parseInt(iconId.charAt(6));
-	var columnSetNumber = parseInt(iconId.charAt(17));
-	var columnSet = tableColumnSets[tableNumber][0][columnSetNumber];
-	var graphs = getGraphTypes(iconId);
-	loadVisTypeIcons(graphs,iconId);
-	visTypeClickHandler('table_'+tableNumber+'_columnSet'+columnSetNumber+'_'+graphs[0]);
-}
 
 function visTypeClickHandler(event)
 {
+	//Add a border to the icon clicked and remove any existing borders
 	var iconId = NaN;
-	//This function can be called by an event or by another function
-	//The parameter may be either a string or an event
-	if(typeof(event)=='string')
+	if(typeof(event) == 'string')
 	{
 		iconId = event;
-	} else{
+	}else{
+		console.log('type:'+typeof(event)+'\n\t'+event);
 		iconId = event.target.id;
 	}
-	var tableNumber = parseInt(iconId.charAt(6));
-	var columnSetNumber = parseInt(iconId.charAt(17));
-	var columnSet = tableColumnSets[tableNumber][0][columnSetNumber];
-	var visType = iconId.substring(19);
-	var visDivId = 'table_'+tableNumber+'_columnSet_'+columnSetNumber+'_visType_'+visType;
+	console.log(iconId + 'Clicked');
+	$('#iconContainer img').each(function()
+	{
+		$(this).removeClass('iconBorder');
+	});
+	$('#'+iconId).addClass('iconBorder');
 
-	console.log('Icon Click. visType:' + visType);
+	//Draw the visualization
+	var visType = iconId.replace('_icon','');
+	var visDivId = 'table_'+currentTable+'_visType_'+visType;
 
 	//Check if visualization already exists, if not make it.
 	if($('#'+visDivId).length)
@@ -222,7 +273,7 @@ function visTypeClickHandler(event)
 	}else{
 		console.log('Creating new visualization div for '+visDivId);
 		createDiv('visualizationContainer',visDivId,"","",'visualization');
-		var visualization = getVisualization(tables[tableNumber],columnSet,visType);
+		var visualization = getVisualization(tables[currentTable],visType);
 		visualization.draw(visDivId);
 		$('#'+visDivId).show();
 		$('#'+visDivId).siblings().hide();
@@ -230,91 +281,65 @@ function visTypeClickHandler(event)
 	}	
 }
 
-function loadVisTypeIcons(visTypes,source)
+function loadVisTypeIcons(visTypes)
 {
-	$('#visTypeSelection').empty();
+	$('#iconContainer').empty();
 	for(var i = 0; i<visTypes.length; i++)
 	{
 		var imagePath = NaN;
-		var iconId = NaN;
+		var iconId = visTypes[i]+"_icon";
 		switch(visTypes[i])
 		{
+			case 'Table':
+				imagePath = 'images/table.png';
+				break;
 			case 'Bar':
-				iconId = source + '_Bar';
 				imagePath = 'images/bar.png';
 				break;
 			case 'Line':
-				iconId = source + '_Line';
 				imagePath = 'images/line.png';
 				break;
 			case 'Scatter':
-				iconId = source + '_Scatter';
 				imagePath = 'images/scatter.png';
 				break;
 			case 'Area':
-				iconId = source + '_Area';
 				imagePath = 'images/area.png';
 				break;
 			case 'Pie':
-				iconId = source + '_Pie';
 				imagePath = 'images/pie.png';
+				break;
+			case 'Tree':
+				imagePath = 'images/tree.png';
+				break;
+			case 'Bubble':
+				imagePath = 'images/bubble.png'
 				break;
 			default:
 				console.log('Encountered unexpected visualization type: '+visTypes[i]);
 		}
 		if(imagePath != NaN && iconId != NaN){
-			createDiv('visTypeSelection',iconId,'50px','50px','visIcon');
-			$("#"+iconId).append("<img id='" + iconId + "'' src='"+imagePath+"' height='50',width='50'/>");
+			$("#iconContainer").append("<img id='" + iconId + "'' src='"+imagePath+"' height='50',width='50'/>");
 			$("#"+iconId).click(visTypeClickHandler);
 		}
 	}
 }
 
-function expandTable(tableId)
-{
-	var children = $('#'+tableId).children();
-	for(i = 0; i< children.length; i++)
-	{
-		$('#'+children[i].id).slideDown();
-	}
-}
 
-function collapseTable(tableId)
+function getGraphTypes(tableNumber)
 {
-	var children = $('#'+tableId).children();
-	for(i = 0; i< children.length; i++)
-	{
-		$('#'+children[i].id).slideUp();
-	}
-}
-
-function getGraphTypes(columnSetId)
-{
-	var tableNumber = parseInt(columnSetId.charAt(6));
-	var columnSetNumber = parseInt(columnSetId.charAt(17));
 	var currentTable = tables[tableNumber];
-	var columnSet = tableColumnSets[tableNumber][0][columnSetNumber];
-	var columnNumString = "";
 
-	console.log('Getting graph types for table:'+tableNumber+' column set:'+columnSetNumber);
-	//console.log('Column sets found: '+columnSet.length)
-	//printArray(columnSet);
+	console.log('Getting graph types for table:'+tableNumber);
 
 	var graphTypes = [];
 
 	for(var i = 0; i < currentTable.Visualizations.length; i++)
 	{
-		if(arraysAreEqual(currentTable.Visualizations[i].DataColumns,columnSet)){
-			graphTypes.push(currentTable.Visualizations[i].Type);
-		}
+		graphTypes.push(currentTable.Visualizations[i].Type);
 	}
-
-	//printArray(graphTypes);
 
 	return graphTypes;
 }
-
-
 
 function printArray(array)
 {

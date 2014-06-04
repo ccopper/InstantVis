@@ -1150,7 +1150,7 @@ visualizations[i].draw(divId);
 return;
 }
 
-function getVisualization(dataPackage,columnSet,type)
+function getVisualization(dataPackage,type)
 {
     var height = 300;
     var width = 650;
@@ -1159,28 +1159,28 @@ function getVisualization(dataPackage,columnSet,type)
         var visType = dataPackage.Visualizations[i].Type;
         var visColumnSet = dataPackage.Visualizations[i].DataColumns;
         var values = dataPackage.Data.Values;
-        if(arraysAreEqual(columnSet,visColumnSet) && type == visType)
+        if(type == visType)
         {
             var v = NaN;
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
             switch(type) {
                 case "Line":
-                    v = new Line(getData(columnSet, values), width, height, true);
+                    v = new Line(getData(visColumnSet, values), width, height, true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), width, height);
+                    v = new Bar(getData(visColumnSet, values), width, height);
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), width, height);
+                    v = new Scatter(getData(visColumnSet, values), width, height);
                     break;  
 
                 case "Area":
-                    v = new Area(getData(columnSet, values), width, height);
+                    v = new Area(getData(visColumnSet, values), width, height);
                     break; 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), height, height);
+                    v = new Pie(getData(visColumnSet, values), height, height);
                     break; 
 
                 default:
