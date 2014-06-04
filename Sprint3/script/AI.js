@@ -124,7 +124,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 					}
 				}
 				
-				var chartsToRequest = ["Pie", "Bar", "Tree"];
+				var chartsToRequest = ["Pie", "Bar", "Tree", "BarHorizontal"];
 				for (var c = 0; c < chartsToRequest.length; c++) {
 					visualizations.push(
 						{
