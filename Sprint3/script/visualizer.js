@@ -2,9 +2,200 @@
 
 var globalPadding = 25;
 
+function Treemap(dataSet, labels, width, height) {
+    this.dataSet = dataSet;
+    this.labels = labels;
+    this.width = width;
+    this.height = height;
+}
+
+Treemap.prototype.draw = function(divId) 
+{
+    var margin = {top: 50, right: 20, bottom: 20, left: 20};
+
+    var w = this.width;
+    var h = this.height;
+    var colors = [];
+
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
+
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    var title = yAxisLabel + " by " + xAxisLabel;
+
+    var titleLabelHeight = margin.top/3;
+    var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
+
+    var numValuesPerDataSet = this.dataSet.length;
+    var categories = [];
+    var data = [];
+    var dataTotal = 0;
+    var highlightTextHeight = 12;
+
+    for (var j = 0; j < numValuesPerDataSet; j++) {
+        isDuplicate = false;
+        for (var t = 0; t < categories.length; t++) {
+            if (categories[t][0] == this.dataSet[j][0]) {
+                categories[t].push(j);
+                isDuplicate = true;
+            }
+        }
+        if (!isDuplicate) {
+            categories.push([this.dataSet[j][0], j]);
+            colors.push(randRGB(100,200));                   
+        }
+    }
+
+    console.log("dataSet: " + this.dataSet.toString());
+
+    var categoryTotal = 0;
+    for (var i = 0; i < categories.length; i++) {
+        categoryTotal = 0;
+        for (var j = 1; j < categories[i].length; j++) {
+            categoryTotal += this.dataSet[categories[i][j]][1];
+        }
+        data.push([categories[i][0], categoryTotal]);
+        dataTotal += categoryTotal;
+    }
+
+    data.sort(function(a,b) { return b[1] - a[1]; });
+
+    console.log("cats: " + categories.toString());
+    console.log(">>> data: " + data.toString());
+    
+    console.log("total: " + dataTotal);
+
+    var base = d3.select("#" + divId)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+    var svg = base.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    var rects = [];
+    var currentWidth = width;
+    var currentHeight = height;
+    var currentX = 0;
+    var currentY = 0;
+    var fraction = 0;
+    var thisWidth = 0;
+    var thisHeight = 0;
+    var nextX = 0;
+    var nextY = 0;
+    var currentTotal = dataTotal;
+    for (var i = 0; i < data.length; i++) {
+        console.log("I:::: " + i);
+        fraction = (data[i][1]/currentTotal);
+        if (currentWidth > currentHeight) {
+            thisHeight = currentHeight;
+            thisWidth = fraction*currentWidth;
+            nextX = currentX + thisWidth;
+            nextY = currentY;
+            nextWidth = currentWidth - thisWidth;
+            nextHeight = currentHeight;
+        } else {
+            thisWidth = currentWidth;
+            thisHeight = fraction*currentHeight;
+            nextY = currentY + thisHeight;
+            nextX = currentX;
+            nextHeight = currentHeight - thisHeight;
+            nextWidth = currentWidth;
+        }
+
+        var fill = colors[i];
+        console.log("fill: " + fill);
+        var category = data[i][0];
+
+        newRect = [fill, thisHeight, thisWidth, currentX, currentY, category, data[i][1]];
+
+        rects.push(newRect);
+
+        currentX = nextX;
+        currentY = nextY;
+        currentWidth = nextWidth;
+        currentHeight = nextHeight;
+        currentTotal = currentTotal - data[i][1];
+    }
+
+    svg.selectAll("rect")
+        .data(rects)
+        .enter()
+        .append("rect")
+        .attr("class", "treemap-section")
+        .attr("fill", function(d) { return d[0]; })
+        .attr("height", function(d) { return d[1]; })
+        .attr("width", function(d) { return d[2]; })
+        .attr("x", function(d) { return d[3]; })
+        .attr("y", function(d) { return d[4]; })
+        .on("mouseover", function(d) {
+            var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
+            var newY = parseFloat(this.getAttribute("y")) + parseFloat(this.getAttribute("height"))/2 + highlightTextHeight/2;
+            d3.select(this)
+                .attr("fill", "orange")
+                .style("stroke", "black")
+            svg.append("text")
+                .attr("id", "treemap-text-tooltip2")
+                .attr("x", newX)
+                .attr("y", newY - highlightTextHeight)
+                .attr("text-anchor", "middle")
+                .attr("text-family", "sans-serif")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .style("pointer-events", "none")
+                .text( function() {
+                    return Math.floor((d[6]/dataTotal)*10000)/100 + "%";
+                });
+            svg.append("text")
+                .attr("id", "treemap-text-tooltip3")
+                .attr("x", newX)
+                .attr("y", newY + highlightTextHeight)
+                .attr("text-anchor", "middle")
+                .attr("text-family", "sans-serif")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .style("pointer-events", "none")
+                .text( function() {
+                    return Math.floor(d[6]*100)/100;
+                });
+        })
+        .on("mouseout", function(d) {
+            d3.select(this)
+                .attr("fill", d[0])
+                .style("stroke", "none")
+            d3.selectAll("#treemap-text-tooltip2").remove();
+            d3.selectAll("#treemap-text-tooltip3").remove();
+        });
+
+    svg.selectAll("rect")
+        .each(function(d) {
+            var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
+            var newY = parseFloat(this.getAttribute("y")) + parseFloat(this.getAttribute("height"))/2 + highlightTextHeight/2;
+            svg.append("text")
+                .attr("id", "treemap-text-tooltip1")
+                .attr("text-anchor", "middle")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-family", "sans-serif")
+                .attr("font-weight", "bold")
+                .style("pointer-events", "none")
+                .attr("x", newX)
+                .attr("y", newY)
+                .text(d[5]);
+        });
+
+    base.append("text")
+        .attr("class", "title")
+        .attr("text-anchor", "middle")
+        .attr("font-size", titleLabelHeight)
+        .attr("font-family", "sans-serif")
+        .attr("x", margin.left + width/2)
+        .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
+        .text(title);  
+}
+
 function Bubble(dataSet, labels, width, height) {
     this.dataSet = dataSet;
-    console.log("Bubble dataSet: " + this.dataSet.toString());
     this.labels = labels;
     this.width = width;
     this.height = height;
@@ -417,69 +608,6 @@ Pie.prototype.draw = function(divId)
                     }
                 });
         }
-
-    // arcs.append("text")
-    //     .attr("transform", function(d) {
-
-    //         console.log("d: " + d);
-    //         console.log("d.toString(): " + d.toString());
-
-    //         var thisX = centerX - (centerX - arc.centroid(d)[0]);
-    //         var thisY = centerY - (centerY - arc.centroid(d)[1]);
-    //         var hyp = Math.sqrt(Math.pow(thisX, 2) + Math.pow(thisY, 2));
-    //         var ratio = labelRadius/hyp;
-    //         var ratio2 = (labelRadius*0.75)/hyp;
-    //         var ratio3 = (labelRadius-5)/hyp;
-
-    //         var newDx = thisX * ratio;
-    //         var newDy = thisY * ratio;
-
-    //         console.log("arc.centroid(d)[0]: " + arc.centroid(d)[0]);
-    //         console.log("arc.centroid(d)[1]: " + arc.centroid(d)[1]);
-
-    //         console.log("thisX: " + thisX);
-    //         console.log("thisY: " + thisY);
-
-    //         console.log("ratio: " + ratio);
-
-    //         console.log("newDx: " + newDx);
-    //         console.log("newDy: " + newDy);
-
-    //         var lineStartX = thisX * ratio2;
-    //         var lineStartY = thisY * ratio2;
-
-    //         var lineEndX = thisX * ratio3;
-    //         var lineEndY = thisY * ratio3;
-
-    //         console.log("lineStartX: " + lineStartX);
-    //         console.log("lineStartY: " + lineStartY);
-    //         console.log("lineEndX: " + lineEndX);
-    //         console.log("lineEndY: " + lineEndY);
-
-    //         var labelLineData = [[lineStartX,lineStartY],[lineEndX,lineEndY]];
-    
-    //         arcs.append("path")
-    //             .attr("class", "label-line")
-    //             .attr("d", line(labelLineData));
-
-    //         return "translate(" + (newDx) + ", " + (newDy) + ")";
-    //     })
-    //     .attr("text-anchor", function(d) {
-    //         var centroidX = arc.centroid(d)[0];
-    //         if (centroidX >= 0) {
-    //             return "start";
-    //         } else if (Math.abs(centroidX) < outerRadius/10) {
-    //             return "middle";
-    //         }
-    //         return "end";
-    //     })
-    //     .attr("font-family", "sans-serif")
-    //     .attr("font-weight", "bold")
-    //     .style("pointer-events", "none")
-    //     .text(function(d, i) {
-    //         return categories[i][0];
-    //     });
-
 }
 
 function Area(dataSet, width, height) 
@@ -1547,6 +1675,10 @@ function getVisualization(dataPackage,columnSet,type)
 
                 case "Pie":
                     v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), pieWidth, height);
+                    break;
+
+                case "Treemap":
+                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), width, 1.3*height);
                     break;
 
                 case "Bubble":

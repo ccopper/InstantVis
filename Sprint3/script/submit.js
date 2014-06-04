@@ -97,6 +97,27 @@ function parseComplete(data)
 	// tables = [{
 	// 		 	"Visualizations":
 	// 		 		[{
+	// 		 			"Type": "Treemap",
+	// 		 			"DataColumns": [0, 1]
+	// 		 		}],
+	// 		 	"Data":
+	// 		 		{
+	// 		 			"ColumnLabel": ["State", "McDonald's Locations"],
+	// 		 			"ColumnType": ["String", "Integer"],
+	// 		 			"Values":
+	// 		 				[["California", 2],
+	// 						 ["Alaska", 1],
+	// 						 ["Kentucky", 4],
+	// 						 ["Ohio", 9],
+	// 						 ["Maine", 16],
+	// 						 ["Arizona", 25],
+	// 						 ["Arizona", 12],
+	// 						 ["California", 7]]
+	// 				 }
+	// 		},
+	// 		{
+	// 		 	"Visualizations":
+	// 		 		[{
 	// 		 			"Type": "Pie",
 	// 		 			"DataColumns": [0, 1]
 	// 		 		}],
