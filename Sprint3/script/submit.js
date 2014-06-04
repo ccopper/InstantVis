@@ -387,7 +387,6 @@ function nonRecoverableError(errMessage)
 	$("#resultsMessage").fadeIn(500);
 	
 }
-=======
 
 //Global reference to table data
 var tables = [];

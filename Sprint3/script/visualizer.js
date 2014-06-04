@@ -1280,10 +1280,7 @@ d3.selection.prototype.moveToFront = function() {
     });
 };
 
-// function adjustRect(text) {
-//     var boundingBox = text.getBBox();
-=======
-//This is our code for the visualizer. 
+
 
 var globalPadding = 25;
 
