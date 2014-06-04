@@ -24,6 +24,53 @@ var determineVisualizationScore = function(dataset, columnsToUse) {
 	return scoreNumerator / columnsToUse.length;
 }
 
+// find the leftmost most unique column that excludes any column numbers in the exclude array
+// if excludeStrings == true, do not select a string column
+var findNextBestAvailableColumn = function(currentDataset, excludeColumns, excludeStrings) {
+	var usableColumns = []; // columns that are not on the exclude list
+/*j	
+	var anExcludeColumnWasFound;
+	for (var i = 0; i < currentDataset.Cols; i++) {
+		anExcludeColumnWasFound = false;
+		if (excludeStrings == true) {
+			if (currentDataset.Data.ColumnType[i] == "String") {
+				anExcludeColumnWasFound = true;
+			}
+		} else {
+			for (var j = 0; j < excludeColumns; j++) {
+				if (i == excludeColumns[j]) { // i is an exclude column
+					anExcludeColumnWasFound = true;
+				}
+		}
+		if (anExcludeColumnWasFound == false) { 
+			usableColumns.push(i);
+		}
+	}
+
+	// sort the usableColumns with the highest uniqueness score at the index 0 of the array, 
+	// for ties in uniqueness, the lefter column moves more toward the 0 index of the array.
+	usableColumns.sort( function(a, b) {
+		if (currentDataset.Data.ColumnUnique[a] > currentDataset.Data.ColumnUnique[b] ||
+			((currentDataset.Data.ColumnUnique[a] == currentDataset.Data.ColumnUnique[b]) && (a < b)))  {
+			return -1;
+		} else if (currentDataset.Data.ColumnUnique[a] < currentDataset.Data.ColumnUnique[b]) {
+			return 1;
+		} else {
+			return 0;
+		}
+	});
+
+*/	
+	return usableColumns[0];
+}
+
+// find the best independent variable
+var findIndependentVariable = function(currentDataset) {
+	var excludeList = [];
+	var excludeStrings = false;
+	return findNextBestAvailableColumn(currentDataset, excludeList, excludeStrings);
+}
+
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
 // remove some datasets if they contain all string data
 var determineVisualizationsToRequest = function(AIdataStructure) {
@@ -56,6 +103,10 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 			// find default columns to be used with each applicable visualization type
 			
+
+
+
+
 			//
 			// bubble chart
 			//
@@ -139,7 +190,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 			//
 			// look for numeric vs numeric data
-			// make one of each of these graphs for each combo: Line, Bar, Scatter
+			// make one of each of these graphs for each combo: Line, Scatter
 			if (numberColumns.length >= 2) {
 				var graphTypes = ["Line", "Scatter"];
 				var indepententVariableColumn;
