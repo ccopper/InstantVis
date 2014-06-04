@@ -1,10 +1,10 @@
-/* Take raw data from the parser and make sense of it, then pass the new massaged data
+/* Take raw data from the parser and analyze it, then pass the new data
  * to the visualizer.
  */
 
 
+// have the type checker assign column type to each column in each table/ 
 var setTypes = function(datasets) {
-
 	var TH = new TypeHandler();
 	
 	for (var i = 0; i < datasets.length; i++) {
@@ -13,14 +13,15 @@ var setTypes = function(datasets) {
 
 }
 
+// calculate the average uniqueness of selected columns of a dataset
 var determineVisualizationScore = function(dataset, columnsToUse) {
-	var score = 0;
+	var scoreNumerator= 0;
 
 	for (var i = 0; i < columnsToUse.length; i++) {
-		score = score + dataset.Data.ColumnUnique[columnsToUse[i]];
+		scoreNumerator = scoreNumerator + dataset.Data.ColumnUnique[columnsToUse[i]];
 	}
 
-	return score;
+	return scoreNumerator / columnsToUse.length;
 }
 
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
@@ -241,7 +242,7 @@ function AI(parserData) {
 
 	}
 
-	setTypes(AIdataStructure); // have the type checker assign column type to each column in each table
+	setTypes(AIdataStructure); 
 
 	determineVisualizationsToRequest(AIdataStructure);
 
