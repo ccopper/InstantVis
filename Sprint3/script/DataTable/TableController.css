@@ -1,0 +1,116 @@
+/*
+ *		Table Controller CSS
+ *		
+ */
+
+#visDiv
+{
+	position: relative;
+
+	width: 100%;
+	min-width: 100%;
+	height: 500px;
+	margin: 0px;
+	padding:0px;
+}
+
+#gDiv
+{
+	display: table-cell;
+	
+	float:left;
+	height: 100%;
+	background: blue;
+	overflow:auto;
+	
+	margin:0px;
+	padding: 0px;
+	text-align: center;
+	vertical-align: middle;
+}
+#divider
+{
+	float: left;
+	margin-left: 5px;
+	width: 5px;
+	height: 100%;
+	background: lightgrey;
+	cursor: ew-resize;
+}
+#tDiv
+{
+	float: left;
+	padding:0px;
+	padding-left: 5px;
+	
+	margin-left:5px;
+	width: auto;
+	height: 100%;
+	overflow: auto;
+	
+}
+#DataTable
+{
+	font-size: 11pt;
+	border-radius:5px;
+}
+
+#DTHead td
+{	
+	text-align: center;
+	vertical-align: middle;
+	border-bottom: 0px;
+}
+
+#DTHeadEdit th
+{	
+	text-align: center;
+	vertical-align: middle;
+}
+#DTCaption
+{
+	text-align: left;
+	font-size: 14pt;
+	font-weight: bold;
+}
+#DTSelMat
+{
+	padding: 0px;
+	background: lightgrey;
+	text-align: center;
+	vertical-align: middle;
+}
+#DTSelMat th
+{
+	padding: 0px;
+}
+
+.unselectable 
+{
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.mButton
+{
+	border: 1px solid black;
+	border-radius: 2px;
+	text-align: center;
+	font-size: 8pt;
+	background: lightgrey;
+	padding-left: 5px;
+	padding-right: 5px; 	
+}
+.mButton:hover
+{
+	background: grey;
+	cursor: pointer;
+}
+
+
+
+
+
+
+

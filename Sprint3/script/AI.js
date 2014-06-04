@@ -2,57 +2,6 @@
  * to the visualizer.
  */
 
-// remove the 0th row from a table, shift all the others up by one
-// helpful when the column labels have been extracted from the first 
-// row of values  
-var shiftAllTableRowsUpByOneDiscardRowZero = function(currentTable) {
-	var totalOldRows = currentTable.Rows;
-	var colSize = currentTable.Cols;
-
-	// do not try to adjust a table with only one or zero rows
-	if (totalOldRows > 1) {
-		for (var i = 0; i < totalOldRows - 1; i++) {
-			for (var col = 0; col < colSize; col++) {
-				currentTable.Values[i][col] = currentTable.Values[i+1][col];
-			}
-		}
-		currentTable.Rows = currentTable.Rows - 1; // to account for the now removed 0th row
-	}
-
-}
-
-var makeColumnLabelsIfNeedBe = function(currentTable) {
-	
-
-	// if the column labels appear to be unpopulated, take the data from the first
-	// row and make column labels out of them
-	if (currentTable.ColumnLabel[0] == "" && currentTable.ColumnLabel.length == 1) {
-		var columnLabelsAreJustANumberSequence = false;
-		var columnLabels = [];
-
-		// do not take column labels from the first row if there is no first row or the data
-		// is a list (single row of data with no labels)
-		if (currentTable.Values.length > 1) {
-			columnLabelsAreJustANumberSequence = true;
-		}
-
-
-		var currentLabel;
-		for (var colLabelIndex = 0; colLabelIndex < currentTable.Cols; colLabelIndex++) {
-			if (columnLabelsAreJustANumberSequence) {
-				currentLabel = "" + colLabelIndex; // force the labels to be strings
-			} else {
-				currentLabel =	"" + currentTable.Values[0][colLabelIndex];
-			}
-			columnLabels.push();
-		}
-		
-		currentTable.ColumnLabel = columnLabels;
-
-		shiftAllTableRowsUpByOneDiscardRowZero(currentTable);
-	} 
-
-}
 
 var setTypes = function(datasets) {
 
@@ -64,16 +13,23 @@ var setTypes = function(datasets) {
 
 }
 
+var determineVisualizationScore = function(dataset, columnsToUse) {
+	var score = 0;
+
+	for (var i = 0; i < columnsToUse.length; i++) {
+		score = score + dataset.Data.ColumnUnique[columnsToUse[i]];
+	}
+
+	return score;
+}
 
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
 // remove some datasets if they contain all string data
 var determineVisualizationsToRequest = function(AIdataStructure) {
 
 	for (var currentDatasetIndex = 0; currentDatasetIndex < AIdataStructure.length; currentDatasetIndex++) {
-		var stringDateColumns = [];	// contains indexes of columns that contain string or date data
 		var numberColumns = [];			// indexes of columns that contain numeric data
-		var stringColumns = [];
-		var dateColumns = [];
+		var stringColumns = [];			// contains indexes of columns that contain string data
 		var currentDataset = AIdataStructure[currentDatasetIndex];
 		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
 
@@ -89,37 +45,92 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 				nonStringFound = true;
 			} else if (colType == "String") {
 				stringColumns.push(currentColumn);	
-			} else if (colType == "Date") {
-				dateColumns.push(currentColumn);
-				nonStringFound = true;
 			} else {
+				console.log("AI found column with no type!");
 				// the column has no type, this is no good, so no additional visualizations will be generated
 			}
 		}
 
-		console.log("AI found " + numberColumns.length + " numeric columns and " + stringDateColumns.length + " string/date columns");
-
 		if (nonStringFound) { // not only string data was found
 
-			stringDateColumns = stringColumns.concat(dateColumns);
+			// find default columns to be used with each applicable visualization type
+			
+			//
+			// bubble chart
+			//
+			if (numberColumns.length >= 3) { // need at least 3 numeric columns for bubble chart
+				var numericColumnsSorted = [];
+				// gather the numeric columns found, but exclude the first one found
+				// as that will be the independent variable (the first data col in the
+				// visualization request).
+				for (var i = 1; i < numberColumns.length; i++) {
+					numericColumnsSorted.push(numberColumns[i]);
+				}
+				// sort the columns based on their ColumnUnique score, the highest score goes at the end
+				// of the array
+				numericColumnsSorted.sort(function(a, b) {
+						if (currentDataset.Data.ColumnUnique[a] > currentDataset.Data.ColumnUnique[b]) {
+							return 1; // put a after b because a has a higher score
+						} else if (currentDataset.Data.ColumnUnique[a] < currentDataset.Data.ColumnUnique[b]) {
+							return -1;
+						} else {
+							return 0; // they are equal
+						}
+					}
+				);
 
-			// look for (string|date) and numeric sets, request a pie chart for them
-			for (var stringDataCurrentCol = 0; stringDataCurrentCol < stringDateColumns.length; stringDataCurrentCol++) {
-				for (var numericCurrentCol = 0; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
+				var columnsToUse = [
+						numberColumns[0],
+						numericColumnsSorted.pop(),
+						numericColumnsSorted.pop()
+					];
 
-					var colsInvolved = [];
-					colsInvolved.push(stringDateColumns[stringDataCurrentCol]);
-					colsInvolved.push(numberColumns[numericCurrentCol]);
+				visualizations.push(
+					{
+						"Type" : "Bubble",
+						"DataColumns" : columnsToUse,
+						"Score" : determineVisualizationScore(currentDataset, columnsToUse)
+					}
+				);
+			}
+								
 
-					visualizations.push(
-							{
-								"Type" : "Pie",
-								"DataColumns" : colsInvolved
-							}
-							);
+			//
+			// pie chart default
+			//
+			
+
+			// look for string and numeric sets
+
+			// find most unique string column
+			var mostUniqueStringColumn = stringColumns[0];
+			for (var stringDataCurrentCol = 1; stringDataCurrentCol < stringColumns.length; stringDataCurrentCol++) {
+				if (currentDataset.Data.ColumnUnique[stringColumns[stringDataCurrentCol]] > 
+						currentDataset.Data.ColumnUnique[mostUniqueStringColumn]) {
+					mostUniqueStringColumn = stringDataCurrentCol;
+				}
+			}
+			
+			// find most unique numeric column
+			var mostUniqueNumericColumn = numberColumns[0];
+			for (var numericCurrentCol = 1; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
+				if (currentDataset.Data.ColumnUnique[numberColumns[numericCurrentCol]] > 
+						currentDataset.Data.ColumnUnique[mostUniqueNumericColumn]) {
+
+						mostUniqueNumericColumn = numericCurrentCol;
 				}
 			}
 
+			visualizations.push(
+				{
+					"Type" : "Pie",
+					"DataColumns" : [mostUniqueStringColumn, mostUniqueNumericColumn],
+					"Score" : determineVisualizationScore(currentDataset, [mostUniqueStringColumn,
+						mostUniqueNumericColumn])
+				}
+			);
+
+			//
 			// look for numeric vs numeric data
 			// make one of each of these graphs for each combo: Line, Bar, Scatter
 			var graphTypes = ["Line", "Bar", "Scatter"];
@@ -172,8 +183,6 @@ function AI(parserData) {
 		var dataColumns = [];
 		var currentTable = parserData.Data[tableNum];
 		var columnType = [""];
-		
-		makeColumnLabelsIfNeedBe(currentTable);
 		
 		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
