@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>TypeHandler Unit Tests</title>
+	<link rel="stylesheet" href="TableSorter.theme.css">
+	<link rel="stylesheet" href="TableController.css">
+		
+	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+	<script src="jquery.tablesorter.min.js"></script>
+	<script src="TableController.js"></script>
+	<script>
+		var sampleTable = 
+		{	
+			"Data":
+				{
+					"Caption": "Chatfield Data",
+					"ColumnLabel":["*Hour(MST)","O3 \nPPB ","PM2.5 \n ?g/m3 ","RD \ndeg ","RS \nmph ","TEMP \ndegF ","WD \ndeg ","WS \nmph "],
+					"ColumnType":["String","Integer","Integer","Float","Float","Integer","Integer","Integer"],
+					"Values":
+					[["1:00 AM",26,1,180,4.1,54,179,4],
+					["2:00 AM",29,2,177.8,4,55,175,5],
+					["3:00 AM",33,3,250.4,2.8,57,251,4],
+					["4:00 AM",30,3,316.9,0,55,347,2],
+					["5:00 AM",27,2,214.3,1,53,214,3],
+					["6:00 AM",30,3,178.3,6.3,57,183,7],
+					["7:00 AM",38,0,173,9.4,65,173,9],
+					["8:00 AM",42,2,173.8,8.9,71,176,9],
+					["9:00 AM",46,5,20,10,74,18,10],
+					["10:00 AM",50,4,36.4,10,74,36,10],
+					["11:00AM",55,1,40.6,8.1,77,42,8],
+					["12:00 PM",60,0,19.5,4,81,22,5],
+					["1:00 PM",60,2,350.5,6,81,347,7],
+					["2:00 PM",64,1,23.4,7.8,81,23,8],
+					["3:00 PM",62,3,26.8,7.3,80,25,8],
+					["4:00 PM",59,2,37.2,6.1,79,39,6],
+					["5:00 PM",60,4,75.2,3.9,81,74,4],
+					["6:00 PM",56,11,318.3,2.2,78,304,3],
+					["7:00 PM",56,11,52.2,4.7,77,51,5],
+					["8:00 PM",46,19,233.5,1.8,69,245,3],
+					["9:00 PM",42,16,0.5,11.1,64,347,11],
+					["10:00 PM",43,5,15.7,8.8,61,18,9],
+					["11:00 PM",46,1,18.2,6.5,60,16,6],
+					["12:00AM",0,0,0,0,0,0,0]],
+					"ColumnUnique":
+						[1,0.7083333333333334,0.375,1,0.875,0.7083333333333334,0.875,0.4583333333333333]
+				}
+		};
+		
+		$(document).ready(function ()
+		{
+			populateTable(sampleTable);
+			
+			var isDrag = false;
+			$("#divider").mousedown(function()
+			{
+				isDrag = true;
+	
+				$("#visDiv").addClass("unselectable");
+				
+				$("#visDiv").css("cursor", "ew-resize");
+				$("#visDiv").mousemove(function ()
+				{
+					var gWidth = $("#gDiv").width();
+					var margin = event.pageX - gWidth - 10;
+					
+					if(margin < 0)
+					{
+						$("#gDiv").width(gWidth + margin)
+					} else
+					{
+						$("#gDiv").width(event.pageX - 10)
+					}
+					
+					$("#tDiv").width($("#visDiv").width() - event.pageX - 30);
+				
+					//$("#divider").css("margin-left", "" + margin +"px");
+				});
+				
+			})
+			$("#visDiv").mouseup(function (event)
+			{
+				if(!isDrag)
+				{
+					return;
+				}
+				$("#visDiv").removeClass("unslectable");
+				$("#visDiv").css("cursor", "auto");
+				isDrag = false;
+				$("#visDiv").unbind("mousemove");
+
+			});
+			
+		});
+	</script>
+</head>
+<body>
+	<div id="visDiv">
+		<div id="gDiv">
+			<div id="dummy" style="width: 300px; height: 500px">
+				Graph Here!
+			</div>
+		</div>
+		<div id="divider"></div>
+		<div id="tDiv">
+			<table id="DataTable" class="tablesorter">
+				<caption id="DTCaption">
+					<span id="TitleLabelContainer">
+						<span id="TitleLabel"></span>
+						<span class="mButton" id="editTitle">EDIT</span>
+					</span>
+	
+					<span id="TitleEditor" style="display: none">
+						<input type="text" />
+						<span class="mButton" id="saveTitle">SAVE</span>
+					</span>				
+				</caption>
+				<thead id="DTHead"></thead>
+				<tbody id="DTHeadEdit" class="tablesorter-infoOnly"></tbody>
+				<tbody id="DTSelMat" class="tablesorter-infoOnly"></tbody>
+				<tbody id="DTBody"></tbody>
+			</table>
+		</div>
+	</div>	
+
+	<div id="test"></div>
+	
+</body>
+</html>
