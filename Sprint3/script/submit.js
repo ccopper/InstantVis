@@ -83,7 +83,7 @@ function parseComplete(data)
 	}
 	//Load first visualization
 	tableSelectHandler(0);
-	$('#tableSelectionBox').options[0].selected = true;
+	$('#tableSelectionBox').val("0");
 }
 
 function loadToolbox()
