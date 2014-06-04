@@ -1649,7 +1649,7 @@ function getVisualization(dataPackage,type)
     for(var i = 0; i < dataPackage.Visualizations.length; i++)
     {
         var visType = dataPackage.Visualizations[i].Type;
-        var visColumnSet = dataPackage.Visualizations[i].DataColumns;
+        var columnSet = dataPackage.Visualizations[i].DataColumns;
         var values = dataPackage.Data.Values;
         console.log('Checking '+visType+' with supplied '+type);
         if(type == visType)
