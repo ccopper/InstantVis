@@ -102,7 +102,7 @@ function parseComplete(data)
 	// 		 		}],
 	// 		 	"Data":
 	// 		 		{
-	// 		 			"ColumnLabel": ["X", "Y"],
+	// 		 			"ColumnLabel": ["State", "McDonald's Locations"],
 	// 		 			"ColumnType": ["String", "Integer"],
 	// 		 			"Values":
 	// 		 				[["California", 2],

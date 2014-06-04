@@ -217,30 +217,45 @@ Bubble.prototype.draw = function(divId)
 }
 
 
-function Pie(dataSet, width, height) 
+function Pie(dataSet, labels, width, height) 
 {
     this.dataSet = dataSet;
+    this.labels = labels;
     this.width = width;
     this.height = height;
 }
 
 Pie.prototype.draw = function(divId)
 {
-    console.log("Drawing Pie Chart ------------------------");
+
+    var margin = {top: 50, right: 40, bottom: 25, left: 55};
+
     var w = this.width;
     var h = this.height;
+
+    var width = w - margin.left - margin.right;
+    var height = h - margin.top - margin.bottom;
+
     var labelLinePadding = 20;
-    var sidePadding = 150;
-    var outerRadius = (w - 2*80 - 2*labelLinePadding)/2;
+    var outerRadius = height/2;
     var innerRadius = 0;
     var labelRadius = outerRadius + labelLinePadding;
     var highlightTextHeight = 15;
 
-    var centerX = (outerRadius + 80 + labelLinePadding + sidePadding);
-    var centerY = (outerRadius + 80 + labelLinePadding);
+    var centerX = outerRadius;
+    var centerY = outerRadius;
 
-    console.log("centerX: " + centerX);
-    console.log("centerY: " + centerY);
+    var xAxisLabelPaddingBottom = 2;
+    var titleLabelHeight = margin.top/3;
+    var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
+    var yAxisLabelPaddingLeft = 2;
+    var axisLabelHeight = 15;
+
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    var title = yAxisLabel + " by " + xAxisLabel;
+
+    var rightGraphBoundary = width;
 
     var numDataSets = this.dataSet[0].length;
     var numValuesPerDataSet = this.dataSet.length;
@@ -249,11 +264,6 @@ Pie.prototype.draw = function(divId)
     var data = [];
     var dataTotal = 0;
     var colors = [];
-
-    // console.log("this.dataSet");
-    // for (var i = 0; i < this.dataSet.length; i++) {
-    //     printArray(this.dataSet[i]);
-    // }
 
     for (var j = 0; j < numValuesPerDataSet; j++) {
         isDuplicate = false;
@@ -269,11 +279,6 @@ Pie.prototype.draw = function(divId)
         }
     }
 
-    // console.log("categories:");
-    // for (var i = 0; i < categories.length; i++) {
-    //     printArray(categories[i]);
-    // }
-
     var categoryTotal = 0;
     for (var i = 0; i < categories.length; i++) {
         categoryTotal = 0;
@@ -283,11 +288,6 @@ Pie.prototype.draw = function(divId)
         data.push(categoryTotal);
         dataTotal += categoryTotal;
     }
-
-    // console.log("data: " + data);
-    // console.log("data.toString(): " + data.toString());
-    // console.log("printArray(data): ");
-    // printArray(data);
 
     var color = d3.scale.category10();
 
@@ -301,10 +301,12 @@ Pie.prototype.draw = function(divId)
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; });
 
-    var svg = d3.select("#" + divId)
-            .append("svg")
-            .attr("width", w + 2*sidePadding)
-            .attr("height", h);
+    var base = d3.select("#" + divId)
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+    var svg = base.append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var arcs = svg.selectAll("g.arc")
                 .data(pie(data))
@@ -312,7 +314,34 @@ Pie.prototype.draw = function(divId)
                 .append("g")
                 .attr("class", "arc")
                 .attr("transform", "translate(" + centerX + ", " + centerY + ")");
-                // .attr("transform", "translate(" + (outerRadius + legendHeight) + ", " + (outerRadius + globalPadding) + ")");
+
+    var legendIconHeight = 15;
+    var legendIconWidth = 15;
+    var legendIconPadding = 3;
+    var midWidth = 50;
+    var legendTextHeight = legendIconHeight;
+    var legendTextPadding = 5;
+
+    var iconX = outerRadius*2 + midWidth;
+    for (var i = 0; i < data.length; i++) {
+        var iconY = i*(legendIconHeight+legendIconPadding);
+        svg.append("rect")
+            .attr("x", iconX)
+            .attr("y", iconY)
+            .attr("height", legendIconHeight)
+            .attr("width", legendIconWidth)
+            .attr("fill", colors[i])
+            .style("stroke", "black");
+        svg.append("text")
+            .attr("id", "legend-text")
+            .attr("x", iconX + legendIconWidth + legendTextPadding)
+            .attr("y", iconY)
+            .attr("dx", 0)
+            .attr("dy", legendTextHeight - 2)
+            .attr("font-family", "sans-serif")
+            .attr("font-size", legendTextHeight)
+            .text(categories[i][0]);
+    }
 
     arcs.append("path")
         .attr("fill", function(d, i) {
@@ -320,7 +349,9 @@ Pie.prototype.draw = function(divId)
         })
         .attr("d", arc)
         .on("mouseover", function(d, i) {
+            mouseover(categories[i][0]);
             this.setAttribute("fill", "orange");
+            d3.select(this).style("stroke", "black");
             svg.append("text")
                 .attr("id", "tooltip-text")
                 .attr("x", (centerX + arc.centroid(d)[0]))
@@ -332,7 +363,7 @@ Pie.prototype.draw = function(divId)
                 .style("pointer-events", "none")
                 .text( function(d) {
                     return Math.floor((data[i]/dataTotal)*10000)/100 + "%";
-            });
+                });
             svg.append("text")
                 .attr("id", "tooltip-text2")
                 .attr("x", (centerX + arc.centroid(d)[0]))
@@ -343,78 +374,112 @@ Pie.prototype.draw = function(divId)
                 .attr("font-weight", "bold")
                 .style("pointer-events", "none")
                 .text( function(d) {
-                    return Math.floor(data[i]*10000)/100;
-            });
+                    return Math.floor(data[i]*100)/100;
+                });
         })
         .on("mouseout", function(d, i) {
+            mouseout(categories[i][0]);
             this.setAttribute("fill", colors[i]);
+            d3.select(this).style("stroke", "none");
             d3.select("#tooltip-text").remove();
             d3.select("#tooltip-text2").remove();
         });
 
-    arcs.append("text")
-        .attr("transform", function(d) {
+        base.append("text")
+            .attr("class", "title")
+            .attr("text-anchor", "middle")
+            .attr("font-size", titleLabelHeight)
+            .attr("font-family", "sans-serif")
+            .attr("x", margin.left + width/2)
+            .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
+            .text(title); 
 
-            console.log("d: " + d);
-            console.log("d.toString(): " + d.toString());
+        function mouseover(labelName) {
+            console.log("HERE");
+            svg.selectAll("#legend-text")
+                .each(function() {
+                    console.log("labelName: " + labelName);
+                    console.log("this.getAttribute(text): " + this.getAttribute("text"));
+                    if (this.textContent == labelName) {
+                        d3.select(this).attr("font-weight", "bold");
+                    }
+                });
+        }
 
-            var thisX = centerX - (centerX - arc.centroid(d)[0]);
-            var thisY = centerY - (centerY - arc.centroid(d)[1]);
-            var hyp = Math.sqrt(Math.pow(thisX, 2) + Math.pow(thisY, 2));
-            var ratio = labelRadius/hyp;
-            var ratio2 = (labelRadius*0.75)/hyp;
-            var ratio3 = (labelRadius-5)/hyp;
+        function mouseout(labelName) {
+            console.log("HERE");
+            svg.selectAll("#legend-text")
+                .each(function() {
+                    console.log("labelName: " + labelName);
+                    console.log("this.getAttribute(text): " + this.getAttribute("text"));
+                    if (this.textContent == labelName) {
+                        d3.select(this).attr("font-weight", "normal");
+                    }
+                });
+        }
 
-            var newDx = thisX * ratio;
-            var newDy = thisY * ratio;
+    // arcs.append("text")
+    //     .attr("transform", function(d) {
 
-            console.log("arc.centroid(d)[0]: " + arc.centroid(d)[0]);
-            console.log("arc.centroid(d)[1]: " + arc.centroid(d)[1]);
+    //         console.log("d: " + d);
+    //         console.log("d.toString(): " + d.toString());
 
-            console.log("thisX: " + thisX);
-            console.log("thisY: " + thisY);
+    //         var thisX = centerX - (centerX - arc.centroid(d)[0]);
+    //         var thisY = centerY - (centerY - arc.centroid(d)[1]);
+    //         var hyp = Math.sqrt(Math.pow(thisX, 2) + Math.pow(thisY, 2));
+    //         var ratio = labelRadius/hyp;
+    //         var ratio2 = (labelRadius*0.75)/hyp;
+    //         var ratio3 = (labelRadius-5)/hyp;
 
-            console.log("ratio: " + ratio);
+    //         var newDx = thisX * ratio;
+    //         var newDy = thisY * ratio;
 
-            console.log("newDx: " + newDx);
-            console.log("newDy: " + newDy);
+    //         console.log("arc.centroid(d)[0]: " + arc.centroid(d)[0]);
+    //         console.log("arc.centroid(d)[1]: " + arc.centroid(d)[1]);
 
-            var lineStartX = thisX * ratio2;
-            var lineStartY = thisY * ratio2;
+    //         console.log("thisX: " + thisX);
+    //         console.log("thisY: " + thisY);
 
-            var lineEndX = thisX * ratio3;
-            var lineEndY = thisY * ratio3;
+    //         console.log("ratio: " + ratio);
 
-            console.log("lineStartX: " + lineStartX);
-            console.log("lineStartY: " + lineStartY);
-            console.log("lineEndX: " + lineEndX);
-            console.log("lineEndY: " + lineEndY);
+    //         console.log("newDx: " + newDx);
+    //         console.log("newDy: " + newDy);
 
-            var labelLineData = [[lineStartX,lineStartY],[lineEndX,lineEndY]];
+    //         var lineStartX = thisX * ratio2;
+    //         var lineStartY = thisY * ratio2;
+
+    //         var lineEndX = thisX * ratio3;
+    //         var lineEndY = thisY * ratio3;
+
+    //         console.log("lineStartX: " + lineStartX);
+    //         console.log("lineStartY: " + lineStartY);
+    //         console.log("lineEndX: " + lineEndX);
+    //         console.log("lineEndY: " + lineEndY);
+
+    //         var labelLineData = [[lineStartX,lineStartY],[lineEndX,lineEndY]];
     
-            arcs.append("path")
-                .attr("class", "label-line")
-                .attr("d", line(labelLineData));
+    //         arcs.append("path")
+    //             .attr("class", "label-line")
+    //             .attr("d", line(labelLineData));
 
-            return "translate(" + (newDx) + ", " + (newDy) + ")";
-        })
-        .attr("text-anchor", function(d) {
-            var centroidX = arc.centroid(d)[0];
-            if (centroidX >= 0) {
-                return "start";
-            } else if (Math.abs(centroidX) < outerRadius/10) {
-                return "middle";
-            }
-            return "end";
-        })
-        .attr("font-family", "sans-serif")
-        .attr("font-weight", "bold")
-        .style("pointer-events", "none")
-        .text(function(d, i) {
-            return categories[i][0];
-        });
+    //         return "translate(" + (newDx) + ", " + (newDy) + ")";
+    //     })
+    //     .attr("text-anchor", function(d) {
+    //         var centroidX = arc.centroid(d)[0];
+    //         if (centroidX >= 0) {
+    //             return "start";
+    //         } else if (Math.abs(centroidX) < outerRadius/10) {
+    //             return "middle";
+    //         }
+    //         return "end";
+    //     })
+    //     .attr("font-family", "sans-serif")
+    //     .attr("font-weight", "bold")
+    //     .style("pointer-events", "none")
+    //     .text(function(d, i) {
+    //         return categories[i][0];
+    //     });
 
-        console.log("Finished Drawing Pie Chart ---------------------------");
 }
 
 function Area(dataSet, width, height) 
@@ -1451,6 +1516,7 @@ function visualize(dataPackage, parentId) {
 function getVisualization(dataPackage,columnSet,type)
 {
     var height = 300;
+    var pieWidth = height*1.5;
     var width = 650;
     for(var i = 0; i < dataPackage.Visualizations.length; i++)
     {
@@ -1480,7 +1546,7 @@ function getVisualization(dataPackage,columnSet,type)
                     break; 
 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), height, height);
+                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), pieWidth, height);
                     break;
 
                 case "Bubble":
