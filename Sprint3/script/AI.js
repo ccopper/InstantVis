@@ -38,12 +38,11 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 			if (currentDataset.Data.ColumnType[i] == "String") {
 				anExcludeColumnWasFound = true;
 			}
-		} else {
-			for (var j = 0; j < excludeColumns.length; j++) {
-				if (i == excludeColumns[j]) { // i is an exclude column
-					anExcludeColumnWasFound = true;
-				} 
-			}
+		} 
+		for (var j = 0; j < excludeColumns.length; j++) {
+			if (i == excludeColumns[j]) { // i is an exclude column
+				anExcludeColumnWasFound = true;
+			} 
 		}
 		if (anExcludeColumnWasFound == false) { 
 			usableColumns.push(i);
