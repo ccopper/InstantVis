@@ -165,6 +165,19 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 					);
 			}
 
+			if (currentDataset.Data.Cols > 2) { // add the twoColumnOnly vis types
+				
+				for (var i = 0; i < twoColumnOnlyVisTypes; i++) {
+					visualizations.push(
+							{
+								"Type" : twoColumnOnlyVisTypes[i],
+								"DataColumns" : [selectedColumns[0], selectedColumns[1]],
+								"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
+							}
+						);
+				}
+			}
+
 		}
 
 		// add the selected visualizations array to the dataset, note that this could be an empty array
