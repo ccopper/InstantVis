@@ -8,7 +8,9 @@ TCIns =
 {
 	"isInit": false,
 	"AIObj": {},
-	"updCallBack": function() { console.log("CallBack Fired") }
+	"VisObj" : {},
+
+	"updCallBack": function() { console.log("CallBack Fired") }	
 };
 
 TSConfig =
@@ -27,7 +29,7 @@ function TableSorterInit()
 	TCIns.isInit = true;
 } 
  
-function populateTable(data)
+function populateTable(data, vis)
 {
 	if(!TCIns.isInit)
 	{
@@ -55,6 +57,9 @@ function populateTable(data)
 		$("#DTSelMat tr").append("<th><input type=\"radio\" /></th>");
 	}
  
+	$("#DTSelMat input[type=radio]").click(updateSelMat);
+ 
+ 
 	//Populate the body
 	for(var row in data.Data.Values)
 	{
@@ -74,6 +79,7 @@ function clearTable()
 {
 	$("#TitleLabels").empty();
 	$("#DTHead").empty();
+	$("#DTHeadEdit").empty();
 	$("#DTSelMat").empty();
 	$("#DTBody").empty();
 }
@@ -166,8 +172,10 @@ function saveTitle()
 	TCIns.updCallBack();
 }
 
-
-
-
-
+function updateSelMat(event)
+{
+	$(this).parentsUntil("tr").find("input nput[type=radio]").attr("checked", false);
+	
+	$(this).attr("checked", true);
+}
 
