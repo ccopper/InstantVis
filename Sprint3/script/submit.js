@@ -3,25 +3,17 @@ var tables = [];
 var currentTable = 0;
 //Global reference to table column sets. [[[1,2],[2,3]],[[4,5],[1,2]]]
 var tableColumnSets = [];
-//var for Draggable splitpane
-var isDrag = false;
-			
 
 $(document).ready(readyFunction);
 	
 
 function readyFunction()
 {
-	var urlParams = getURLParams()
- 	
- 	if(typeof urlParams["URL"] != "undefined")
- 	{
- 		 $("#urlTextbox").val(urlParams["URL"]);
- 		 submitForm();
-  	}
-
-
-
+	if(typeof d3 == "undefined")
+	{	
+		nonRecoverableError("<h3>Failed to load d3!<br>Try again later.</h3>"); 
+		return;
+	}
 	$("#submitButton").mousedown(function()
 	{
 		$(this).css("border-style", "ridge");
@@ -40,53 +32,8 @@ function readyFunction()
 			submitForm();
 		}
 	});
-	
-
-
-	//Handle Split Pane
-	$("#sPaneDiv").mousedown(function()
-	{
-		isDrag = true;
-	
-		$("#visWrapper").addClass("unselectable");
-				
-		$("#visWrapper").css("cursor", "ew-resize");
-		$("#visWrapper").mousemove(function ()
-		{
-			var gWidth = $("#visualizationContainer").width();
-			var margin = event.pageX - gWidth - 10;
-					
-			if(margin < 0)
-			{
-				$("#visualizationContainer").width(gWidth + margin)
-			} else
-			{
-				$("#visualizationContainer").width(event.pageX - 10)
-			}
-			$("#tableContainer").width($("#visWrapper").width() - event.pageX - 30);
-				
-		});
-				
-	});
-	$("#visWrapper").mouseup(function (event)
-	{
-		if(!isDrag)
-		{ return;}
-		$("#visWrapper").removeClass("unslectable");
-		$("#visWrapper").css("cursor", "auto");
-		isDrag = false;
-		$("#visWrapper").unbind("mousemove");
-
-	});
-	
-	
-	
-	
 	$("#tableSelectionBox").change(tableSelectHandler);
 }
-
-
-
 
 function tableSelectHandler(event)
 {
@@ -101,12 +48,9 @@ function tableSelectHandler(event)
 	console.log('Table Selected: '+ tableNumber);
 	//Load icons for table
 	var graphTypes = getGraphTypes(tableNumber);
-	graphTypes.unshift("Table");
 	loadVisTypeIcons(graphTypes);
 	//Load first visualization
-	visTypeClickHandler(tables[tableNumber].Visualizations[0].Type+'_icon');
-	
-	populateTable(tables[tableNumber]);
+	visTypeClickHandler(tables[0].Visualizations[0].Type+'_icon');
 }
 
 
@@ -195,7 +139,6 @@ function loadToolbox()
                      [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
  			}		
  		};
- 
  	var table2 = {		
  		"Visualizations":		
  			[{			
@@ -250,6 +193,8 @@ function loadToolbox()
 
 	//Load first visualization
 	tableSelectHandler(0);
+	//Select first table in selection box
+	$('#tableSelectionBox').val("0");
 }
 
 
@@ -362,6 +307,11 @@ function loadVisTypeIcons(visTypes)
 	}
 }
 
+function toggleDataTable()
+{
+	$("#tableContainer").toggle()
+	$("#sPaneDiv").toggle()
+}
 
 function getGraphTypes(tableNumber)
 {

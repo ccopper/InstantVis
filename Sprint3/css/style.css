@@ -74,6 +74,19 @@
 	cursor: pointer;
 }
 
+#optionIconContainer
+{
+	display: inline-block;
+	float: right;
+}
+
+#optionIconContainer img
+{
+	margin-top: 25px;
+	margin-right: 5px;
+	cursor: pointer;
+}
+
 #smallLogo
 {
 	margin: 5px;
