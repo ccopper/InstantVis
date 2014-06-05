@@ -70,17 +70,6 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 	}
 }
 
-var generateVisualizationBlock = function(visType, dataColumns, qualityScore) {
-	return (
-		{
-			"Type" : visType,
-			"DataColumns" : dataColumns,
-			"Score" : qualityScore
-		}
-	);
-}
-
-
 // find the best independent variable
 // return undefined if none was found
 var findIndependentVariable = function(currentDataset) {
@@ -159,10 +148,12 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			for (var i = 0; i < visTypes.length; i++) {
 
 				visualizations.push(
-						generateVisualizationBlock(visTypes[i], 
-						columnsToVisualize,
-						determineVisualizationScore(currentDataset, columnsToVisualize)
-					));
+						{
+							"Type" : visType[i],
+							"DataColumns" : columnsToVisualize,
+							"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
+						}
+					);
 			}
 
 		}
