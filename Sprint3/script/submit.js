@@ -90,6 +90,8 @@ function tableSelectHandler(event)
 	loadVisTypeIcons(graphTypes);
 	//Load first visualization
 	visTypeClickHandler(tables[0].Visualizations[0].Type+'_icon');
+	populateTable(tables[tableNumber]);
+
 }
 
 
