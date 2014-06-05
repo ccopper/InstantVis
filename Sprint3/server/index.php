@@ -45,10 +45,7 @@
 		$URL = $app->request->post('URL');
 
 		chdir(dirname(__FILE__));
-		
-		$CMD = "phantomjs phantomScripts/parseHTML.js " . base64_encode($URL);
-		
-		echo exec($CMD);
+		echo exec("phantomjs phantomScripts/parseHTML.js \"$URL\"");
 		
 	}	
 ?>
