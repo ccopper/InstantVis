@@ -26,7 +26,7 @@ var determineVisualizationScore = function(dataset, columnsToUse) {
 
 // find the leftmost most unique column that excludes any column numbers in the exclude array
 // if excludeStrings == true, do not select a string column
-// return undefined if no columns were found
+// return -1 if no columns were found
 var findNextBestAvailableColumn = function(currentDataset, excludeColumns, excludeStrings) {
 	var usableColumns = []; // columns that are not on the exclude list
 
@@ -64,14 +64,14 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 	});
 
 	if (usableColumns.length == 0) { // nothing was found
-		return undefined;
+		return -1;
 	} else {
 		return usableColumns[0];
 	}
 }
 
 // find the best independent variable
-// return undefined if none was found
+// return -1 if none was found
 var findIndependentVariable = function(currentDataset) {
 	var excludeList = [];
 	var excludeStrings = false;
@@ -121,8 +121,12 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			selectedColumns.push(firstDependentVariable);
 
 			// look for a second dependent variable
-			var secondDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
-			if (secondDependentVariable == undefined) {
+			var secondDependentVariable = -1;
+			if (currentDataset.Data.Cols > 2) {
+				var secondDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
+			}
+
+			if (secondDependentVariable == -1) {
 				haveOnlyTwoColumns = true;
 			} else {
 				haveOnlyTwoColumns = false;
