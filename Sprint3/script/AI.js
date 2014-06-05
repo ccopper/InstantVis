@@ -188,21 +188,24 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 }
  
-
+// give each dataset a score using this algorithm:
+// DataSetScore = (the sum of all column unique scores for the dataset) * (data set rows) * (data set cols)
 var rankDatasets = function(AIdataStructure) {
 	
 	for (var datasetIndex = 0; datasetIndex < AIdataStructure.length; datasetIndex++) {
+		
 		var currentDataset = AIdataStructure[datasetIndex];
-		var bestVisScoreFound = 0;
-		for (var visIndex = 0; visIndex < currentDataset.Visualizations.length; visIndex++) {
-			var currentVis = currentDataset.Visualizations[visIndex];
-			if (currentVis.Score > bestVisScoreFound) {
-				bestVisScoreFound = currentVis.Score;
-			}
+		var colUniqueSum = 0;
+
+		for (var col = 0; col < currentDataset.Data.Cols; col++) {
+			colUniqueSum = colUniqueSum + currentDataset.Data.ColumnUnique[col];
 		}
-		currentDataset.Data.DataSetScore = bestVisScoreFound;
+
+		currentDataset.Data.DataSetScore = colUniqueSum * currentDataset.Data.Cols * 
+			currentDataset.Data.Rows;
 	}
 }
+
 
 /**
  * Take raw parser data and return a data object to be used by the visualizer.
