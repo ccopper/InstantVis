@@ -113,6 +113,9 @@ function parseComplete(data)
 	{
 		$("#submissionNotification").text("No meaningful data found. Please try again.");
 		$("#urlTextbox").val("");
+		$("#form").fadeIn(0);
+		$("#loadingContent").hide();
+		$("#examples").show();
 		return;
 	}
 
