@@ -391,7 +391,7 @@ function submitForm(urlToParse)
 
 	$("#form").fadeOut(0);
 	$("#loadingContent").show();//style.display = "inline";
-
+	$("#examples").hide();
 
 	parseHTML(url, parseComplete);
 
