@@ -121,9 +121,10 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			selectedColumns.push(firstDependentVariable);
 
 			// look for a second dependent variable
-			var secondDependentVariable = -1;
+			var secondDependentVariable ;
 			if (currentDataset.Data.Cols > 2) {
 				secondDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
+				selectedColumns.push(secondDependentVariable);
 			}
 
 			if (secondDependentVariable == -1) {
