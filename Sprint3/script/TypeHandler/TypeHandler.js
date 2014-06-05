@@ -28,6 +28,12 @@ function TypeHandler() {}
 TypeHandler.prototype.processTable = function(table)
 {
 	table.Data.ColumnUnique = []
+	//Check for Caption
+	if(typeof table.Data.Caption == "undefined" || table.Data.Caption == "")
+	{
+		table.Data["Caption"] = "Unlabeled Table";
+	}
+	
 	//Check for labels
 	var hasLabels = true;
 	if(table.Data.ColumnLabel[0] == "")

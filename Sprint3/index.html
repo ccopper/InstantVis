@@ -3,7 +3,11 @@
 	<head>
 			<meta charset="utf-8">
 			<link rel="stylesheet" type="text/css" href="css/style.css">
+			
+			<link rel="stylesheet" type="text/css" href="script/DataTable/TableSorter.theme.css">
+			
 			<title>Instant Visualization</title>
+			
 			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" type="text/javascript"></script>
 			<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
@@ -12,7 +16,8 @@
 			<script src="script/AI.js" type="text/javascript"></script>
 			<script src="script/submit.js" type="text/javascript"></script>
 			<script src="script/TypeHandler/TypeHandler.js" type="text/javascript"></script>
-			<script src="script/date.js" type="text/javascript"></script>
+			<script src="script/DataTable/jquery.tablesorter.min.js"></script>
+			<script src="script/DataTable/TableController.js"></script>
 
 	</head>
 	<body>
@@ -68,10 +73,29 @@
 	 				</div>
  				</div>
 			</div>
-			<div id="visualizationContainer">
-			</div>
-			<div id="tableContainer">
-			</div>
+			<div id="visWrapper">				
+				<div id="visualizationContainer"></div>
+				<div id="sPaneDiv"></div>
+				<div id="tableContainer">
+					<table id="DataTable" class="tablesorter">
+						<caption id="DTCaption">
+							<span id="TitleLabelContainer">
+								<span id="TitleLabel"></span>
+								<span class="mButton" id="editTitle">EDIT</span>
+							</span>
+	
+							<span id="TitleEditor" style="display: none">
+								<input type="text" />
+								<span class="mButton" id="saveTitle">SAVE</span>
+							</span>				
+						</caption>
+						<thead id="DTHead"></thead>
+						<tbody id="DTHeadEdit" class="tablesorter-infoOnly"></tbody>
+						<tbody id="DTSelMat" class="tablesorter-infoOnly"></tbody>
+						<tbody id="DTBody"></tbody>
+					</table>
+				</div>
+			</div>	
 		</div>
 	</body>
 </html>
