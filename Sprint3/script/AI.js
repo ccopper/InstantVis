@@ -167,7 +167,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 			if (currentDataset.Data.Cols > 2) { // add the twoColumnOnly vis types
 				
-				for (var i = 0; i < twoColumnOnlyVisTypes; i++) {
+				for (var i = 0; i < twoColumnOnlyVisTypes.length; i++) {
 					visualizations.push(
 							{
 								"Type" : twoColumnOnlyVisTypes[i],
