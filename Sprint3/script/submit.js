@@ -350,8 +350,17 @@ function loadVisTypeIcons(visTypes)
 
 function toggleDataTable()
 {
-	$("#tableContainer").toggle()
-	$("#sPaneDiv").toggle()
+	if($("#tableContainer").is(":visible"))
+	{
+		$("#tableContainer").hide()
+		$("#sPaneDiv").hide()
+		$("#visualizationContainer").width(document.body.clientWidth);
+	}else{
+		$("#tableContainer").show();
+		$("#sPaneDiv").show()	
+		$("#visualizationContainer").width(document.body.clientWidth/2);
+	}
+	
 }
 
 function getGraphTypes(tableNumber)
