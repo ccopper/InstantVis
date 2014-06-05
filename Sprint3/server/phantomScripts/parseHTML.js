@@ -21,7 +21,9 @@ var webpage = require('webpage');
 var outputData = 
 {
      "Status": 0,      
-     "Data": []
+     "Data": [],
+	 "B64": "",
+	 "E64":""
 }
 /**
  *	Outputs the result to stdout and exits
@@ -45,7 +47,9 @@ if (system.args.length != 2)
 }
 
 //URL of page to parse
-var URL = system.args[1];
+var URL = atob(system.args[1]);
+outputData.E64 = system.args[1];
+outputData.B64 = URL;
 
 //Create a webpage
 var page = webpage.create();

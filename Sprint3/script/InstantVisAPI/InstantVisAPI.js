@@ -46,7 +46,7 @@ function parseHTML(URL, APICallback)
 	}	
 	
 	//Encode the URL properly to handle slashed and special chars
-	var cleanURI = encodeURI(URL);
+	var cleanURI = URL; //encodeURI(URL);
 	//Make an ajax request for the data
 	$.ajax({
 		type: 'POST',
