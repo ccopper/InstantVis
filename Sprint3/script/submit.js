@@ -12,6 +12,15 @@ $(document).ready(readyFunction);
 
 function readyFunction()
 {
+	var urlParams = getURLParams()
+ 	
+ 	if(typeof urlParams["URL"] != "undefined")
+ 	{
+ 		 $("#urlTextbox").val(urlParams["URL"]);
+ 		 submitForm();
+  	}
+
+
 
 	$("#submitButton").mousedown(function()
 	{
@@ -34,7 +43,7 @@ function readyFunction()
 	
 
 
-	//Han Split Pane
+	//Handle Split Pane
 	$("#sPaneDiv").mousedown(function()
 	{
 		isDrag = true;
