@@ -149,7 +149,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 				visualizations.push(
 						{
-							"Type" : visType[i],
+							"Type" : visTypes[i],
 							"DataColumns" : columnsToVisualize,
 							"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
 						}
