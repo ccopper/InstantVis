@@ -32,7 +32,7 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 
 	var anExcludeColumnWasFound;
 	
-	for (var i = 0; i < currentDataset.Cols; i++) {
+	for (var i = 0; i < currentDataset.Data.Cols; i++) {
 		anExcludeColumnWasFound = false;
 		if (excludeStrings == true) {
 			if (currentDataset.Data.ColumnType[i] == "String") {
