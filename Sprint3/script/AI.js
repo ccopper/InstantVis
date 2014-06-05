@@ -125,14 +125,14 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			
 			// select independent variable
 			var independentVariableColumn = findIndependentVariable(currentDataset);
-			excludeColumns.push(indepententVariableColumn);
+			selectedColumns.push(indepententVariableColumn);
 		
 			// select first dependent variable, exclude strings
-			var firstDependentVariable = findNextBestAvailableColumn(currentDataset, excludeColumns, true); 
-			excludeColumns.push(firstDependentVariable);
+			var firstDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
+			selectedColumns.push(firstDependentVariable);
 
 			// look for a second dependent variable
-			var secondDependentVariable = findNextBestAvailableColumn(currentDataset, excludeColumns, true); 
+			var secondDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
 			if (secondDependentVariable == undefined) {
 				haveOnlyTwoColumns = true;
 			} else {
