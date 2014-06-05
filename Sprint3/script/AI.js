@@ -125,7 +125,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			
 			// select independent variable
 			var independentVariableColumn = findIndependentVariable(currentDataset);
-			selectedColumns.push(indepententVariableColumn);
+			selectedColumns.push(independentVariableColumn);
 		
 			// select first dependent variable, exclude strings
 			var firstDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
