@@ -134,15 +134,22 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
 			var threeColumnVisTypes = twoOrThreeColumnVisTypes.concat(threeColumnOnlyVisTypes);
 
-			var columnsToVisualize;
-			var visTypes;
+			var columnsToVisualize = [];
+			var visTypes = [];
 
 			if (haveOnlyTwoColumns) { // request visualizations that only require two variables
-				columnsToVisualize = [selectedColumns[0], selectedColumns[1]];
-				visTypes = twoColumnVisTypes;
+				columnsToVisualize.push(selectedColumns[0]);
+				columnsToVisualize.push(selectedColumns[1]);
+				for (var i = 0; i < twoColumnVisTypes.length; i++) {
+					visTypes.push(twoColumnVisTypes[i]);
+				}
 			} else {
-				columnsToVisualize = selectedColumns;
-				visTypes = threeColumnVisTypes;
+				for (var i = 0; i < selectedColumns.length; i++) {
+					columnsToVisualize.push(selectedColumns[i]);
+				}
+				for (var i = 0; i < threeColumnVisTypes.length; i++) {
+					visTypes.push(threeColumnVisTypes[i]);
+				}
 			}
 
 			for (var i = 0; i < visTypes.length; i++) {
