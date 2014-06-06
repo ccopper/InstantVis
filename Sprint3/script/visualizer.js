@@ -194,9 +194,10 @@ Treemap.prototype.draw = function(divId)
         .text(title);  
 }
 
-function Bubble(dataSet, labels, width, height) {
+function Bubble(dataSet, labels, columnTypes, width, height) {
     this.dataSet = dataSet;
     this.labels = labels;
+    this.columnTypes = columnTypes;
     this.width = width;
     this.height = height;
 }
@@ -221,6 +222,9 @@ Bubble.prototype.draw = function(divId)
     var characterWidth = 6;
     var data = [];
     var dataPoints = [];
+
+    var minBubbleRadius = 5;
+    var maxBubbleRadius = 20;
 
     var xAxisLabelPaddingBottom = 2;
     var titleLabelHeight = margin.top/3;
@@ -248,18 +252,30 @@ Bubble.prototype.draw = function(divId)
         }
     }
     
-
-    console.log("MaxY: " + maxY);
-
     var numXAxisTicks = numValuesPerDataSet;
     var numYAxisTicks = height/15;
 
     var multiset = false;
     multiset = (numDataSets > 2) ? true : false;
 
-    var xScale = d3.scale.linear()
+    
+    var xValues = [];
+    if (this.columnTypes[0] != "String") {
+
+        var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([0, width]);
+
+    } else {
+
+        for (var i = 0; i < this.dataSet.length; i++) {
+            xValues.push(this.dataSet[i][0]);
+        }
+
+        var xScale = d3.scale.ordinal()
+                        .domain(xValues)
+                        .rangePoints([0,width]);
+    }             
 
     var yScale = d3.scale.linear()
                         .domain([0, maxY])
@@ -268,7 +284,7 @@ Bubble.prototype.draw = function(divId)
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[2]; })])
-                        .range([defaultRadius, 10]);
+                        .range([minBubbleRadius, maxBubbleRadius]);
 
     if (numValuesPerDataSet > 25) {
         numXAxisTicks = 25;
@@ -351,7 +367,10 @@ Bubble.prototype.draw = function(divId)
         .append("circle")
         .attr("cx", function(d) { return xScale(d[0]); })
         .attr("cy", function(d) { return yScale(d[1]); })
-        .attr("r", function(d) { return rScale(d[2]); })
+        .attr("r", function(d) { 
+            console.log("r: " + d[2]);
+            return rScale(d[2]); 
+        })
         .attr("fill", color)
         .on("mouseover", function(d) {
             this.setAttribute("fill", highlightColor);
@@ -1454,9 +1473,10 @@ Line.prototype.draw = function (divId) {
    
 };
 
-function Bar (dataSet, labels, width, height) {
+function Bar (dataSet, labels, columnTypes, width, height) {
 	this.dataSet = dataSet;
     this.labels = labels;
+    this.columnTypes = columnTypes;
 	this.width = width;
 	this.height = height;
 }
@@ -1469,11 +1489,14 @@ Bar.prototype.draw = function(divId) {
 	yValues = [];
 
 	numBars = this.dataSet.length;
+
+    console.log("(A) numBars: " + numBars);
+
 	for(var i = 0; i < numBars; i++) {
 		xValues[i] = this.dataSet[i][0];
 		yValues[i] = this.dataSet[i][1];		
 	}
-    numBars = d3.max(xValues);
+    
 
     console.log("xValues: " + xValues.toString());
     console.log("yValues: " + yValues.toString());
@@ -1506,6 +1529,12 @@ Bar.prototype.draw = function(divId) {
     console.log("condensedYValues: " + condensedYValues.toString());
 
 
+    // numBars = d3.max(xValues);
+    // numBars = d3.max(condensedXValues);
+    numBars = condensedXValues.length;
+
+    console.log("(B) numBars: " + numBars);
+
 	//Width and height
     var w = this.width;
     var h = this.height;
@@ -1531,12 +1560,39 @@ Bar.prototype.draw = function(divId) {
 
     var barWidth = (width / numBars) - barPadding;
 
+    console.log("(width / numBars) - barPadding: " +  "(" + width + "/" + numBars + ")" + " - " + barPadding);
+    console.log("barWidth: " + barWidth);
+
     var fillColor = randRGB(100, 200);
     var highlightColor = randRGB(100, 200);  
 
-    var xScale = d3.scale.linear()
+      
+
+
+
+
+
+    if (this.columnTypes[0] != "String") {
+
+        var xScale = d3.scale.linear()
                     .domain([0, d3.max(condensedXValues)])
-                    .range([0, width - barPadding - barWidth]);    
+                    .range([0, width - barPadding - barWidth]);
+
+    } else {
+
+        // for (var i = 0; i < this.dataSet.length; i++) {
+        //     xValues.push(this.dataSet[i][0]);
+        // }
+
+        var xScale = d3.scale.ordinal()
+                        .domain(condensedXValues)
+                        .rangePoints([0,width - barPadding - barWidth]);
+    }  
+
+
+
+
+
 
     var yScale = d3.scale.linear()
                     .domain([0, d3.max(condensedYValues)])
@@ -1729,7 +1785,7 @@ function getVisualization(dataPackage,type)
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), width, height);
+                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height);
                     break;
 
                 case "Scatter":
@@ -1749,7 +1805,7 @@ function getVisualization(dataPackage,type)
                     break;
 
                 case "Bubble":
-                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), width, height);
+                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height);
                     break;
 
                 default:
