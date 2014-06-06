@@ -1440,6 +1440,36 @@ Bar.prototype.draw = function(divId) {
 	}
     numBars = d3.max(xValues);
 
+    console.log("xValues: " + xValues.toString());
+    console.log("yValues: " + yValues.toString());
+
+    var condensedXValues = [];
+    var condensedYValues = [];
+    var currentYTotal = 0;
+    for (var i = 0; i < xValues.length; i++) {
+        // If this is a duplicate x-value:
+        if (condensedXValues.indexOf(xValues[i]) != -1) {
+            continue;
+        } 
+        currentYTotal = yValues[i];
+        for (var j = i + 1; j < xValues.length; j++) {
+            if (xValues[j] == xValues[i]) {
+                currentYTotal += yValues[j];
+            }
+        }
+        condensedXValues.push(xValues[i]);
+        condensedYValues.push(currentYTotal);
+    }
+
+    var condensedDataSet = [];
+
+    for (var i = 0; i < condensedXValues.length; i++) {
+        condensedDataSet.push([condensedXValues[i],condensedYValues[i]]);
+    }
+
+    console.log("condensedXValues: " + condensedXValues.toString());
+    console.log("condensedYValues: " + condensedYValues.toString());
+
 
 	//Width and height
     var w = this.width;
@@ -1467,14 +1497,14 @@ Bar.prototype.draw = function(divId) {
     var barWidth = (width / numBars) - barPadding;
 
     var fillColor = randRGB(100, 200);
-    var highlightColor = randRGB(100, 200);
+    var highlightColor = randRGB(100, 200);  
 
     var xScale = d3.scale.linear()
-                    .domain([0, d3.max(xValues)])
+                    .domain([0, d3.max(condensedXValues)])
                     .range([0, width - barPadding - barWidth]);    
 
     var yScale = d3.scale.linear()
-                    .domain([0, d3.max(yValues)])
+                    .domain([0, d3.max(condensedYValues)])
                     .range([height, 0]);
 
  	var xAxis = d3.svg.axis()
@@ -1505,7 +1535,7 @@ Bar.prototype.draw = function(divId) {
 
 	//Create bars
     svg.selectAll("rect")
-    	.data(this.dataSet)
+        .data(condensedDataSet)
         .enter()
         .append("rect")
         .attr("x", function(d) {

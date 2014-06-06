@@ -122,7 +122,6 @@ function parseComplete(data)
 	
 	tables = AI(data); // Call AI
 
-
 	numDataSets = tables.length;
 
 	if(numDataSets==0)
