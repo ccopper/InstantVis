@@ -9,7 +9,11 @@ TCIns =
 	"isInit": false,
 	"AIObj": {},
 	"VisObj" : {},
-
+	"titleCallBack": function()
+	{
+		populateTableSelect();
+	},
+	
 	"updCallBack": function() { console.log("CallBack Fired") }	
 };
 
@@ -169,7 +173,7 @@ function saveTitle()
 	
 	$("#TitleLabel").text(TCIns.AIObj.Data.Caption);
 	
-	TCIns.updCallBack();
+	TCIns.titleCallBack();
 }
 
 function updateSelMat(event)

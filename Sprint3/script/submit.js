@@ -11,11 +11,14 @@ $(document).ready(readyFunction);
 
 function readyFunction()
 {
-	if(typeof d3 == "undefined")
-	{	
-		nonRecoverableError("<h3>Failed to load d3!<br>Try again later.</h3>"); 
-		return;
-	}
+	var urlParams = getURLParams()
+ 	
+ 	if(typeof urlParams["URL"] != "undefined")
+ 	{
+ 		 $("#urlTextbox").val(urlParams["URL"]);
+ 		 submitForm();
+  	}
+
 	$("#submitButton").mousedown(function()
 	{
 		$(this).css("border-style", "ridge");
@@ -34,7 +37,8 @@ function readyFunction()
 			submitForm();
 		}
 	});
-	//Han Split Pane
+
+	//Handle Split Pane
 	$("#sPaneDiv").mousedown(function()
 	{
 		isDrag = true;
@@ -54,7 +58,7 @@ function readyFunction()
 			{
 				$("#visualizationContainer").width(event.pageX - 10)
 			}
-			$("#tableContainer").width($("#visWrapper").width() - event.pageX - 30);
+			$("#tableContainer").width($("#visWrapper").width() - event.pageX - 20);
 
 		});
 
@@ -69,10 +73,22 @@ function readyFunction()
 		$("#visWrapper").unbind("mousemove");
 
 	});
-
+	
+	$( window ).resize(resizeVisWrapper);
 
 	$("#tableSelectionBox").change(tableSelectHandler);
 }
+
+//Called to fix table and graph size
+function resizeVisWrapper()
+{
+	//Let the graph auto size
+	$("#visualizationContainer").width($("#visSCG").outerWidth());
+	//Fix table width
+	$("#tableContainer").width($("#visWrapper").width() - $("#sPaneDiv").outerWidth() - $("#visualizationContainer").outerWidth() - 25);
+
+}
+
 
 function tableSelectHandler(event)
 {
@@ -127,15 +143,22 @@ function parseComplete(data)
 	$("#loadingContent").slideUp();
 
 
-	for(var i=0; i<numDataSets; i++)
-	{
-		addTable(tables[i],i);
-	}
+	populateTableSelect();
 
 	//Load first visualization
 	tableSelectHandler(0);
 	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
+}
+function populateTableSelect()
+{
+	var sel = $('#tableSelectionBox').val();
+	$('#tableSelectionBox').empty();
+	for(var i in tables)
+	{
+		addTable(tables[i],i);
+	}
+	$('#tableSelectionBox').val(sel);
 }
 
 function loadToolbox()
@@ -256,6 +279,9 @@ function addTable(table,tableNumber)
 	if(tables[tableNumber].Data.Caption)
 	{
 		tableName = tables[tableNumber].Data.Caption;
+	}else
+	{
+		tables[tableNumber].Data.Caption = tableName;
 	}
 	$('#tableSelectionBox').append('<option value="'+tableNumber+'">'+tableName+'</option>');
 }
@@ -282,7 +308,7 @@ function visTypeClickHandler(event)
 
 	//Draw the visualization
 	var visType = iconId.replace('_icon','');
-	var visDivId = 'table_'+currentTable+'_visType_'+visType;
+/*	var visDivId = 'table_'+currentTable+'_visType_'+visType;
 
 	//Check if visualization already exists, if not make it.
 	if($('#'+visDivId).length)
@@ -312,7 +338,21 @@ function visTypeClickHandler(event)
 			$('#options').show();	
 		}
 		
-	}	
+	}
+	*/
+	$("#visSVG").empty();
+	var visualization = getVisualization(tables[currentTable],visType);
+	if(!visualization)
+	{
+		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
+	}else{
+		visualization.draw("visSVG");
+
+		$('#options').show();	
+	}
+	
+	//Since we have initilized a new graph resize the vis/table
+	resizeVisWrapper();
 }
 
 function loadVisTypeIcons(visTypes)
@@ -364,13 +404,14 @@ function toggleDataTable()
 	{
 		$("#tableContainer").hide()
 		$("#sPaneDiv").hide()
-		$("#visualizationContainer").width(document.body.clientWidth);
+		$("#visualizationContainer").width("100%");
 	}else{
 		$("#tableContainer").show();
 		$("#sPaneDiv").show()	
 		$("#visualizationContainer").width(document.body.clientWidth/2);
+		
 	}
-	
+	resizeVisWrapper();
 }
 
 function getGraphTypes(tableNumber)
