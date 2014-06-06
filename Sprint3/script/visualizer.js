@@ -678,9 +678,10 @@ Area.prototype.draw = function(divId)
 
 };
 
-function Scatter(dataSet, labels, width, height) {
+function Scatter(dataSet, labels, columnTypes, width, height) {
 	this.dataSet = dataSet;
     this.labels = labels;
+    this.columnTypes = columnTypes;
 	this.width = width;
 	this.height = height;
 }
@@ -736,12 +737,29 @@ Scatter.prototype.draw = function(divId)
     var numXAxisTicks = numValuesPerDataSet;
     var numYAxisTicks = height/15;
 
+    var xValues = [];
+
     var multiset = false;
     multiset = (numDataSets > 2) ? true : false;
 
-    var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([0, width]);
+    if (this.columnTypes[0] != "String") {
+
+        var xScale = d3.scale.linear()
+                        .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                        .range([0, width]);
+
+    } else {
+
+        for (var i = 0; i < this.dataSet.length; i++) {
+            xValues.push(this.dataSet[i][0]);
+        }
+
+        var xScale = d3.scale.ordinal()
+                        .domain(xValues)
+                        .rangePoints([0,width]);
+    }
+
+    console.log("||||| xValues: " + xValues);
 
     var yScale = d3.scale.linear()
                         .domain([0, maxY])
@@ -1010,9 +1028,10 @@ Scatter.prototype.draw = function(divId)
  *  @param Boolean showPoints       Whether or not points should be displayed on the lines.
  *
  */
-function Line(dataSet, labels, width, height, showPoints) {
+function Line(dataSet, labels, columnTypes, width, height, showPoints) {
 	this.dataSet = dataSet;
     this.labels = labels;
+    this.columnTypes = columnTypes;
 	this.width = width;
 	this.height = height;
     this.showPoints = showPoints; // Boolean (show points?)
@@ -1074,10 +1093,26 @@ Line.prototype.draw = function (divId) {
     var multiline = false;
     multiline = (numDataSets > 2) ? true : false;
 
-    var xScale = d3.scale.linear()
+    
+
+
+    if (this.columnTypes[0] != "String") {
+
+        var xScale = d3.scale.linear()
                  .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([0, width])
                  .clamp(true);
+
+    } else {
+
+        for (var i = 0; i < this.dataSet.length; i++) {
+            xValues.push(this.dataSet[i][0]);
+        }
+
+        var xScale = d3.scale.ordinal()
+                        .domain(xValues)
+                        .rangePoints([0,width]);
+    }                 
 
     var yScale = d3.scale.linear()
                         .domain([0, maxY])
@@ -1680,6 +1715,7 @@ function getVisualization(dataPackage,type)
     {
         var visType = dataPackage.Visualizations[i].Type;
         var columnSet = dataPackage.Visualizations[i].DataColumns;
+        var columnTypes = dataPackage.Data.ColumnType;
         var values = dataPackage.Data.Values;
         var labels = dataPackage.Data.ColumnLabel;
         console.log('Checking ' + visType + ' == ' + type + ' -> ' + (visType==type));
@@ -1689,7 +1725,7 @@ function getVisualization(dataPackage,type)
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
             switch(type) {
                 case "Line":
-                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), width, height, true);
+                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height, true);
                     break;
 
                 case "Bar":
@@ -1697,7 +1733,7 @@ function getVisualization(dataPackage,type)
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), width, height);
+                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height);
                     break;  
 
                 case "Area":
@@ -1763,6 +1799,15 @@ function getLabels(columns, labels)
         labelSet.push(labels[i]);
     }
     return labelSet;
+}
+
+function getColumnTypes(columns, types)
+{
+    var typeSet = [];
+    for (var i = 0; i < columns.length; i++) {
+        typeSet.push(types[i]);
+    }
+    return typeSet;
 }
 
 /**
