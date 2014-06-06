@@ -8,12 +8,11 @@ TCIns =
 {
 	"isInit": false,
 	"AIObj": {},
-	"VisObj" : {},
 	"titleCallBack": function()
 	{
 		populateTableSelect();
 	},
-	
+	"VisID": -1,
 	"updCallBack": function() { console.log("CallBack Fired") }	
 };
 
@@ -52,16 +51,20 @@ function populateTable(data, vis)
 	//Populate the header and
 	$("#DTHead").append("<tr />");
 	$("#DTHeadEdit").append("<tr />");
-	$("#DTSelMat").append("<tr /><tr /><tr />");
+	$("#DTSelMatInd").append("<tr />");
+	$("#DTSelMatD1").append("<tr /><");
+	$("#DTSelMatD2").append("<tr /><");
 	for(var hItem in data.Data.ColumnLabel)
 	{
 		$("#DTHead tr").append(createHeaderLabel(hItem));
 		$("#DTHeadEdit tr").append(createHeaderEditor(hItem));
 		
-		$("#DTSelMat tr").append("<th><input type=\"radio\" /></th>");
+		$("#DTSelMatInd tr").append("<th><input type=\"radio\" name=\"Ind\" value=\"" + hItem +"\" /></th>");
+		$("#DTSelMatD1 tr").append("<th><input type=\"radio\" name=\"D1\" value=\"" + hItem +"\" /></th>");
+		$("#DTSelMatD2 tr").append("<th><input type=\"radio\" name=\"D2\" value=\"" + hItem +"\" /></th>");
 	}
  
-	$("#DTSelMat input[type=radio]").click(updateSelMat);
+	$("#DataTable input[type=radio]").click(updateSelMat);
  
  
 	//Populate the body
@@ -79,12 +82,40 @@ function populateTable(data, vis)
 	
 }
 
+function updateTableVis(visType)
+{
+	$("#DTSelMatInd").hide();
+	$("#DTSelMatD1").hide();
+	$("#DTSelMatD2").hide();
+	
+	$("input:radio[name=Ind]").val("undefined");
+	
+	console.log(visType)
+	
+	switch(visType)
+	{
+		case "Bar":
+	
+		break;
+		
+		case "Line":
+		case "Scatter":
+		
+		break
+		default:
+		
+		
+	}
+}
+
 function clearTable()
 {
 	$("#TitleLabels").empty();
 	$("#DTHead").empty();
 	$("#DTHeadEdit").empty();
-	$("#DTSelMat").empty();
+	$("#DTSelMatInd").empty();
+	$("#DTSelMatD1").empty();
+	$("#DTSelMatD2").empty();
 	$("#DTBody").empty();
 }
 
@@ -178,8 +209,6 @@ function saveTitle()
 
 function updateSelMat(event)
 {
-	$(this).parentsUntil("tr").find("input nput[type=radio]").attr("checked", false);
-	
-	$(this).attr("checked", true);
-}
 
+
+}

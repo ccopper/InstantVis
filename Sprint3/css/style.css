@@ -172,17 +172,15 @@
 	font-weight: bold;
 	background-color:rgba(0,0,0,0);
 }
-#DTSelMat
+.DTSelMat
 {
 	padding: 0px;
 	text-align: center;
 	vertical-align: middle;
 }
-#DTSelMat th
-{
-	padding: 0px;
-}
-
+#DTSelMatInd th{	padding: 0px;}
+#DTSelMatD1 th{	padding: 0px;}
+#DTSelMatD2 th{	padding: 0px;}
 
 
 .visualization

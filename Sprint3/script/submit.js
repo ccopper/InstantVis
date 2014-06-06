@@ -350,6 +350,7 @@ function visTypeClickHandler(event)
 		$('#options').show();	
 	}
 	
+	updateTableVis(visType);
 	//Since we have initilized a new graph resize the vis/table
 	resizeVisWrapper();
 }
