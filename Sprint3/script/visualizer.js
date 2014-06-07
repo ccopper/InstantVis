@@ -68,6 +68,11 @@ Treemap.prototype.draw = function(divId)
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
+    var toggle = [];
+    for (var i = 0; i < categories.length; i++) {
+        toggle.push(false);
+    }
+
     var rects = [];
     var currentWidth = width;
     var currentHeight = height;
@@ -121,14 +126,56 @@ Treemap.prototype.draw = function(divId)
         .attr("width", function(d) { return d[2]; })
         .attr("x", function(d) { return d[3]; })
         .attr("y", function(d) { return d[4]; })
-        .on("mouseover", function(d) {
+        .on("mouseover", function(d, i) {
             var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
             var newY = parseFloat(this.getAttribute("y")) + parseFloat(this.getAttribute("height"))/2 + highlightTextHeight/2;
             d3.select(this)
                 .attr("fill", "orange")
                 .style("stroke", "black")
+            if (!toggle[i]) {
+                svg.append("text")
+                    .attr("id", ("treemap-text-tooltip2-" + i))
+                    .attr("x", newX)
+                    .attr("y", newY - highlightTextHeight)
+                    .attr("text-anchor", "middle")
+                    .attr("text-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .style("pointer-events", "none")
+                    .text( function() {
+                        return Math.floor((d[6]/dataTotal)*10000)/100 + "%";
+                    });
+                svg.append("text")
+                    .attr("id", ("treemap-text-tooltip3-" + i))
+                    .attr("x", newX)
+                    .attr("y", newY + highlightTextHeight)
+                    .attr("text-anchor", "middle")
+                    .attr("text-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .style("pointer-events", "none")
+                    .text( function() {
+                        return Math.floor(d[6]*100)/100;
+                    });
+            }
+        })
+        .on("click", function(d, i) {
+            d3.selectAll(("#treemap-text-tooltip2-" + i)).remove();
+            d3.selectAll(("#treemap-text-tooltip3-" + i)).remove();
+
+            toggle[i] = !toggle[i];
+
+            if (!toggle[i]) {
+                d3.selectAll(("#treemap-text-tooltip2-" + i)).remove();
+                d3.selectAll(("#treemap-text-tooltip3-" + i)).remove();                
+                return;
+            }
+
+            var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
+            var newY = parseFloat(this.getAttribute("y")) + parseFloat(this.getAttribute("height"))/2 + highlightTextHeight/2;
+            
             svg.append("text")
-                .attr("id", "treemap-text-tooltip2")
+                .attr("id", ("treemap-text-tooltip2-" + i))
                 .attr("x", newX)
                 .attr("y", newY - highlightTextHeight)
                 .attr("text-anchor", "middle")
@@ -140,7 +187,7 @@ Treemap.prototype.draw = function(divId)
                     return Math.floor((d[6]/dataTotal)*10000)/100 + "%";
                 });
             svg.append("text")
-                .attr("id", "treemap-text-tooltip3")
+                .attr("id", ("treemap-text-tooltip3-" + i))
                 .attr("x", newX)
                 .attr("y", newY + highlightTextHeight)
                 .attr("text-anchor", "middle")
@@ -152,12 +199,14 @@ Treemap.prototype.draw = function(divId)
                     return Math.floor(d[6]*100)/100;
                 });
         })
-        .on("mouseout", function(d) {
-            d3.select(this)
-                .attr("fill", d[0])
-                .style("stroke", "none")
-            d3.selectAll("#treemap-text-tooltip2").remove();
-            d3.selectAll("#treemap-text-tooltip3").remove();
+        .on("mouseout", function(d, i) {
+            d3.select(this).attr("fill", d[0])
+            if (!toggle[i]) {
+                d3.select(this)
+                    .style("stroke", "none")
+                d3.selectAll(("#treemap-text-tooltip2-" + i)).remove();
+                d3.selectAll(("#treemap-text-tooltip3-" + i)).remove();
+            }
         });
 
     svg.selectAll("rect")
