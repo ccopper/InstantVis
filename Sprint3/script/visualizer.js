@@ -594,6 +594,11 @@ Pie.prototype.draw = function(divId)
     var legendTextHeight = legendIconHeight;
     var legendTextPadding = 5;
 
+    var toggle = [];
+    for (var i = 0; i < categories.length; i++) {
+        toggle.push(false);
+    }
+
     var iconX = outerRadius*2 + midWidth;
     for (var i = 0; i < data.length; i++) {
         var iconY = i*(legendIconHeight+legendIconPadding);
@@ -605,7 +610,7 @@ Pie.prototype.draw = function(divId)
             .attr("fill", colors[i])
             .style("stroke", "black");
         svg.append("text")
-            .attr("id", "legend-text")
+            .attr("id", ("legend-text-" + i))
             .attr("x", iconX + legendIconWidth + legendTextPadding)
             .attr("y", iconY)
             .attr("dx", 0)
@@ -621,11 +626,53 @@ Pie.prototype.draw = function(divId)
         })
         .attr("d", arc)
         .on("mouseover", function(d, i) {
-            mouseover(categories[i][0]);
+            if (!toggle[i]) {
+                mouseover(categories[i][0], i);
+                this.setAttribute("fill", "orange");
+                d3.select(this).style("stroke", "black");
+                svg.append("text")
+                    .attr("id", ("tooltip-text-" + i))
+                    .attr("x", (centerX + arc.centroid(d)[0]))
+                    .attr("y", (centerY + arc.centroid(d)[1]) + highlightTextHeight/2)
+                    .attr("text-anchor", "middle")
+                    .attr("text-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .style("pointer-events", "none")
+                    .text( function(d) {
+                        return Math.floor((data[i]/dataTotal)*10000)/100 + "%";
+                    });
+                svg.append("text")
+                    .attr("id", ("tooltip-text2-" + i))
+                    .attr("x", (centerX + arc.centroid(d)[0]))
+                    .attr("y", (centerY + arc.centroid(d)[1]) - highlightTextHeight/2)
+                    .attr("text-anchor", "middle")
+                    .attr("text-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .style("pointer-events", "none")
+                    .text( function(d) {
+                        return Math.floor(data[i]*100)/100;
+                    });
+            }
+        })
+        .on("click", function(d, i) {
+            d3.select(("#tooltip-text-" + i)).remove();
+            d3.select(("#tooltip-text2-" + i)).remove();
+
+            toggle[i] = !toggle[i];
+
+            if (!toggle[i]) {
+                d3.select(("#tooltip-text-" + i)).remove();
+                d3.select(("#tooltip-text2-" + i)).remove();
+                return;
+            }
+
+            mouseover(categories[i][0], i);
             this.setAttribute("fill", "orange");
             d3.select(this).style("stroke", "black");
             svg.append("text")
-                .attr("id", "tooltip-text")
+                .attr("id", ("tooltip-text-" + i))
                 .attr("x", (centerX + arc.centroid(d)[0]))
                 .attr("y", (centerY + arc.centroid(d)[1]) + highlightTextHeight/2)
                 .attr("text-anchor", "middle")
@@ -637,7 +684,7 @@ Pie.prototype.draw = function(divId)
                     return Math.floor((data[i]/dataTotal)*10000)/100 + "%";
                 });
             svg.append("text")
-                .attr("id", "tooltip-text2")
+                .attr("id", ("tooltip-text2-" + i))
                 .attr("x", (centerX + arc.centroid(d)[0]))
                 .attr("y", (centerY + arc.centroid(d)[1]) - highlightTextHeight/2)
                 .attr("text-anchor", "middle")
@@ -648,13 +695,16 @@ Pie.prototype.draw = function(divId)
                 .text( function(d) {
                     return Math.floor(data[i]*100)/100;
                 });
+
         })
         .on("mouseout", function(d, i) {
-            mouseout(categories[i][0]);
+            mouseout(categories[i][0], i);
             this.setAttribute("fill", colors[i]);
-            d3.select(this).style("stroke", "none");
-            d3.select("#tooltip-text").remove();
-            d3.select("#tooltip-text2").remove();
+            if (!toggle[i]) {
+                d3.select(this).style("stroke", "none");
+                d3.select(("#tooltip-text-" + i)).remove();
+                d3.select(("#tooltip-text2-" + i)).remove();
+            }
         });
 
         base.append("text")
@@ -666,22 +716,26 @@ Pie.prototype.draw = function(divId)
             .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
             .text(title); 
 
-        function mouseover(labelName) {
-            svg.selectAll("#legend-text")
-                .each(function() {
-                    if (this.textContent == labelName) {
-                        d3.select(this).attr("font-weight", "bold");
-                    }
-                });
+        function mouseover(labelName, i) {
+            if (!toggle[i]) {
+                svg.selectAll(("#legend-text-" + i))
+                    .each(function() {
+                        if (this.textContent == labelName) {
+                            d3.select(this).attr("font-weight", "bold");
+                        }
+                    });
+            }
         }
 
-        function mouseout(labelName) {
-            svg.selectAll("#legend-text")
-                .each(function() {
-                    if (this.textContent == labelName) {
-                        d3.select(this).attr("font-weight", "normal");
-                    }
-                });
+        function mouseout(labelName, i) {
+            if (!toggle[i]) {
+                svg.selectAll(("#legend-text-" + i))
+                    .each(function() {
+                        if (this.textContent == labelName) {
+                            d3.select(this).attr("font-weight", "normal");
+                        }
+                    });
+            }
         }
 }
 
