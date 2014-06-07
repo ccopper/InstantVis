@@ -1015,6 +1015,15 @@ Scatter.prototype.draw = function(divId)
         .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
         .text(title);    
 
+
+    var toggle = [];
+    for (var i = 0; i < numValuesPerDataSet; i++) {
+        toggle.push(false);
+        if (multiset) {
+            toggle.push(false);
+        }
+    }
+
     //for (var k = 1; k < numDataSets; k++) {
     data = getData([0,1],this.dataSet);
 
@@ -1037,69 +1046,143 @@ Scatter.prototype.draw = function(divId)
         .attr("r", defaultRadius)
         .attr("fill", color)
         .on("mouseover", function(d, i) {
-            var x = xScale(d[0]);
-            var y = yScale(d[1]);
-            var col = colorSet[0];
-            var highlightText = d[0] + ", " + d[1];
-            var xRect = x + 2*highlightRadius;
-            var yRect = y - highlightRectHeight/2;
-            var xText = xRect + highlightTextPadding;
-            var yText = yRect + highlightTextHeight;
-            var lineData = [[x+highlightRadius,y],[x+2*highlightRadius,y]]; 
-            
-            highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
-            if (xRect + highlightRectWidth > width) {
-                lineData = [[x-2*highlightRadius, y],[x-highlightRadius, y]];
-                xRect = x - 2*highlightRadius - highlightRectWidth;
-                xText = xRect + highlightTextPadding;
+            if(!toggle[i]) {
+                var x = xScale(d[0]);
+                var y = yScale(d[1]);
+                var col = colorSet[0];
+                var highlightText = d[0] + ", " + d[1];
+                var xRect = x + 2*highlightRadius;
+                var yRect = y - highlightRectHeight/2;
+                var xText = xRect + highlightTextPadding;
+                var yText = yRect + highlightTextHeight;
+                var lineData = [[x+highlightRadius,y],[x+2*highlightRadius,y]]; 
+                
+                highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
+                if (xRect + highlightRectWidth > width) {
+                    lineData = [[x-2*highlightRadius, y],[x-highlightRadius, y]];
+                    xRect = x - 2*highlightRadius - highlightRectWidth;
+                    xText = xRect + highlightTextPadding;
+                }
+
+                console.log("appending circle-highlight...");
+                svg.append("circle")
+                    .attr("id", ("circle-highlight" + 1 + "-" + i))
+                    .attr("cx", x)
+                    .attr("cy", y)
+                    .attr("fill", "none")
+                    .style("stroke", col)
+                    .attr("r", highlightRadius);
+
+                console.log("appending tooltip-rect...");
+                svg.append("rect")
+                    .attr("id", ("tooltip-rect" + 1 + "-" + i))
+                    .attr("x", xRect)
+                    .attr("y", yRect)
+                    .attr("fill", highlightRectFillColor)
+                    .style("stroke", col)
+                    .attr("width", highlightRectWidth)
+                    .attr("height", highlightRectHeight);
+
+                console.log("appending tooltip-text...");
+                svg.append("text")
+                    .attr("id", ("tooltip-text" + 1 + "-" + i))
+                    .attr("x", xText)
+                    .attr("y", yText)
+                    .style("pointer-events", "none")
+                    .attr("text-anchor", "start")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .attr("fill", "black")
+                    .text(highlightText);
+
+                console.log("appending tooltip-line...");
+                svg.append("path")
+                    .attr("id", ("tooltip-line" + 1 + "-" + i))
+                    .style("stroke", col)
+                    .attr("d", line(lineData))
             }
-
-            console.log("appending circle-highlight...");
-            svg.append("circle")
-                .attr("id", ("circle-highlight" + 1 + "-" + i))
-                .attr("cx", x)
-                .attr("cy", y)
-                .attr("fill", "none")
-                .style("stroke", col)
-                .attr("r", highlightRadius);
-
-            console.log("appending tooltip-rect...");
-            svg.append("rect")
-                .attr("id", ("tooltip-rect" + 1 + "-" + i))
-                .attr("x", xRect)
-                .attr("y", yRect)
-                .attr("fill", highlightRectFillColor)
-                .style("stroke", col)
-                .attr("width", highlightRectWidth)
-                .attr("height", highlightRectHeight);
-
-            console.log("appending tooltip-text...");
-            svg.append("text")
-                .attr("id", ("tooltip-text" + 1 + "-" + i))
-                .attr("x", xText)
-                .attr("y", yText)
-                .style("pointer-events", "none")
-                .attr("text-anchor", "start")
-                .attr("font-family", "sans-serif")
-                .attr("font-size", highlightTextHeight)
-                .attr("font-weight", "bold")
-                .attr("fill", "black")
-                .text(highlightText);
-
-            console.log("appending tooltip-line...");
-            svg.append("path")
-                .attr("id", ("tooltip-line" + 1 + "-" + i))
-                .style("stroke", col)
-                .attr("d", line(lineData))
         })
-        .on("mouseout", function(d, i) {
-        // If the popup should not persist, remove it.
-        //if (!toggle[i]) {
+        .on("click", function(d, i) {
             d3.select(("#circle-highlight" + 1 + "-" + i)).remove();
             d3.select(("#tooltip-rect" + 1 + "-" + i)).remove();  
             d3.select(("#tooltip-text" + 1 + "-" + i)).remove();
             d3.select(("#tooltip-line" + 1 + "-" + i)).remove();  
-        //}
+
+            toggle[i] = !toggle[i];
+
+            // If the popup already existed, remove if immediately and return.
+            if (!toggle[i]) {
+                d3.select(("#circle-highlight" + 1 + "-" + i)).remove();
+                d3.select(("#tooltip-rect" + 1 + "-" + i)).remove();  
+                d3.select(("#tooltip-text" + 1 + "-" + i)).remove();
+                d3.select(("#tooltip-line" + 1 + "-" + i)).remove(); 
+                return;
+            }
+
+                var x = xScale(d[0]);
+                var y = yScale(d[1]);
+                var col = colorSet[0];
+                var highlightText = d[0] + ", " + d[1];
+                var xRect = x + 2*highlightRadius;
+                var yRect = y - highlightRectHeight/2;
+                var xText = xRect + highlightTextPadding;
+                var yText = yRect + highlightTextHeight;
+                var lineData = [[x+highlightRadius,y],[x+2*highlightRadius,y]]; 
+                
+                highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
+                if (xRect + highlightRectWidth > width) {
+                    lineData = [[x-2*highlightRadius, y],[x-highlightRadius, y]];
+                    xRect = x - 2*highlightRadius - highlightRectWidth;
+                    xText = xRect + highlightTextPadding;
+                }
+
+                console.log("appending circle-highlight...");
+                svg.append("circle")
+                    .attr("id", ("circle-highlight" + 1 + "-" + i))
+                    .attr("cx", x)
+                    .attr("cy", y)
+                    .attr("fill", "none")
+                    .style("stroke", col)
+                    .attr("r", highlightRadius);
+
+                console.log("appending tooltip-rect...");
+                svg.append("rect")
+                    .attr("id", ("tooltip-rect" + 1 + "-" + i))
+                    .attr("x", xRect)
+                    .attr("y", yRect)
+                    .attr("fill", highlightRectFillColor)
+                    .style("stroke", col)
+                    .attr("width", highlightRectWidth)
+                    .attr("height", highlightRectHeight);
+
+                console.log("appending tooltip-text...");
+                svg.append("text")
+                    .attr("id", ("tooltip-text" + 1 + "-" + i))
+                    .attr("x", xText)
+                    .attr("y", yText)
+                    .style("pointer-events", "none")
+                    .attr("text-anchor", "start")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .attr("fill", "black")
+                    .text(highlightText);
+
+                console.log("appending tooltip-line...");
+                svg.append("path")
+                    .attr("id", ("tooltip-line" + 1 + "-" + i))
+                    .style("stroke", col)
+                    .attr("d", line(lineData))
+        })
+        .on("mouseout", function(d, i) {
+        // If the popup should not persist, remove it.
+        if (!toggle[i]) {
+            d3.select(("#circle-highlight" + 1 + "-" + i)).remove();
+            d3.select(("#tooltip-rect" + 1 + "-" + i)).remove();  
+            d3.select(("#tooltip-text" + 1 + "-" + i)).remove();
+            d3.select(("#tooltip-line" + 1 + "-" + i)).remove();  
+        }
     });            
 
     if (multiset) {
@@ -1123,6 +1206,81 @@ Scatter.prototype.draw = function(divId)
             .attr("r", defaultRadius)
             .attr("fill", color2)
             .on("mouseover", function(d, i) {
+                if(!toggle[numValuesPerDataSet + i]) {
+                    var x2 = xScale(d[0]);
+                    var y2 = yScale2(d[1]);
+                    var col2 = colorSet[1];
+                    var highlightText2 = d[0] + ", " + d[1];
+                    var xRect2 = x2 + 2*highlightRadius;
+                    var yRect2 = y2 - highlightRectHeight/2;
+                    var xText2 = xRect2 + highlightTextPadding;
+                    var yText2 = yRect2 + highlightTextHeight;
+                    var lineData2 = [[x2+highlightRadius,y2],[x2+2*highlightRadius,y2]]; 
+                    
+                    highlightRectWidth2 = (2*highlightTextPadding) + (characterWidth*highlightText2.length);
+                    if (xRect2 + highlightRectWidth2 > width) {
+                        lineData2 = [[x2-2*highlightRadius, y2],[x2-highlightRadius, y2]];
+                        xRect2 = x2 - 2*highlightRadius - highlightRectWidth2;
+                        xText2 = xRect2 + highlightTextPadding;
+                    }
+
+                    console.log("appending circle-highlight...");
+                    svg.append("circle")
+                        .attr("id", ("circle-highlight" + 2 + "-" + i))
+                        .attr("cx", x2)
+                        .attr("cy", y2)
+                        .attr("fill", "none")
+                        .style("stroke", col2)
+                        .attr("r", highlightRadius);
+
+                    console.log("appending tooltip-rect...");
+                    svg.append("rect")
+                        .attr("id", ("tooltip-rect" + 2 + "-" + i))
+                        .attr("x", xRect2)
+                        .attr("y", yRect2)
+                        .attr("fill", highlightRectFillColor)
+                        .style("stroke", col2)
+                        .attr("width", highlightRectWidth2)
+                        .attr("height", highlightRectHeight);
+
+                    console.log("appending tooltip-text...");
+                    svg.append("text")
+                        .attr("id", ("tooltip-text" + 2 + "-" + i))
+                        .attr("x", xText2)
+                        .attr("y", yText2)
+                        .style("pointer-events", "none")
+                        .attr("text-anchor", "start")
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", highlightTextHeight)
+                        .attr("font-weight", "bold")
+                        .attr("fill", "black")
+                        .text(highlightText2);
+
+                    console.log("appending tooltip-line...");
+                    svg.append("path")
+                        .attr("id", ("tooltip-line" + 2 + "-" + i))
+                        .style("stroke", col2)
+                        .attr("d", line(lineData2));
+                }
+            })
+            .on("click", function(d, i) {
+
+                d3.select(("#circle-highlight" + 2 + "-" + i)).remove();
+                d3.select(("#tooltip-rect" + 2 + "-" + i)).remove();  
+                d3.select(("#tooltip-text" + 2 + "-" + i)).remove();
+                d3.select(("#tooltip-line" + 2 + "-" + i)).remove();  
+
+                toggle[numValuesPerDataSet + i] = !toggle[numValuesPerDataSet + i];
+
+                // If the popup already existed, remove if immediately and return.
+                if (!toggle[numValuesPerDataSet + i]) {
+                    d3.select(("#circle-highlight" + 2 + "-" + i)).remove();
+                    d3.select(("#tooltip-rect" + 2 + "-" + i)).remove();  
+                    d3.select(("#tooltip-text" + 2 + "-" + i)).remove();
+                    d3.select(("#tooltip-line" + 2 + "-" + i)).remove(); 
+                    return;
+                }
+
                 var x2 = xScale(d[0]);
                 var y2 = yScale2(d[1]);
                 var col2 = colorSet[1];
@@ -1176,17 +1334,17 @@ Scatter.prototype.draw = function(divId)
                 svg.append("path")
                     .attr("id", ("tooltip-line" + 2 + "-" + i))
                     .style("stroke", col2)
-                    .attr("d", line(lineData2))
+                    .attr("d", line(lineData2));
             })
             .on("mouseout", function(d, i) {
             // If the popup should not persist, remove it.
-            //if (!toggle[i]) {
+            if (!toggle[numValuesPerDataSet + i]) {
                 console.log("mouseout2");
                 d3.select(("#circle-highlight" + 2 + "-" + i)).remove();
                 d3.select(("#tooltip-rect" + 2 + "-" + i)).remove();  
                 d3.select(("#tooltip-text" + 2 + "-" + i)).remove();
                 d3.select(("#tooltip-line" + 2 + "-" + i)).remove();  
-            //}
+            }
         });   
     }
 
