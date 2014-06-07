@@ -708,7 +708,7 @@ function Scatter(dataSet, labels, columnTypes, width, height) {
 Scatter.prototype.draw = function(divId) 
 {
 
-    var margin = {top: 50, right: 55, bottom: 40, left: 55};
+    var margin = {top: 50, right: 65, bottom: 40, left: 65};
 
     var w = this.width;
     var h = this.height;
@@ -724,6 +724,8 @@ Scatter.prototype.draw = function(divId)
     var characterWidth = 6;
     var data = [];
     var dataPoints = [];
+    var colorIconHeight = 10;
+    var colorIconWidth = 10;
 
     var xAxisLabelPaddingBottom = 2;
     var titleLabelHeight = margin.top/3;
@@ -768,9 +770,9 @@ Scatter.prototype.draw = function(divId)
 
     var title;
     if (!multiset) {
-        title = this.labels[0] + " vs. " + this.labels[1];
+        title = this.labels[1] + " vs. " + this.labels[0];
     } else {
-        title = this.labels[0] + " vs. " + this.labels[1] + " and " + this.labels[2];
+        title = this.labels[1] + " and " + this.labels[2] + " vs. " + this.labels[0];
         var yAxisLabel2 = this.labels[2];
     }
 
@@ -957,7 +959,7 @@ Scatter.prototype.draw = function(divId)
             .attr("x", (w - yAxisLabelPaddingRight - axisLabelHeight))
             .attr("transform", "rotate(90, " + (w - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
             .text(yAxisLabel2);
-        }
+    }
 
     base.append("text")
         .attr("class", "title")
@@ -1159,6 +1161,26 @@ Scatter.prototype.draw = function(divId)
                 .attr("d", line(lineData))    
     }
 
+    if (multiset) {
+        base.append("rect")
+            .attr("id", "colorIcon1")
+            .attr("x", (margin.left/2 - colorIconWidth/2))
+            .attr("y", (margin.top + (height - colorIconHeight)))
+            .attr("height", colorIconHeight)
+            .attr("width", colorIconWidth)
+            .style("stroke", "black")
+            .style("fill", colors[0]);  
+
+        base.append("rect")
+            .attr("id", "colorIcon2")
+            .attr("x", (w - (margin.right/2 - colorIconWidth/2)))
+            .attr("y", (margin.top + (height - colorIconHeight)))
+            .attr("height", colorIconHeight)
+            .attr("width", colorIconWidth)
+            .style("stroke", "black")
+            .style("fill", colors[1]);
+    }
+
     svg.append("rect")
         .attr("x", -defaultRadius)
         .attr("y", -defaultRadius)
@@ -1199,7 +1221,7 @@ function Line(dataSet, labels, columnTypes, width, height, showPoints) {
 
 Line.prototype.draw = function (divId) {
 
-    var margin = {top: 50, right: 40, bottom: 40, left: 55};
+    var margin = {top: 50, right: 65, bottom: 40, left: 65};
 
     var w = this.width;
     var h = this.height;
@@ -1223,11 +1245,15 @@ Line.prototype.draw = function (divId) {
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
+    var yAxisLabelPaddingRight = 2;
     var axisLabelHeight = 15;
+    var colorIconWidth = 10;
+    var colorIconHeight = 10;
 
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
-    var title = yAxisLabel + " vs. " + xAxisLabel;
+    var yAxisLabel2 = this.labels[2];
+    
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
@@ -1239,13 +1265,15 @@ Line.prototype.draw = function (divId) {
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
-    for (var i = 1; i < numDataSets; i++) {
-        for (var j = 0; j < numValues; j++) {
-            if (this.dataSet[j][i] > maxY) {
-                maxY = this.dataSet[j][i];
+    for (var i = 1; i < numValues; i++) {
+        //for (var j = 0; j < numValues; j++) {
+            if (this.dataSet[i][1] > maxY) {
+                maxY = this.dataSet[i][1];
             }
-        }
+        //}
     }
+
+
 
     var numXAxisTicks = numValues;
     var numYAxisTicks = height/15;
@@ -1253,8 +1281,22 @@ Line.prototype.draw = function (divId) {
     var multiline = false;
     multiline = (numDataSets > 2) ? true : false;
 
+    if (multiline) {
+        var maxY2 = 0;
+        for (var i = 1; i < numValues; i++) {
+           // for (var j = 0; j < numValues; j++) {
+                if (this.dataSet[i][2] > maxY2) {
+                    maxY2 = this.dataSet[i][2];
+                }
+            //}
+        }
+    }
     
-
+    if (multiline) {
+        var title = this.labels[1] + " and " + this.labels[2] + " vs. " + this.labels[0];
+    } else {
+        var title = this.labels[1] + " vs. " + this.labels[0];
+    }
 
     if (this.columnTypes[0] != "String") {
 
@@ -1279,6 +1321,13 @@ Line.prototype.draw = function (divId) {
                         .range([height, 0])
                         .clamp(true);
 
+    if (multiline) {
+        var yScale2 = d3.scale.linear()
+                        .domain([0, maxY2])
+                        .range([height, 0])
+                        .clamp(true);
+    }
+
     if (numValues > 25) {
         numXAxisTicks = 25;
     }
@@ -1293,9 +1342,20 @@ Line.prototype.draw = function (divId) {
                     .orient("left")
                     .ticks(numYAxisTicks);
 
+    if (multiline) {
+        var yAxis2 = d3.svg.axis()
+                    .scale(yScale2)
+                    .orient("right")
+                    .ticks(numYAxisTicks);
+    }
+
     var line = d3.svg.line()
             .x(function(d) { return xScale(d[0]); })
-            .y(function(d) { return yScale(d[1]); }); 
+            .y(function(d) { return yScale(d[1]); });
+
+    var line2 = d3.svg.line()
+            .x(function(d) { return xScale(d[0]); })
+            .y(function(d) { return yScale2(d[1]); }); 
 
     var unscaledLine = d3.svg.line()
             .x(function(d) { return d[0]; })
@@ -1422,8 +1482,24 @@ Line.prototype.draw = function (divId) {
     // Display the y-axis. 
     svg.append("g")
         .attr("height", height)
-        .attr("class", "y-axis")
-        .call(yAxis); 
+        .attr({
+            class: "y-axis",
+            id: "y-axis-line-1",                
+            })
+        .call(yAxis);
+
+    if (multiline) {
+        // Display the y-axis.        
+        svg.append("g")
+            .attr("height", height)
+            .attr({
+                class: "y-axis",
+                id: "y-axis-line-2",                
+                transform: "translate(" + width + ",0)"
+                })
+            .call(yAxis2);
+
+    }   
 
     base.append("text")
         .attr("class", "x-label")
@@ -1436,6 +1512,7 @@ Line.prototype.draw = function (divId) {
 
     base.append("text")
         .attr("class", "y-label")
+        .attr("id", "y-label-line-2")
         .attr("text-anchor", "middle")
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "sans-serif")
@@ -1443,6 +1520,20 @@ Line.prototype.draw = function (divId) {
         .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
         .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
         .text(yAxisLabel);
+
+    if (multiline) {
+        base.append("text")
+            .attr("class", "y-label2")
+            .attr("id", "y-label-line-2")
+            .attr("text-anchor", "middle")
+            .attr("font-size", axisLabelHeight)
+            .attr("font-family", "sans-serif")
+            .attr("font-weight", "normal")
+            .attr("y", h/2)
+            .attr("x", (w - yAxisLabelPaddingRight - axisLabelHeight))
+            .attr("transform", "rotate(90, " + (w - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
+            .text(yAxisLabel2);
+    }        
 
     base.append("text")
         .attr("class", "title")
@@ -1455,6 +1546,17 @@ Line.prototype.draw = function (divId) {
 
     for (var i = 1; i < numDataSets; i++) {
         data = getData([0,i],this.dataSet);
+        dataScaled = [];
+
+        for (var x = 0; x < data.length; x++) {
+            dataScaledX = xScale(data[x][0]);
+            if (i == 1) {
+                dataScaledY = yScale(data[x][1]);
+            } else {
+                dataScaledY = yScale2(data[x][1]);
+            }
+            dataScaled.push([dataScaledX, dataScaledY]);
+        }
 
         if (numDataSets <= 2) {
             colors[i-1] = "black";
@@ -1467,13 +1569,23 @@ Line.prototype.draw = function (divId) {
         svg.append("path")
             .attr("class", "line")
             .attr("style", "stroke: " + colors[i-1])
-            .attr("d", line(data));
+            .attr("d", function() {
+                if (i == 1) {
+                    return line(data);
+                } else {
+                    return line2(data);
+                }
+            });
 
         // If instructed, display the data points.
         if (this.showPoints) {            
             for (var j = 0; j < numValues; j++) {
-                pointX = xScale(data[j][0]);
-                pointY = yScale(data[j][1]);
+                pointX = dataScaled[j][0];
+                // if (i == 1) {
+                pointY = dataScaled[j][1];
+                // } else {
+                    // pointY = yScale2(data[j][1]);
+                // }
 
                 // If this x-value has not been seen before, add it to the list of x-values.
                 if (xValues.indexOf(pointX) == -1) {
@@ -1531,6 +1643,26 @@ Line.prototype.draw = function (divId) {
 
             }
         }
+    }
+
+    if (multiline) {
+        base.append("rect")
+            .attr("id", "colorIcon1")
+            .attr("x", (margin.left/2 - colorIconWidth/2))
+            .attr("y", (margin.top + (height - colorIconHeight)))
+            .attr("height", colorIconHeight)
+            .attr("width", colorIconWidth)
+            .style("stroke", "black")
+            .style("fill", colors[0]);  
+
+        base.append("rect")
+            .attr("id", "colorIcon2")
+            .attr("x", (w - (margin.right/2 - colorIconWidth/2)))
+            .attr("y", (margin.top + (height - colorIconHeight)))
+            .attr("height", colorIconHeight)
+            .attr("width", colorIconWidth)
+            .style("stroke", "black")
+            .style("fill", colors[1]);
     }
 
     // Sort first by data point's x position, they by y position.
