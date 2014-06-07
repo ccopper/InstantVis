@@ -753,12 +753,13 @@ Area.prototype.draw = function(divId)
 
 };
 
+
 function Scatter(dataSet, labels, columnTypes, width, height) {
-	this.dataSet = dataSet;
+    this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
-	this.width = width;
-	this.height = height;
+    this.width = width;
+    this.height = height;
 }
 
 Scatter.prototype.draw = function(divId) 
@@ -777,9 +778,10 @@ Scatter.prototype.draw = function(divId)
     var highlightTextPadding = 2;
     var highlightRectFillColor = "rgb(225,225,225)";
     var highlightRectHeight = highlightTextHeight + highlightTextPadding * 2;
-    var highlightRectWidth;
+    var highlightRectWidth, highlightRectWidth2;
     var characterWidth = 6;
     var data = [];
+    var data2 = [];
     var dataPoints = [];
     var colorIconHeight = 10;
     var colorIconWidth = 10;
@@ -804,18 +806,17 @@ Scatter.prototype.draw = function(divId)
     var numDataSets = this.dataSet[0].length;
     var numValuesPerDataSet = this.dataSet.length;
 
+    console.log("numDataSets: " + numDataSets);
+
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
     for (var i = 0; i < numValuesPerDataSet; i++) {
-            yValues.push(this.dataSet[i][1]);
-        //for (var j = 0; j < numValuesPerDataSet; j++) {
-            if (this.dataSet[i][1] > maxY) {
-                maxY = this.dataSet[i][1];
-            }
-        //}
+        yValues.push(this.dataSet[i][1]);
+        if (this.dataSet[i][1] > maxY) {
+            maxY = this.dataSet[i][1];
+        }
     }
 
-    
 
     var numXAxisTicks = numValuesPerDataSet;
     var numYAxisTicks = height/15;
@@ -838,16 +839,13 @@ Scatter.prototype.draw = function(divId)
         var maxY2 = 0;
         for (var i = 0; i < numValuesPerDataSet; i++) {
             yValues2.push(this.dataSet[i][2]);
-            //for (var j = 0; j < numValuesPerDataSet; j++) {
-                if (this.dataSet[i][2] > maxY2) {
-                    maxY2 = this.dataSet[i][2];
-                }
-            //}
+            if (this.dataSet[i][2] > maxY2) {
+                maxY2 = this.dataSet[i][2];
+            }
         }
     }
 
     if (this.columnTypes[0] != "String") {
-
         var xScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                         .range([0, width]);
@@ -855,9 +853,7 @@ Scatter.prototype.draw = function(divId)
         var reverseXScale = d3.scale.linear()
                         .domain([0, width])
                         .range([0, d3.max(this.dataSet, function(d) { return d[0]; })]);
-
     } else {
-
         for (var i = 0; i < this.dataSet.length; i++) {
             xValues.push(this.dataSet[i][0]);
         }
@@ -926,7 +922,9 @@ Scatter.prototype.draw = function(divId)
     for (var i = 0; i < numValuesPerDataSet; i++) {
         xValuesScaled.push(xScale(this.dataSet[i][0]));
         yValuesScaled.push(yScale(this.dataSet[i][1]));
-        yValues2Scaled.push(yScale2(this.dataSet[i][2]));
+        if (multiset) {
+            yValues2Scaled.push(yScale2(this.dataSet[i][2]));
+        }
     }
 
     var base = d3.select("#" + divId)
@@ -1017,183 +1015,181 @@ Scatter.prototype.draw = function(divId)
         .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
         .text(title);    
 
-    function mousemove() {
-        var mouseX = d3.mouse(this)[0];
-        var mouseY = d3.mouse(this)[1];
+    //for (var k = 1; k < numDataSets; k++) {
+    data = getData([0,1],this.dataSet);
 
-        var pointHighlighted = false;
+    console.log("data: " + data.toString());
 
-        for (var k = 0; k < dataPoints.length; k++) {
-            var thisPointX = dataPoints[k][0][0];
-            var thisPointY = dataPoints[k][0][1];
-            var thisRectX = dataPoints[k][1][0];
-            var thisRectY = dataPoints[k][1][1];
-            var thisTextX = dataPoints[k][2][0];
-            var thisTextY = dataPoints[k][2][1];
-            var thisLineData = dataPoints[k][3];
+    
+    var color = colorSet[0];
+
+    svg.selectAll(("circle.set" + 1))
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("class", ("data-point-set" + 1))
+        .attr("cx", function(d, i) {
+            return xScale(d[0])
+        })
+        .attr("cy", function(d, i) {
+            return yScale(d[1]);
+        })
+        .attr("r", defaultRadius)
+        .attr("fill", color)
+        .on("mouseover", function(d, i) {
+            var x = xScale(d[0]);
+            var y = yScale(d[1]);
+            var col = colorSet[0];
+            var highlightText = d[0] + ", " + d[1];
+            var xRect = x + 2*highlightRadius;
+            var yRect = y - highlightRectHeight/2;
+            var xText = xRect + highlightTextPadding;
+            var yText = yRect + highlightTextHeight;
+            var lineData = [[x+highlightRadius,y],[x+2*highlightRadius,y]]; 
             
-            if (mouseX < thisPointX + defaultRadius && mouseX > thisPointX - defaultRadius &&
-                mouseY > thisPointY - defaultRadius && mouseY < thisPointY + defaultRadius) {
-                pointHighlighted = true;
-
-                // if (yValues2Scaled.indexOf(thisPointY) != -1 &&
-                //     xValuesScaled.indexOf(thisPointX) == yValues2Scaled.indexOf(thisPointY) ) {
-                //     d3.select("#y-label-scatter-2").style("font-weight", "bold");
-                //     // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
-                // } else if (yValuesScaled.indexOf(thisPointY) != -1 &&
-                //     xValuesScaled.indexOf(thisPointX) == yValuesScaled.indexOf(thisPointY)) {
-                //     d3.select("#y-label-scatter-1").style("font-weight", "bold");
-                //     // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
-                // } 
-
-                // else if (yValues2.indexOf(thisPointY) != -1) {
-                //     console.log("there");
-                //     d3.select("#y-label-scatter-1").style("font-weight", "bold");
-                //     // d3.select("#y-label-scatter-2").setAttribute("font-weight", "bold");
-                //     // d3.select("#y-axis-scatter-2").setAttribute("stroke", colors[1]);
-                // }
-
-                svg.selectAll(".circle-highlight")
-                    .moveToFront()
-                    .attr("display", function() {
-                        if (this.getAttribute("cx") == thisPointX && this.getAttribute("cy") == thisPointY) {
-                            return null;
-                        }
-                        return "none"
-                    });
-                svg.selectAll(".tooltip-rect")
-                    .moveToFront()
-                    .attr("display", function() {
-                        if (this.getAttribute("x") == thisRectX && this.getAttribute("y") == thisRectY) {
-                            return null;
-                        }
-                        return "none"
-                    });
-                svg.selectAll(".tooltip-text")
-                    .moveToFront()
-                    .attr("display", function() {
-                        if (this.getAttribute("x") == thisTextX && this.getAttribute("y") == thisTextY) {
-                            return null;
-                        }
-                        return "none"
-                    });
-                svg.selectAll(".tooltip-line")
-                    .moveToFront()
-                    .attr("display", function() {
-                        if (this.getAttribute("d") == line(thisLineData)) {
-                            return null;
-                        }
-                        return "none"
-                    });
-            }
-        } 
-
-        if (!pointHighlighted) {
-            svg.selectAll(".circle-highlight").attr("display", "none");
-            svg.selectAll(".tooltip-text").attr("display", "none");
-            svg.selectAll(".tooltip-rect").attr("display", "none");
-            svg.selectAll(".tooltip-line").attr("display", "none");
-        }
-    }
-
-    for (var i = 1; i < numDataSets; i++) {
-        data = getData([0,i],this.dataSet);
-
-        if (!multiset) {
-            colors[i-1] = "black";
-        }
-        else {
-            colors[i-1] = randRGB(50,200);
-        }
-
-        for (var j = 0; j < numValuesPerDataSet; j++) {
-            pointX = xScale(data[j][0]);
-            if (i == 1) {
-                pointY = yScale(data[j][1]);
-            } else {
-                pointY = yScale2(data[j][1]);
-            }
-            var dataX = data[j][0];
-            var dataY = data[j][1];
-            var highlightText = dataX + ", " + dataY;
-            var xRectPosition = pointX + 2*highlightRadius;
-            var yRectPosition = pointY - highlightRectHeight/2;
-            var xTextPosition = xRectPosition + highlightTextPadding;
-            var yTextPosition = yRectPosition  + highlightTextHeight;
-            var highlightLineData = [[pointX+highlightRadius,pointY],[pointX+2*highlightRadius,pointY]]; 
-            var color = colorSet[i-1];//= colors[i-1];
             highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
-            if (xRectPosition + highlightRectWidth > width) {
-                highlightLineData = [[pointX-2*highlightRadius, pointY],[pointX-highlightRadius, pointY]];
-                xRectPosition = pointX - 2*highlightRadius - highlightRectWidth;
-                xTextPosition = xRectPosition + highlightTextPadding;
+            if (xRect + highlightRectWidth > width) {
+                lineData = [[x-2*highlightRadius, y],[x-highlightRadius, y]];
+                xRect = x - 2*highlightRadius - highlightRectWidth;
+                xText = xRect + highlightTextPadding;
             }
 
-            dataPoints.push([[pointX, pointY], [xRectPosition, yRectPosition], [xTextPosition, yTextPosition], highlightLineData, highlightText, color]); 
-        }
-    }
-
-    for (var k = 0; k < dataPoints.length; k++) {
-        var x = dataPoints[k][0][0];
-        var y = dataPoints[k][0][1];
-        var xRect = dataPoints[k][1][0];
-        var yRect = dataPoints[k][1][1];
-        var xText = dataPoints[k][2][0];
-        var yText = dataPoints[k][2][1];
-        var lineData = dataPoints[k][3];
-        var text = dataPoints[k][4];
-        var col = dataPoints[k][5];
-        var highlightRectW = (2*highlightTextPadding) + (characterWidth*text.length);
-
-
-        // Draw the scatter plot points.
-        svg.append("circle")
-            .attr("class", "data-point")
-            .attr({
-                cx: x,
-                cy: y,
-                r: defaultRadius,
-                fill: col
-            });
-
-        svg.append("circle")
-                .attr("class", "circle-highlight")
+            console.log("appending circle-highlight...");
+            svg.append("circle")
+                .attr("id", ("circle-highlight" + 1 + "-" + i))
                 .attr("cx", x)
                 .attr("cy", y)
                 .attr("fill", "none")
                 .style("stroke", col)
-                .attr("display", "none")
                 .attr("r", highlightRadius);
 
+            console.log("appending tooltip-rect...");
             svg.append("rect")
-                .attr("class", "tooltip-rect")
+                .attr("id", ("tooltip-rect" + 1 + "-" + i))
                 .attr("x", xRect)
                 .attr("y", yRect)
                 .attr("fill", highlightRectFillColor)
                 .style("stroke", col)
-                .attr("display", "none")
-                .attr("width", highlightRectW)
+                .attr("width", highlightRectWidth)
                 .attr("height", highlightRectHeight);
 
+            console.log("appending tooltip-text...");
             svg.append("text")
-                .attr("class", "tooltip-text")
+                .attr("id", ("tooltip-text" + 1 + "-" + i))
                 .attr("x", xText)
                 .attr("y", yText)
                 .style("pointer-events", "none")
-                .attr("display", "none")
                 .attr("text-anchor", "start")
                 .attr("font-family", "sans-serif")
                 .attr("font-size", highlightTextHeight)
                 .attr("font-weight", "bold")
                 .attr("fill", "black")
-                .text(text);
+                .text(highlightText);
 
+            console.log("appending tooltip-line...");
             svg.append("path")
-                .attr("class", "tooltip-line")
+                .attr("id", ("tooltip-line" + 1 + "-" + i))
                 .style("stroke", col)
-                .attr("display", "none")
-                .attr("d", line(lineData))    
+                .attr("d", line(lineData))
+        })
+        .on("mouseout", function(d, i) {
+        // If the popup should not persist, remove it.
+        //if (!toggle[i]) {
+            d3.select(("#circle-highlight" + 1 + "-" + i)).remove();
+            d3.select(("#tooltip-rect" + 1 + "-" + i)).remove();  
+            d3.select(("#tooltip-text" + 1 + "-" + i)).remove();
+            d3.select(("#tooltip-line" + 1 + "-" + i)).remove();  
+        //}
+    });            
+
+    if (multiset) {
+        data2 = getData([0,2],this.dataSet);
+
+        console.log("data2: " + data2.toString());
+
+        var color2 = colorSet[1];
+
+        svg.selectAll(("circle.set" + 2))
+            .data(data2)
+            .enter()
+            .append("circle")
+            .attr("class", ("data-point-set" + 2))
+            .attr("cx", function(d, i) {
+                return xScale(d[0])
+            })
+            .attr("cy", function(d, i) {
+                return yScale2(d[1]);
+            })
+            .attr("r", defaultRadius)
+            .attr("fill", color2)
+            .on("mouseover", function(d, i) {
+                var x2 = xScale(d[0]);
+                var y2 = yScale2(d[1]);
+                var col2 = colorSet[1];
+                var highlightText2 = d[0] + ", " + d[1];
+                var xRect2 = x2 + 2*highlightRadius;
+                var yRect2 = y2 - highlightRectHeight/2;
+                var xText2 = xRect2 + highlightTextPadding;
+                var yText2 = yRect2 + highlightTextHeight;
+                var lineData2 = [[x2+highlightRadius,y2],[x2+2*highlightRadius,y2]]; 
+                
+                highlightRectWidth2 = (2*highlightTextPadding) + (characterWidth*highlightText2.length);
+                if (xRect2 + highlightRectWidth2 > width) {
+                    lineData2 = [[x2-2*highlightRadius, y2],[x2-highlightRadius, y2]];
+                    xRect2 = x2 - 2*highlightRadius - highlightRectWidth2;
+                    xText2 = xRect2 + highlightTextPadding;
+                }
+
+                console.log("appending circle-highlight...");
+                svg.append("circle")
+                    .attr("id", ("circle-highlight" + 2 + "-" + i))
+                    .attr("cx", x2)
+                    .attr("cy", y2)
+                    .attr("fill", "none")
+                    .style("stroke", col2)
+                    .attr("r", highlightRadius);
+
+                console.log("appending tooltip-rect...");
+                svg.append("rect")
+                    .attr("id", ("tooltip-rect" + 2 + "-" + i))
+                    .attr("x", xRect2)
+                    .attr("y", yRect2)
+                    .attr("fill", highlightRectFillColor)
+                    .style("stroke", col2)
+                    .attr("width", highlightRectWidth2)
+                    .attr("height", highlightRectHeight);
+
+                console.log("appending tooltip-text...");
+                svg.append("text")
+                    .attr("id", ("tooltip-text" + 2 + "-" + i))
+                    .attr("x", xText2)
+                    .attr("y", yText2)
+                    .style("pointer-events", "none")
+                    .attr("text-anchor", "start")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .attr("fill", "black")
+                    .text(highlightText2);
+
+                console.log("appending tooltip-line...");
+                svg.append("path")
+                    .attr("id", ("tooltip-line" + 2 + "-" + i))
+                    .style("stroke", col2)
+                    .attr("d", line(lineData2))
+            })
+            .on("mouseout", function(d, i) {
+            // If the popup should not persist, remove it.
+            //if (!toggle[i]) {
+                console.log("mouseout2");
+                d3.select(("#circle-highlight" + 2 + "-" + i)).remove();
+                d3.select(("#tooltip-rect" + 2 + "-" + i)).remove();  
+                d3.select(("#tooltip-text" + 2 + "-" + i)).remove();
+                d3.select(("#tooltip-line" + 2 + "-" + i)).remove();  
+            //}
+        });   
     }
+
 
     if (multiset) {
         base.append("rect")
@@ -1214,23 +1210,6 @@ Scatter.prototype.draw = function(divId)
             .style("stroke", "black")
             .style("fill", colorSet[1]);
     }
-
-    svg.append("rect")
-        .attr("x", -defaultRadius)
-        .attr("y", -defaultRadius)
-        .attr("class", "overlay")
-        .attr("width", width+2*defaultRadius)
-        .attr("height", height+2*defaultRadius)
-        .on("mouseout", function() {
-            // Clear the graph area.
-            svg.selectAll(".circle-highlight").attr("display", "none");
-            svg.selectAll(".tooltip-text").attr("display", "none");
-            svg.selectAll(".tooltip-rect").attr("display", "none");
-            svg.selectAll(".tooltip-line").attr("display", "none");
-        })
-        .on("mousemove", mousemove);
-
-
 }
 
 
