@@ -708,14 +708,14 @@ function Scatter(dataSet, labels, columnTypes, width, height) {
 Scatter.prototype.draw = function(divId) 
 {
 
-    var margin = {top: 50, right: 40, bottom: 40, left: 55};
+    var margin = {top: 50, right: 55, bottom: 40, left: 55};
 
     var w = this.width;
     var h = this.height;
     var padding = 20;
     var colors = [];
-    var highlightRadius = 6;
-    var defaultRadius = 3;
+    var highlightRadius = 8;
+    var defaultRadius = 4;
     var highlightTextHeight = 12;
     var highlightTextPadding = 2;
     var highlightRectFillColor = "rgb(225,225,225)";
@@ -729,11 +729,13 @@ Scatter.prototype.draw = function(divId)
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
+    var yAxisLabelPaddingRight = 2;
     var axisLabelHeight = 15;
 
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
-    var title = yAxisLabel + " vs. " + xAxisLabel;
+
+    var yValues = [];
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
@@ -745,13 +747,16 @@ Scatter.prototype.draw = function(divId)
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
-    for (var i = 1; i < numDataSets; i++) {
-        for (var j = 0; j < numValuesPerDataSet; j++) {
-            if (this.dataSet[j][i] > maxY) {
-                maxY = this.dataSet[j][i];
+    for (var i = 0; i < numValuesPerDataSet; i++) {
+            yValues.push(this.dataSet[i][1]);
+        //for (var j = 0; j < numValuesPerDataSet; j++) {
+            if (this.dataSet[i][1] > maxY) {
+                maxY = this.dataSet[i][1];
             }
-        }
+        //}
     }
+
+    
 
     var numXAxisTicks = numValuesPerDataSet;
     var numYAxisTicks = height/15;
@@ -761,11 +766,36 @@ Scatter.prototype.draw = function(divId)
     var multiset = false;
     multiset = (numDataSets > 2) ? true : false;
 
+    var title;
+    if (!multiset) {
+        title = this.labels[0] + " vs. " + this.labels[1];
+    } else {
+        title = this.labels[0] + " vs. " + this.labels[1] + " and " + this.labels[2];
+        var yAxisLabel2 = this.labels[2];
+    }
+
+    if (multiset) {
+        var yValues2 = [];
+        var maxY2 = 0;
+        for (var i = 0; i < numValuesPerDataSet; i++) {
+            yValues2.push(this.dataSet[i][2]);
+            //for (var j = 0; j < numValuesPerDataSet; j++) {
+                if (this.dataSet[i][2] > maxY2) {
+                    maxY2 = this.dataSet[i][2];
+                }
+            //}
+        }
+    }
+
     if (this.columnTypes[0] != "String") {
 
         var xScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
                         .range([0, width]);
+
+        var reverseXScale = d3.scale.linear()
+                        .domain([0, width])
+                        .range([0, d3.max(this.dataSet, function(d) { return d[0]; })]);
 
     } else {
 
@@ -776,6 +806,10 @@ Scatter.prototype.draw = function(divId)
         var xScale = d3.scale.ordinal()
                         .domain(xValues)
                         .rangePoints([0,width]);
+
+        var reverseXScale = d3.scale.ordinal()
+                        .domain([0,width])
+                        .rangePoints(xValues);
     }
 
     console.log("||||| xValues: " + xValues);
@@ -784,6 +818,26 @@ Scatter.prototype.draw = function(divId)
                         .domain([0, maxY])
                         .range([height, 0])
                         .clamp(true);
+
+    var reverseYScale = d3.scale.linear()
+                        .domain([height, 0])
+                        .range([0, maxY])
+                        .clamp(true);
+
+    console.log("yValues: " + yValues.toString());
+    console.log("yValues2: " + yValues2.toString());
+    if (multiset) {
+        console.log("maxY2: " + maxY2);
+        var yScale2 = d3.scale.linear()
+                        .domain([0, maxY2])
+                        .range([height, 0])
+                        .clamp(true);
+
+        var reverseYScale2 = d3.scale.linear()
+                        .domain([height, 0])
+                        .range([0, maxY2])
+                        .clamp(true);
+    }
 
     var rScale = d3.scale.linear()
                         .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
@@ -798,10 +852,33 @@ Scatter.prototype.draw = function(divId)
                     .orient("bottom")
                     .ticks(numXAxisTicks);
 
+
     var yAxis = d3.svg.axis()
                     .scale(yScale)
                     .orient("left")
                     .ticks(numYAxisTicks);
+
+    if (multiset) {
+        var yAxis2 = d3.svg.axis()
+                        .scale(yScale2)
+                        .orient("right")
+                        .ticks(numYAxisTicks);
+    }
+
+    var xValuesScaled = [];
+    var yValues2Scaled = [];
+    var yValuesScaled = [];
+
+    for (var i = 0; i < numValuesPerDataSet; i++) {
+        xValuesScaled.push(xScale(this.dataSet[i][0]));
+        yValuesScaled.push(yScale(this.dataSet[i][1]));
+        yValues2Scaled.push(yScale2(this.dataSet[i][2]));
+    }
+
+    console.log("xValuesScaled: " + xValuesScaled.toString());
+    console.log("yValuesScaled: " + yValuesScaled.toString());
+    console.log("yValues2Scaled: " + yValues2Scaled.toString());
+
 
     var base = d3.select("#" + divId)
                 .append("svg")
@@ -829,9 +906,22 @@ Scatter.prototype.draw = function(divId)
         .attr("height", height)
         .attr({
             class: "y-axis",
+            id: "y-axis-scatter-1",
             transform: "translate(" + 0 + ",0)"
             })
         .call(yAxis);
+
+    if (multiset) {
+        // Draw the y-axis.
+        svg.append("g")
+            .attr("height", height)
+            .attr({
+                class: "y-axis",
+                id: "y-axis-scatter-2",                
+                transform: "translate(" + width + ",0)"
+                })
+            .call(yAxis2);
+    }
 
     base.append("text")
         .attr("class", "x-label")
@@ -844,13 +934,30 @@ Scatter.prototype.draw = function(divId)
 
     base.append("text")
         .attr("class", "y-label")
+        .attr("id", "y-label-scatter-1")
         .attr("text-anchor", "middle")
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "sans-serif")
+        .attr("font-weight", "normal")
         .attr("y", h/2)
         .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
         .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
         .text(yAxisLabel);
+
+
+    if (multiset) {
+        base.append("text")
+            .attr("class", "y-label2")
+            .attr("id", "y-label-scatter-2")
+            .attr("text-anchor", "middle")
+            .attr("font-size", axisLabelHeight)
+            .attr("font-family", "sans-serif")
+            .attr("font-weight", "normal")
+            .attr("y", h/2)
+            .attr("x", (w - yAxisLabelPaddingRight - axisLabelHeight))
+            .attr("transform", "rotate(90, " + (w - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
+            .text(yAxisLabel2);
+        }
 
     base.append("text")
         .attr("class", "title")
@@ -861,6 +968,7 @@ Scatter.prototype.draw = function(divId)
         .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
         .text(title);    
 
+    console.log("B4 mousemove");
 
     function mousemove() {
         var mouseX = d3.mouse(this)[0];
@@ -880,6 +988,29 @@ Scatter.prototype.draw = function(divId)
             if (mouseX < thisPointX + defaultRadius && mouseX > thisPointX - defaultRadius &&
                 mouseY > thisPointY - defaultRadius && mouseY < thisPointY + defaultRadius) {
                 pointHighlighted = true;
+
+                console.log("thisPointX: " + thisPointX);
+                console.log("thisPointY: " + thisPointY);
+
+                if (yValues2Scaled.indexOf(thisPointY) != -1 &&
+                    xValuesScaled.indexOf(thisPointX) == yValues2Scaled.indexOf(thisPointY) ) {
+                    console.log("here");
+                    d3.select("#y-label-scatter-2").style("font-weight", "bold");
+                    // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
+                } else if (yValuesScaled.indexOf(thisPointY) != -1 &&
+                    xValuesScaled.indexOf(thisPointX) == yValuesScaled.indexOf(thisPointY)) {
+                    console.log("here");
+                    d3.select("#y-label-scatter-1").style("font-weight", "bold");
+                    // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
+                } 
+
+                // else if (yValues2.indexOf(thisPointY) != -1) {
+                //     console.log("there");
+                //     d3.select("#y-label-scatter-1").style("font-weight", "bold");
+                //     // d3.select("#y-label-scatter-2").setAttribute("font-weight", "bold");
+                //     // d3.select("#y-axis-scatter-2").setAttribute("stroke", colors[1]);
+                // }
+
                 svg.selectAll(".circle-highlight")
                     .moveToFront()
                     .attr("display", function() {
@@ -920,8 +1051,12 @@ Scatter.prototype.draw = function(divId)
             svg.selectAll(".tooltip-text").attr("display", "none");
             svg.selectAll(".tooltip-rect").attr("display", "none");
             svg.selectAll(".tooltip-line").attr("display", "none");
+            d3.select("#y-label-scatter-1").style("font-weight", "normal");
+            d3.select("#y-label-scatter-2").style("font-weight", "normal");
         }
     }
+
+    console.log("B4 loops");
 
     for (var i = 1; i < numDataSets; i++) {
         data = getData([0,i],this.dataSet);
@@ -935,7 +1070,13 @@ Scatter.prototype.draw = function(divId)
 
         for (var j = 0; j < numValuesPerDataSet; j++) {
             pointX = xScale(data[j][0]);
-            pointY = yScale(data[j][1]);
+            if (i == 1) {
+                console.log("1");
+                pointY = yScale(data[j][1]);
+            } else {
+                console.log("more");
+                pointY = yScale2(data[j][1]);
+            }
             var dataX = data[j][0];
             var dataY = data[j][1];
             var highlightText = dataX + ", " + dataY;
