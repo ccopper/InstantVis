@@ -353,6 +353,11 @@ Bubble.prototype.draw = function(divId)
         .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
         .text(title);    
 
+    var toggle = [];
+    for (var i = 0; i < numValuesPerDataSet; i++) {
+        toggle.push(false);
+    }
+
     svg.selectAll("circle")
         .data(this.dataSet)
         .enter()
@@ -363,8 +368,71 @@ Bubble.prototype.draw = function(divId)
             return rScale(d[2]); 
         })
         .attr("fill", color)
-        .on("mouseover", function(d) {
+        .on("mouseover", function(d, i) {
             this.setAttribute("fill", highlightColor);
+            if (!toggle[i]) {
+                
+                var x = Math.floor(this.getAttribute("cx")*100)/100;
+                var y = Math.floor(this.getAttribute("cy")*100)/100;
+                var r = Math.floor(this.getAttribute("r")*100)/100;
+                var ind = d[0];
+                var dep = d[1];
+                var rad = d[2];
+                var labelText =  ind + ", " + dep + ": " + rad;
+                var length = labelText.length;
+                var rectWidth = length*characterWidth;
+
+                var rightEdge = x + r + highlightRectPadding + rectWidth;
+
+                if (rightEdge > width) {
+                    var lineData = [[x - r, y], [x - r - highlightRectPadding, y]];
+                    var rectX = x - r - highlightRectPadding - rectWidth;
+                } else {
+                    var lineData = [[x + r, y], [x + r + highlightRectPadding, y]];
+                    var rectX = x + r + highlightRectPadding;
+                }
+
+                var textX = rectX + highlightTextPadding;
+
+                svg.append("path")
+                    .attr("id", ("bubble-line-label"+i))
+                    .style("stroke", color)
+                    .attr("d", line(lineData));
+                svg.append("rect")
+                    .attr("id", ("bubble-rect-label"+i))
+                    .attr("x", rectX)
+                    .attr("y", y - (highlightTextHeight + 2*highlightTextPadding)/2)
+                    .attr("width", rectWidth)
+                    .attr("height", highlightTextHeight + 2*highlightTextPadding)
+                    .attr("fill", highlightRectFillColor)
+                    .style("stroke", color);
+                svg.append("text")
+                    .attr("id", ("bubble-text-label"+i))
+                    .attr("x", textX)
+                    .attr("y", y + highlightTextHeight/3)
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-family", "sans-serif")
+                    .attr("font-weight", "bold")
+                    .text(labelText);
+            }
+        })
+        .on("click", function(d, i) {
+            // Remove the popup created by the mouseover.
+            d3.select(("#bubble-text-label"+i)).remove();
+            d3.select(("#bubble-rect-label"+i)).remove();  
+            d3.select(("#bubble-line-label"+i)).remove(); 
+
+            toggle[i] = !toggle[i];
+
+            // If the popup already existed, remove if immediately and return.
+            if (!toggle[i]) {
+                d3.select(("#bubble-text-label"+i)).remove();
+                d3.select(("#bubble-rect-label"+i)).remove();  
+                d3.select(("#bubble-line-label"+i)).remove();
+                return; 
+            }
+
+            // Otherwise create the popup.
             var x = Math.floor(this.getAttribute("cx")*100)/100;
             var y = Math.floor(this.getAttribute("cy")*100)/100;
             var r = Math.floor(this.getAttribute("r")*100)/100;
@@ -389,11 +457,11 @@ Bubble.prototype.draw = function(divId)
             var textX = rectX + highlightTextPadding;
 
             svg.append("path")
-                .attr("id", "bubble-line-label")
+                .attr("id", ("bubble-line-label"+i))
                 .style("stroke", color)
                 .attr("d", line(lineData));
             svg.append("rect")
-                .attr("id", "bubble-rect-label")
+                .attr("id", ("bubble-rect-label"+i))
                 .attr("x", rectX)
                 .attr("y", y - (highlightTextHeight + 2*highlightTextPadding)/2)
                 .attr("width", rectWidth)
@@ -401,7 +469,7 @@ Bubble.prototype.draw = function(divId)
                 .attr("fill", highlightRectFillColor)
                 .style("stroke", color);
             svg.append("text")
-                .attr("id", "bubble-text-label")
+                .attr("id", ("bubble-text-label"+i))
                 .attr("x", textX)
                 .attr("y", y + highlightTextHeight/3)
                 .attr("font-size", highlightTextHeight)
@@ -409,11 +477,14 @@ Bubble.prototype.draw = function(divId)
                 .attr("font-weight", "bold")
                 .text(labelText);
         })
-        .on("mouseout", function() {
+        .on("mouseout", function(d, i) {
             this.setAttribute("fill", color);
-            svg.selectAll("#bubble-text-label").remove();
-            svg.selectAll("#bubble-rect-label").remove();  
-            svg.selectAll("#bubble-line-label").remove();  
+            // If the popup should not persist, remove it.
+            if (!toggle[i]) {
+                d3.select(("#bubble-text-label"+i)).remove();
+                d3.select(("#bubble-rect-label"+i)).remove();  
+                d3.select(("#bubble-line-label"+i)).remove();  
+            }
         });
 }
 
@@ -965,15 +1036,15 @@ Scatter.prototype.draw = function(divId)
                 mouseY > thisPointY - defaultRadius && mouseY < thisPointY + defaultRadius) {
                 pointHighlighted = true;
 
-                if (yValues2Scaled.indexOf(thisPointY) != -1 &&
-                    xValuesScaled.indexOf(thisPointX) == yValues2Scaled.indexOf(thisPointY) ) {
-                    d3.select("#y-label-scatter-2").style("font-weight", "bold");
-                    // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
-                } else if (yValuesScaled.indexOf(thisPointY) != -1 &&
-                    xValuesScaled.indexOf(thisPointX) == yValuesScaled.indexOf(thisPointY)) {
-                    d3.select("#y-label-scatter-1").style("font-weight", "bold");
-                    // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
-                } 
+                // if (yValues2Scaled.indexOf(thisPointY) != -1 &&
+                //     xValuesScaled.indexOf(thisPointX) == yValues2Scaled.indexOf(thisPointY) ) {
+                //     d3.select("#y-label-scatter-2").style("font-weight", "bold");
+                //     // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
+                // } else if (yValuesScaled.indexOf(thisPointY) != -1 &&
+                //     xValuesScaled.indexOf(thisPointX) == yValuesScaled.indexOf(thisPointY)) {
+                //     d3.select("#y-label-scatter-1").style("font-weight", "bold");
+                //     // d3.select("#y-axis-scatter-1").setAttribute("stroke", colors[0]);
+                // } 
 
                 // else if (yValues2.indexOf(thisPointY) != -1) {
                 //     console.log("there");
@@ -1022,8 +1093,6 @@ Scatter.prototype.draw = function(divId)
             svg.selectAll(".tooltip-text").attr("display", "none");
             svg.selectAll(".tooltip-rect").attr("display", "none");
             svg.selectAll(".tooltip-line").attr("display", "none");
-            d3.select("#y-label-scatter-1").style("font-weight", "normal");
-            d3.select("#y-label-scatter-2").style("font-weight", "normal");
         }
     }
 
@@ -1134,7 +1203,7 @@ Scatter.prototype.draw = function(divId)
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
-            .style("fill", colors[0]);  
+            .style("fill", colorSet[0]);  
 
         base.append("rect")
             .attr("id", "colorIcon2")
@@ -1143,7 +1212,7 @@ Scatter.prototype.draw = function(divId)
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
-            .style("fill", colors[1]);
+            .style("fill", colorSet[1]);
     }
 
     svg.append("rect")
