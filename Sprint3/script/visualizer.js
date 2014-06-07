@@ -1756,10 +1756,19 @@ function Bar (dataSet, labels, columnTypes, width, height) {
 
 Bar.prototype.draw = function(divId) {
 
-    var margin = {top: 50, right: 40, bottom: 40, left: 55};
+    var margin = {top: 50, right: 55, bottom: 40, left: 55};
+
+    var numValuesPerDataSet = this.dataSet.length;
+    var numDataSets = this.dataSet[0].length;
+
+    var multiset = false;
+    if (numDataSets > 2) {
+        multiset = true;
+    }
 
 	xValues = [];
 	yValues = [];
+    y2Values = [];
 
 	numBars = this.dataSet.length;
 
@@ -1767,39 +1776,59 @@ Bar.prototype.draw = function(divId) {
 
 	for(var i = 0; i < numBars; i++) {
 		xValues[i] = this.dataSet[i][0];
-		yValues[i] = this.dataSet[i][1];		
+		yValues[i] = this.dataSet[i][1];
+        if (multiset) {
+            y2Values[i] = this.dataSet[i][2];
+        }		
 	}
     
 
     console.log("xValues: " + xValues.toString());
     console.log("yValues: " + yValues.toString());
+    console.log("y2Values: " + y2Values.toString());
 
     var condensedXValues = [];
     var condensedYValues = [];
+    var condensedY2Values = [];
     var currentYTotal = 0;
+    var currentY2Total = 0;
     for (var i = 0; i < xValues.length; i++) {
         // If this is a duplicate x-value:
         if (condensedXValues.indexOf(xValues[i]) != -1) {
             continue;
         } 
         currentYTotal = yValues[i];
+        if (multiset) {
+            currentY2Total = y2Values[i];
+        }
         for (var j = i + 1; j < xValues.length; j++) {
             if (xValues[j] == xValues[i]) {
                 currentYTotal += yValues[j];
+                if (multiset) {
+                    currentY2Total += y2Values[j];
+                }
             }
         }
         condensedXValues.push(xValues[i]);
         condensedYValues.push(currentYTotal);
+        if (multiset) {
+            condensedY2Values.push(currentY2Total);
+        }
     }
 
     var condensedDataSet = [];
+    var condensedDataSet2 = [];
 
     for (var i = 0; i < condensedXValues.length; i++) {
         condensedDataSet.push([condensedXValues[i],condensedYValues[i]]);
+        if (multiset) {
+            condensedDataSet2.push([condensedXValues[i], condensedY2Values[i]]);
+        }
     }
 
     console.log("condensedXValues: " + condensedXValues.toString());
     console.log("condensedYValues: " + condensedYValues.toString());
+    console.log("condensedY2Values: " + condensedY2Values.toString());
 
 
     // numBars = d3.max(xValues);
@@ -1815,6 +1844,7 @@ Bar.prototype.draw = function(divId) {
     var highlightTextPadding = 2;
     var padding = 20;
     var barPadding = 5;
+    var barSetPadding = 10;
     
     var xAxisLabelPaddingBottom = 2;
     var titleLabelHeight = margin.top/3;
@@ -1831,12 +1861,19 @@ Bar.prototype.draw = function(divId) {
 
     var numYAxisTicks = height/15;
 
-    var barWidth = (width / numBars) - barPadding;
+    if (!multiset) {
+        var barWidth = (width / numBars) - barPadding;
+    } else {
+        console.log("multiset");
+        var barWidth = ((width - ((numBars-1)*barSetPadding) - ((3*numBars)*barPadding))/(2*numBars));
+    }
 
-    console.log("(width / numBars) - barPadding: " +  "(" + width + "/" + numBars + ")" + " - " + barPadding);
+
+    //console.log("(width / numBars) - barPadding: " +  "(" + width + "/" + numBars + ")" + " - " + barPadding);
     console.log("barWidth: " + barWidth);
 
     var fillColor = randRGB(100, 200);
+    var fillColor2 = randRGB(100,200);
     var highlightColor = randRGB(100, 200);  
 
       
@@ -1849,7 +1886,7 @@ Bar.prototype.draw = function(divId) {
 
         var xScale = d3.scale.linear()
                     .domain([0, d3.max(condensedXValues)])
-                    .range([0, width - barPadding - barWidth]);
+                    .range([barPadding, width - barPadding - barWidth]);
 
     } else {
 
@@ -1857,9 +1894,15 @@ Bar.prototype.draw = function(divId) {
         //     xValues.push(this.dataSet[i][0]);
         // }
 
-        var xScale = d3.scale.ordinal()
-                        .domain(condensedXValues)
-                        .rangePoints([0,width - barPadding - barWidth]);
+        if (multiset) {
+            var xScale = d3.scale.ordinal()
+                            .domain(condensedXValues)
+                            .rangePoints([barPadding,width - 2*barPadding - 2*barWidth]);
+        } else {
+            var xScale = d3.scale.ordinal()
+                            .domain(condensedXValues)
+                            .rangePoints([barPadding,width - barPadding - barWidth]);
+        }
     }  
 
 
@@ -1898,7 +1941,7 @@ Bar.prototype.draw = function(divId) {
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	//Create bars
-    svg.selectAll("rect")
+    svg.selectAll("rect.set1")
         .data(condensedDataSet)
         .enter()
         .append("rect")
@@ -1915,7 +1958,7 @@ Bar.prototype.draw = function(divId) {
 	    .attr("fill", function(d) {
 	        return fillColor;
 	    })
-        .attr("class", "bar")
+        .attr("class", "bar-set1")
         .on("mouseover",function(d) {
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
@@ -1965,18 +2008,104 @@ Bar.prototype.draw = function(divId) {
             d3.select("#barline").remove();
             d3.select(this)
                 .attr("fill", fillColor);
-            svg.selectAll(".bar")
-                .attr("fill", fillColor);
+            svg.selectAll(".bar-set2")
+                .attr("fill", fillColor2);
+            svg.selectAll(".bar-set1")
+                .attr("fill", fillColor); 
             
         });
 
-    // Create x-axis
-    svg.append("g")
+    svg.selectAll("rect.set2")
+        .data(condensedDataSet2)
+        .enter()
+        .append("rect")
+        .attr("x", function(d) {
+            return (xScale(d[0]) + barWidth + barPadding);
+        })
+        .attr("y", function(d) {
+            return (yScale(d[1]));
+        })
+        .attr("width", barWidth)
+        .attr("height", function(d) {
+            return height - yScale(d[1]);
+        })
+        .attr("fill", function(d) {
+            return fillColor2;
+        })
+        .attr("class", "bar-set2")
+        .on("mouseover",function(d) {
+            var xPosition = parseFloat(d3.select(this).attr("x"));
+            var xTextPosition = xPosition + barWidth/2;
+            var yPosition = parseFloat(d3.select(this).attr("y"));
+            var yTextPosition = yPosition + highlightTextHeight;
+            if (yTextPosition > height) {
+                yTextPosition = yPosition - highlightTextPadding;
+            }
+            svg.append("text")
+                .attr("id", "tooltip")
+                .attr("x", xTextPosition)
+                .attr("y", yTextPosition)
+                .style("pointer-events", "none")
+                .attr("text-anchor", "middle")
+                .attr("font-family", "sans-serif")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .attr("fill", "black")
+                .text(d[1]);
+
+            var barLineData = [ [0, yPosition], [width, yPosition] ];
+
+            svg.append("path")
+                .attr("class", "bar-line")
+                .attr("id", "barline")
+                .attr("style", "stroke: rgb(150,150,150)")
+                .attr("d", unscaledLine(barLineData));
+
+            d3.select(this)
+                .attr("fill", highlightColor);
+
+            svg.selectAll(".bar")
+                .attr("fill", function() {
+                    if (this.getAttribute("y") < barLineData[0][1]) {
+                        return "rgb(161,219,136)";
+                    } else if (this.getAttribute("y") > barLineData[0][1]) {
+                        return "rgb(219,136,136)";
+                    } else {
+                        return "rgb(191,191,191)";
+                    }
+                });
+
+            this.setAttribute("fill", "rgb(240,209,86)");
+        })
+        .on("mouseout", function(d) {
+            d3.select("#tooltip").remove();
+            d3.select("#barline").remove();
+            d3.select(this)
+                .attr("fill", fillColor2);
+            svg.selectAll(".bar-set2")
+                .attr("fill", fillColor2);
+            svg.selectAll(".bar-set1")
+                .attr("fill", fillColor);    
+            
+        });    
+
+    if (multiset) {
+        // Create x-axis
+        svg.append("g")
+            .attr({
+                class: "x-axis",
+                "transform": "translate(" + (barWidth + barPadding/2) + "," + height + ")"
+            })
+            .call(xAxis);
+    } else {
+        // Create x-axis
+        svg.append("g")
         .attr({
             class: "x-axis",
             "transform": "translate(" + (barWidth/2) + "," + height + ")"
         })
         .call(xAxis);
+       }
 
    	// Create y-axis
     svg.append("g")
