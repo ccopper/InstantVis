@@ -104,9 +104,11 @@ function tableSelectHandler(event)
 	//Load icons for table
 	var graphTypes = getGraphTypes(tableNumber);
 	loadVisTypeIcons(graphTypes);
+	
+	populateTable(tables[tableNumber]);
+	
 	//Load first visualization
 	visTypeClickHandler(tables[0].Visualizations[0].Type+'_icon');
-	populateTable(tables[tableNumber]);
 
 }
 

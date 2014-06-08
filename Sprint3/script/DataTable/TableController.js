@@ -8,11 +8,19 @@ TCIns =
 {
 	"isInit": false,
 	"AIObj": {},
+	"VisID": -1,
 	"titleCallBack": function()
 	{
 		populateTableSelect();
 	},
-	"VisID": -1,
+	"headerCallBack": function ()
+	{
+		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
+	},
+	"selUpdCallBack": function ()
+	{
+		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
+	},
 	"updCallBack": function() { console.log("CallBack Fired") }	
 };
 
@@ -22,7 +30,22 @@ TSConfig =
 	
 	widgets: ["zebra"],
 };
- 
+
+function showSelectRows(rList)
+{ 	
+	$("#DTBody tr").hide();
+	
+	for(var row in rList)
+	{
+		$("#DTRow" + rList[row]).show();
+	}
+}
+
+function showAllRows()
+{
+	$("#DTBody tr").show();
+}
+
  
 function TableSorterInit()
 {
@@ -48,9 +71,10 @@ function populateTable(data, vis)
 
 	$("#TitleLabel").text(data.Data.Caption);
 	
-	//Populate the header and
+	//Populate the header
 	$("#DTHead").append("<tr />");
 	$("#DTHeadEdit").append("<tr />");
+	//Selections matricies
 	$("#DTSelMatInd").append("<tr />");
 	$("#DTSelMatD1").append("<tr /><");
 	$("#DTSelMatD2").append("<tr /><");
@@ -59,18 +83,17 @@ function populateTable(data, vis)
 		$("#DTHead tr").append(createHeaderLabel(hItem));
 		$("#DTHeadEdit tr").append(createHeaderEditor(hItem));
 		
-		$("#DTSelMatInd tr").append("<th><input type=\"radio\" name=\"Ind\" value=\"" + hItem +"\" /></th>");
-		$("#DTSelMatD1 tr").append("<th><input type=\"radio\" name=\"D1\" value=\"" + hItem +"\" /></th>");
-		$("#DTSelMatD2 tr").append("<th><input type=\"radio\" name=\"D2\" value=\"" + hItem +"\" /></th>");
+		$("#DTSelMatInd tr").append(createRadio("Ind", hItem, false));
+		$("#DTSelMatD1 tr").append(createRadio("D1", hItem, true));
+		$("#DTSelMatD2 tr").append(createRadio("D2", hItem, true));
 	}
- 
-	$("#DataTable input[type=radio]").click(updateSelMat);
- 
- 
+  
 	//Populate the body
 	for(var row in data.Data.Values)
 	{
-		$("#DTBody").append("<tr />");
+		$("#DTBody").append($("<tr>", {
+			"id": "DTRow" + row
+		}));
 		for(var col in data.Data.Values[row])
 		{
 			$("#DTBody tr:last").append("<td>" + data.Data.Values[row][col] + "</td>")
@@ -82,30 +105,58 @@ function populateTable(data, vis)
 	
 }
 
+
+
+
 function updateTableVis(visType)
 {
-	$("#DTSelMatInd").hide();
-	$("#DTSelMatD1").hide();
-	$("#DTSelMatD2").hide();
+	$("#DTSelMatInd").show();
+	$("#DTSelMatD1").show();
+	$("#DTSelMatD2").show();
 	
-	$("input:radio[name=Ind]").val("undefined");
+	for(var id in TCIns.AIObj.Visualizations)
+	{
+		if(TCIns.AIObj.Visualizations[id].Type == visType)
+		{
+			TCIns.VisID = id;
+			break
+		}
+	}
 	
-	console.log(visType)
-	
+	//To set the value it must be passed as an array
+	$("input:radio[name=Ind]").val([TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[0]]);
+	$("input:radio[name=D1]").val([TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[1]]);
+	$("input:radio[name=D2]").val([TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[2]]);
+		
 	switch(visType)
 	{
 		case "Bar":
-	
+		case "BarHorizontal":
+			
+		break;
+		
+		case "Pie":
+			$("#DTSelMatD2").hide();
+		break;
+		
+		case "Tree":
+		
+		break;
+		case "Bubble":
+		
 		break;
 		
 		case "Line":
 		case "Scatter":
 		
-		break
+		break;
+		
 		default:
 		
 		
 	}
+	
+	
 }
 
 function clearTable()
@@ -159,6 +210,24 @@ function createHeaderEditor(colNum)
 	return cont
 }
 
+function createRadio(gName,colNum,isDep)
+{
+	var cont = $("<th>", { })
+	cont.append($("<input>", {
+		"type": "radio",
+		"disabled": (isDep && TCIns.AIObj.Data.ColumnType[colNum] == "String"),
+		"name": gName,
+		"value": colNum,
+		"class": "DTSelMat",
+		"title": (isDep && TCIns.AIObj.Data.ColumnType[colNum] == "String")? "Inappropriate data for a dependent variable": "",
+		"click": updateSelMat,
+		"data": { "colNum": colNum }
+		}));
+	return cont;
+}
+
+
+
 function editHeader(event)
 {
 	var colNum = $(this).data("colNum")
@@ -183,7 +252,7 @@ function saveHeader()
 	$("#hEdit" + colNum).show();
 	
 	$("#hEditor" + colNum).hide();
-	TCIns.updCallBack();
+	TCIns.headerCallBack();
 }
 
 
@@ -209,6 +278,40 @@ function saveTitle()
 
 function updateSelMat(event)
 {
+	var Ind = $("input:radio[name=Ind]:checked").val();
+	var D1 = $("input:radio[name=D1]:checked").val();
+	var D2 = $("input:radio[name=D2]:checked").val();
+	
+	if($(this).attr("name") != "Ind")
+	{
+		
+		if($(this).attr("name") == "D1" && $(this).val() == TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[1] && typeof D2 != "undefined")
+		{
+			$("input:radio[name=D1]").attr("checked", false);
+		}
+		
+		if($(this).attr("name") == "D2" && $(this).val() == TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[2] && typeof D1 != "undefined")
+		{
+			$("input:radio[name=D2]").attr("checked", false);
+		}
+	
+	}
+	
+	var Ind = $("input:radio[name=Ind]:checked").val();
+	var D1 = $("input:radio[name=D1]:checked").val();
+	var D2 = $("input:radio[name=D2]:checked").val();
 
-
+	TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns = [];
+	TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(Ind);
+	
+	if(typeof D1 != "undefined")
+		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D1);
+	
+	if(typeof D2 != "undefined")
+		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D2);
+	
+	
+	console.log(TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns);
+	
+	TCIns.selUpdCallBack();
 }
