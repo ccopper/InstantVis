@@ -11,13 +11,6 @@ $(document).ready(readyFunction);
 
 function readyFunction()
 {
-	var urlParams = getURLParams()
- 	
- 	if(typeof urlParams["URL"] != "undefined")
- 	{
- 		 $("#urlTextbox").val(urlParams["URL"]);
- 		 submitForm();
-  	}
 
 	$("#submitButton").mousedown(function()
 	{
@@ -32,10 +25,10 @@ function readyFunction()
 
 		submitForm();
 	});
-	$(document).keypress(function(e) {
-		if(e.which == 13) {
+	
+	$(document).bind("keypress.key13", function(e) 
+	{
 			submitForm();
-		}
 	});
 
 	//Handle Split Pane
@@ -77,6 +70,15 @@ function readyFunction()
 	$( window ).resize(resizeVisWrapper);
 
 	$("#tableSelectionBox").change(tableSelectHandler);
+	
+	var urlParams = getURLParams()
+ 	
+ 	if(typeof urlParams["URL"] != "undefined")
+ 	{
+ 		 $("#urlTextbox").val(urlParams["URL"]);
+ 		 submitForm();
+  	}
+	
 }
 
 //Called to fix table and graph size
@@ -121,6 +123,9 @@ function parseComplete(data)
 		nonRecoverableError("<h3>No tables found<br>Refresh and try again</h3>");
 		return
 	}
+	
+	//Remove Keypress handler
+	$(document).unbind("keypress.key13");
 	
 	tables = AI(data); // Call AI
 
