@@ -31,7 +31,8 @@ TCIns =
 TSConfig =
 {
 	theme : 'blue',
-	
+	headers : { 0 : { sorter: false } },
+	cssNone: "DTNone",
 	widgets: ["zebra"],
 };
 
@@ -77,11 +78,20 @@ function populateTable(data, vis)
 	
 	//Populate the header
 	$("#DTHead").append("<tr />");
+	$("#DTHead tr").append("<td />");
+	
 	$("#DTHeadEdit").append("<tr />");
+	$("#DTHeadEdit tr").append("<th />");
 	//Selections matricies
 	$("#DTSelMatInd").append("<tr />");
+	$("#DTSelMatInd tr").append("<th>Independent</th>");
+	
 	$("#DTSelMatD1").append("<tr /><");
+	$("#DTSelMatD1 tr").append("<th>Dependent</th>");
+	
 	$("#DTSelMatD2").append("<tr /><");
+	$("#DTSelMatD2 tr").append("<th>Dependent</th>");
+	
 	for(var hItem in data.Data.ColumnLabel)
 	{
 		$("#DTHead tr").append(createHeaderLabel(hItem));
@@ -99,6 +109,7 @@ function populateTable(data, vis)
 			"id": "DTRow" + row,
 			"data": { "rowNum" : row }
 		}));
+		$("#DTBody tr:last").append("<td><span class=\"mButton\">DEL</span></td>");
 		for(var col in data.Data.Values[row])
 		{
 			$("#DTBody tr:last").append("<td>" + data.Data.Values[row][col] + "</td>")
@@ -107,7 +118,9 @@ function populateTable(data, vis)
 	//Enable Sorting
 	$("#DataTable").tablesorter(TSConfig);
 	$("#DataTable").bind("sortEnd", reSortData);
-		
+	
+	//$("#DataTable .DTNone").removeClass().addClass("DTNone");
+	
 }
 
 function reSortData(e, table)

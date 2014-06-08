@@ -150,7 +150,9 @@
 #DataTable
 {
 	font-size: 11pt;
-	border-radius:5px;
+	border: none;
+	background:rgba(0,0,0,0);
+	background-color:rgba(0,0,0,0);
 }
 
 #DTHead td
@@ -160,6 +162,36 @@
 	border-bottom: 0px;
 }
 
+#DTHead td:nth-child(2)
+{	
+	border-radius: 5px 0px 0px 0px;
+}
+
+#DTHead td:last-child
+{	
+	border-radius: 0px 5px 0px 0px;
+}
+
+#DTHeadEdit th:first-child
+{	
+
+	background:rgba(0,0,0,0);
+	background-color:rgba(0,0,0,0);
+	text-align: center;
+	vertical-align: middle;
+	border: none;
+}
+
+#DataTable td:first-child
+{	
+
+	background:rgba(0,0,0,0);
+	background-color:rgba(0,0,0,0);
+	text-align: right;
+	vertical-align: middle;
+	border: none;
+}
+
 #DTHeadEdit th
 {	
 	text-align: center;
@@ -167,19 +199,35 @@
 }
 #DTCaption
 {
+	margin-left: 15%;
 	text-align: left;
 	font-size: 14pt;
 	font-weight: bold;
 	background-color:rgba(0,0,0,0);
 }
-.DTSelMat
+
+#DTSelMatInd th,#DTSelMatD1 th,#DTSelMatD2 th
 {
 	padding: 0px;
 	text-align: center;
 	vertical-align: middle;
+
 }
-
-
+#DTSelMatInd th:first-child
+{
+	border-radius: 5px 0px 0px 0px;
+}
+#DTSelMatD2 th:first-child
+{
+	border-radius: 0px 0px 0px 5px;
+}
+#DTSelMatInd th:first-child,#DTSelMatD1 th:first-child,#DTSelMatD2 th:first-child
+{
+	padding-right: 5px;
+	padding-left: 5px;
+	font-size: 8pt;
+	text-align: right;
+}
 .visualization
 {
 	/*width: 100%;*/
@@ -394,6 +442,7 @@
 	border-radius: 2px;
 	text-align: center;
 	font-size: 8pt;
+	color: black;
 	background: lightgrey;
 	padding-left: 5px;
 	padding-right: 5px; 	
