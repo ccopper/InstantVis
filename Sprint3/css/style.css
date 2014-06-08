@@ -228,6 +228,11 @@
 	font-size: 8pt;
 	text-align: right;
 }
+#DTBody
+{
+	cursor: pointer;
+}
+
 .visualization
 {
 	/*width: 100%;*/

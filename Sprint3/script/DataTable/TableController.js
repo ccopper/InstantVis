@@ -9,6 +9,7 @@ TCIns =
 	"isInit": false,
 	"AIObj": {},
 	"VisID": -1,
+	"isEditing": false,
 	"titleCallBack": function()
 	{
 		populateTableSelect();
@@ -125,7 +126,12 @@ function populateTable(data, vis)
 		$("#DTBody tr:last").append(createDelRow(row));
 		for(var col in data.Data.Values[row])
 		{
-			$("#DTBody tr:last").append("<td>" + data.Data.Values[row][col] + "</td>")
+			$("#DTBody tr:last").append($("<td>", 
+			{
+				"text": data.Data.Values[row][col],
+				"data": {"cellLoc": [row, col] },
+				"click":editCell
+			}));
 		}
 	}
 	//Enable Sorting
@@ -407,3 +413,49 @@ function updateSelMat(event)
 	
 	TCIns.selUpdCallBack();
 }
+
+function editCell(event)
+{
+	if(TCIns.isEditing)
+	{ return; }
+	
+	TCIns.isEditing = true;
+	
+	var cellLoc = $(this).data("cellLoc");
+
+	$(this).unbind("click");
+	
+	$(this).empty();
+	$(this).append($("<input>", {
+		"type": "text",
+		"width": "100%",
+		"value": TCIns.AIObj.Data.Values[cellLoc[0]][cellLoc[1]],
+		"id": "cellEditor"
+		}));
+	$(this).append("<br>");
+	$(this).append($("<span>", {
+		"text": "SAVE",
+		"class": "mButton",
+		"click": saveCell,
+		"data": { "cellLoc": cellLoc, "cellPtr": this }
+		}));
+}
+
+function saveCell(event)
+{
+	TCIns.isEditing = false;
+	
+	var cellLoc = $(this).data("cellLoc");
+	var cellPtr = $(this).data("cellPtr");
+	
+	var val = $("#cellEditor").val();
+	
+	TCIns.AIObj.Data.Values[cellLoc[0]][cellLoc[1]] = val;
+	
+	$(cellPtr).empty();
+	$(cellPtr).text(val);
+
+	$("table").trigger("updateCell", [cellPtr, false]);
+	TCIns.dataCallBack();
+}
+
