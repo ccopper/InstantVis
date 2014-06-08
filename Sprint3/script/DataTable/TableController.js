@@ -21,6 +21,10 @@ TCIns =
 	{
 		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
 	},
+	"dataCallBack": function()
+	{
+		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
+	},
 	"updCallBack": function() { console.log("CallBack Fired") }	
 };
 
@@ -92,7 +96,8 @@ function populateTable(data, vis)
 	for(var row in data.Data.Values)
 	{
 		$("#DTBody").append($("<tr>", {
-			"id": "DTRow" + row
+			"id": "DTRow" + row,
+			"data": { "rowNum" : row }
 		}));
 		for(var col in data.Data.Values[row])
 		{
@@ -101,12 +106,28 @@ function populateTable(data, vis)
 	}
 	//Enable Sorting
 	$("#DataTable").tablesorter(TSConfig);
+	$("#DataTable").bind("sortEnd", reSortData);
 		
-	
 }
 
-
-
+function reSortData(e, table)
+{
+	var newData = []
+	var newRow = 0;
+	$("#DTBody tr").each(function ()
+	{
+		var rowNum = $(this).data("rowNum");
+		newData.push( TCIns.AIObj.Data.Values[rowNum]);
+		
+		$(this).data("rowNum", newRow);
+		newRow+=1;
+	});
+	
+	TCIns.AIObj.Data.Values = newData;
+	
+	TCIns.dataCallBack();
+	
+}
 
 function updateTableVis(visType)
 {
@@ -310,8 +331,6 @@ function updateSelMat(event)
 	if(typeof D2 != "undefined")
 		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D2);
 	
-	
-	console.log(TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns);
 	
 	TCIns.selUpdCallBack();
 }
