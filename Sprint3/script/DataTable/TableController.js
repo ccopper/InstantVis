@@ -25,6 +25,16 @@ TCIns =
 	{
 		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
 	},
+	"colDelCallBack": function ()
+	{
+		populateTable(TCIns.AIObj);
+		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
+	},
+	"rowDelCallBack": function ()
+	{
+		populateTable(TCIns.AIObj);
+		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
+	},
 	"updCallBack": function() { console.log("CallBack Fired") }	
 };
 
@@ -66,6 +76,9 @@ function populateTable(data, vis)
 	{
 		TableSorterInit()
 	}
+	
+	//Destroy the tablesorter if it exists
+	$("#DataTable").trigger("destroy");
 	
 	//Save the reference
 	TCIns.AIObj = data;
@@ -109,7 +122,7 @@ function populateTable(data, vis)
 			"id": "DTRow" + row,
 			"data": { "rowNum" : row }
 		}));
-		$("#DTBody tr:last").append("<td><span class=\"mButton\">DEL</span></td>");
+		$("#DTBody tr:last").append(createDelRow(row));
 		for(var col in data.Data.Values[row])
 		{
 			$("#DTBody tr:last").append("<td>" + data.Data.Values[row][col] + "</td>")
@@ -227,6 +240,14 @@ function createHeaderEditor(colNum)
 		"click": editHeader,
 		"data": { "colNum": colNum }
 		}));
+	cont.append("<br>");
+	cont.append($("<span>",{ 
+		"id": "hDel" + colNum, 
+		"class": "mButton",
+		"text": "DEL",
+		"click": deleteColumn,
+		"data": { "colNum": colNum }
+		}));
 	
 	var save = $("<span>", { "id": "hEditor" + colNum }).css("display", "none");
 	save.append("<input type=\"text\"><br>");	
@@ -244,6 +265,19 @@ function createHeaderEditor(colNum)
 	return cont
 }
 
+function createDelRow(rowNum)
+{
+	var cont = $("<td>", { })
+	cont.append($("<span>", {
+		"text": "DEL",
+		"class": "mButton",
+		"click": deleteRow,
+		"data": { "rowNum": rowNum }
+		}));
+	return cont;
+}
+
+
 function createRadio(gName,colNum,isDep)
 {
 	var cont = $("<th>", { })
@@ -260,7 +294,33 @@ function createRadio(gName,colNum,isDep)
 	return cont;
 }
 
+function deleteColumn(event)
+{
+	var colNum = $(this).data("colNum");
 
+	for(var row in TCIns.AIObj.Data.Values)
+	{
+		TCIns.AIObj.Data.Values[row].splice(colNum, 1);
+	}
+	
+	TCIns.AIObj.Data.ColumnLabel.splice(colNum, 1);
+	TCIns.AIObj.Data.ColumnType.splice(colNum, 1);
+	TCIns.AIObj.Data.ColumnUnique.splice(colNum, 1);
+	TCIns.AIObj.Data.Cols--;
+
+	TCIns.colDelCallBack();
+}
+function deleteRow(event)
+{
+	var rowNum = $(this).data("rowNum");
+	$("#DTRow" + rowNum).remove();
+	
+	TCIns.AIObj.Data.Values.splice(rowNum,1);
+		
+	TCIns.AIObj.Data.Rows--;
+
+	TCIns.rowDelCallBack();
+}
 
 function editHeader(event)
 {
