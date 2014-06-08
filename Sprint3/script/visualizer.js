@@ -2138,8 +2138,8 @@ Bar.prototype.draw = function(divId) {
 
     var fillColor = randRGB(100, 200);
     var fillColor2 = randRGB(100,200);
-    var highlightColor = randRGB(100, 200);  
-
+    // var highlightColor = randRGB(100, 200);  
+    var highlightColor = "rgb(240,209,86)";
       
 
 
@@ -2217,6 +2217,15 @@ Bar.prototype.draw = function(divId) {
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+    var toggle = [];
+    for (var i = 0; i < numBars; i++) {
+        toggle.push(false);
+        if (multiset) {
+            toggle.push(false);
+        }
+    }
+
 	//Create bars
     svg.selectAll("rect.set1")
         .data(condensedDataSet)
@@ -2236,7 +2245,73 @@ Bar.prototype.draw = function(divId) {
 	        return fillColor;
 	    })
         .attr("class", "bar-set1")
-        .on("mouseover",function(d) {
+        .on("mouseover", function(d, i) {
+
+            // d3.select(this)
+            //         .attr("fill", highlightColor);
+            
+            
+            
+
+            var xPosition = parseFloat(d3.select(this).attr("x"));
+            var xTextPosition = xPosition + barWidth/2;
+            var yPosition = parseFloat(d3.select(this).attr("y"));
+            var yTextPosition = yPosition + highlightTextHeight;
+            if (yTextPosition > height) {
+                yTextPosition = yPosition - highlightTextPadding;
+            }
+        
+            var barLineData = [ [0, yPosition], [width, yPosition] ];
+
+            svg.append("path")
+                .attr("class", "bar-line")
+                .attr("id", "barline")
+                .attr("style", "stroke: rgb(150,150,150)")
+                .attr("d", unscaledLine(barLineData));
+
+            svg.selectAll(".bar-set1")
+                .attr("fill", function() {
+                    if (this.getAttribute("y") < barLineData[0][1]) {
+                        return "rgb(161,219,136)";
+                    } else if (this.getAttribute("y") > barLineData[0][1]) {
+                        return "rgb(219,136,136)";
+                    } else {
+                        return "rgb(191,191,191)";
+                    }
+                });
+
+            this.setAttribute("fill", highlightColor);
+
+            if (!toggle[i]) {
+                svg.append("text")
+                    .attr("id", ("tooltip" + i))
+                    .attr("x", xTextPosition)
+                    .attr("y", yTextPosition)
+                    .style("pointer-events", "none")
+                    .attr("text-anchor", "middle")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .attr("fill", "black")
+                    .text(d[1]);               
+            }
+        })
+        .on("click", function(d, i) {
+            d3.select(("#tooltip" + i)).remove();
+            d3.select("#barline").remove();
+
+            // d3.select(this)
+            //     .attr("fill", highlightColor);
+            
+
+            toggle[i] = !toggle[i];
+
+            if (!toggle[i]) {
+                d3.select(("#tooltip" + i)).remove();
+                d3.select("#barline").remove();
+                return;
+            }
+
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
@@ -2245,7 +2320,7 @@ Bar.prototype.draw = function(divId) {
                 yTextPosition = yPosition - highlightTextPadding;
             }
             svg.append("text")
-                .attr("id", "tooltip")
+                .attr("id", ("tooltip" + i))
                 .attr("x", xTextPosition)
                 .attr("y", yTextPosition)
                 .style("pointer-events", "none")
@@ -2264,10 +2339,8 @@ Bar.prototype.draw = function(divId) {
                 .attr("style", "stroke: rgb(150,150,150)")
                 .attr("d", unscaledLine(barLineData));
 
-            d3.select(this)
-                .attr("fill", highlightColor);
-
-            svg.selectAll(".bar")
+            
+            svg.selectAll(".bar-set1")
                 .attr("fill", function() {
                     if (this.getAttribute("y") < barLineData[0][1]) {
                         return "rgb(161,219,136)";
@@ -2278,18 +2351,20 @@ Bar.prototype.draw = function(divId) {
                     }
                 });
 
-            this.setAttribute("fill", "rgb(240,209,86)");
-        })
-        .on("mouseout", function(d) {
-            d3.select("#tooltip").remove();
+            this.setAttribute("fill", highlightColor);
+
+        }) 
+        .on("mouseout", function(d, i) {
+            if (!toggle[i]) {
+                d3.select(("#tooltip" + i)).remove();
+            }
             d3.select("#barline").remove();
             d3.select(this)
                 .attr("fill", fillColor);
             svg.selectAll(".bar-set2")
                 .attr("fill", fillColor2);
             svg.selectAll(".bar-set1")
-                .attr("fill", fillColor); 
-            
+                .attr("fill", fillColor);             
         });
 
     svg.selectAll("rect.set2")
@@ -2310,7 +2385,77 @@ Bar.prototype.draw = function(divId) {
             return fillColor2;
         })
         .attr("class", "bar-set2")
-        .on("mouseover",function(d) {
+        .on("mouseover",function(d, i) {
+
+            // d3.select(this)
+            //         .attr("fill", highlightColor);
+            
+
+
+            
+            var xPosition = parseFloat(d3.select(this).attr("x"));
+            var xTextPosition = xPosition + barWidth/2;
+            var yPosition = parseFloat(d3.select(this).attr("y"));
+            var yTextPosition = yPosition + highlightTextHeight;
+            if (yTextPosition > height) {
+                yTextPosition = yPosition - highlightTextPadding;
+            }
+        
+            var barLineData = [ [0, yPosition], [width, yPosition] ];
+
+            svg.append("path")
+                .attr("class", "bar-line")
+                .attr("id", "barline")
+                .attr("style", "stroke: rgb(150,150,150)")
+                .attr("d", unscaledLine(barLineData));
+
+            svg.selectAll(".bar-set2")
+                .attr("fill", function() {
+                    if (this.getAttribute("y") < barLineData[0][1]) {
+                        return "rgb(161,219,136)";
+                    } else if (this.getAttribute("y") > barLineData[0][1]) {
+                        return "rgb(219,136,136)";
+                    } else {
+                        return "rgb(191,191,191)";
+                    }
+                });
+
+            this.setAttribute("fill", highlightColor);
+
+
+            if (!toggle[(numBars + i)]) {
+            
+                svg.append("text")
+                    .attr("id", ("tooltip" + numBars + i))
+                    .attr("x", xTextPosition)
+                    .attr("y", yTextPosition)
+                    .style("pointer-events", "none")
+                    .attr("text-anchor", "middle")
+                    .attr("font-family", "sans-serif")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .attr("fill", "black")
+                    .text(d[1]);
+
+                
+            }
+        })
+        .on("click", function(d, i) {
+            d3.select(("#tooltip" + numBars + i)).remove();
+            d3.select("#barline").remove();
+
+            // d3.select(this)
+            //     .attr("fill", highlightColor);
+            
+
+            toggle[(numBars + i)] = !toggle[(numBars + i)];
+
+            if (!toggle[(numBars + i)]) {
+                d3.select(("#tooltip" + numBars + i)).remove();
+                d3.select("#barline").remove();
+                return;
+            }
+
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
@@ -2319,7 +2464,7 @@ Bar.prototype.draw = function(divId) {
                 yTextPosition = yPosition - highlightTextPadding;
             }
             svg.append("text")
-                .attr("id", "tooltip")
+                .attr("id", ("tooltip" + numBars + i))
                 .attr("x", xTextPosition)
                 .attr("y", yTextPosition)
                 .style("pointer-events", "none")
@@ -2338,10 +2483,9 @@ Bar.prototype.draw = function(divId) {
                 .attr("style", "stroke: rgb(150,150,150)")
                 .attr("d", unscaledLine(barLineData));
 
-            d3.select(this)
-                .attr("fill", highlightColor);
+            
 
-            svg.selectAll(".bar")
+            svg.selectAll(".bar-set2")
                 .attr("fill", function() {
                     if (this.getAttribute("y") < barLineData[0][1]) {
                         return "rgb(161,219,136)";
@@ -2352,11 +2496,15 @@ Bar.prototype.draw = function(divId) {
                     }
                 });
 
-            this.setAttribute("fill", "rgb(240,209,86)");
+            this.setAttribute("fill", highlightColor);  
+
+            
+
         })
-        .on("mouseout", function(d) {
-            d3.select("#tooltip").remove();
-            d3.select("#barline").remove();
+        .on("mouseout", function(d, i) {
+            if (!toggle[(numBars + i)]) {
+                d3.select(("#tooltip" + numBars + i)).remove();
+            }            d3.select("#barline").remove();
             d3.select(this)
                 .attr("fill", fillColor2);
             svg.selectAll(".bar-set2")
