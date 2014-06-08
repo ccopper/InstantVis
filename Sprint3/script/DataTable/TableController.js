@@ -129,7 +129,7 @@ function populateTable(data, vis)
 			$("#DTBody tr:last").append($("<td>", 
 			{
 				"text": data.Data.Values[row][col],
-				"data": {"cellLoc": [row, col] },
+				"data": {"cellRow": row, "cellCol": col },
 				"click":editCell
 			}));
 		}
@@ -148,9 +148,11 @@ function reSortData(e, table)
 	var newRow = 0;
 	$("#DTBody tr").each(function ()
 	{
+
 		var rowNum = $(this).data("rowNum");
 		newData.push( TCIns.AIObj.Data.Values[rowNum]);
-		
+
+		$(this).children("td").data("cellRow", newRow);
 		$(this).data("rowNum", newRow);
 		newRow+=1;
 	});
@@ -319,7 +321,6 @@ function deleteColumn(event)
 function deleteRow(event)
 {
 	var rowNum = $(this).data("rowNum");
-	$("#DTRow" + rowNum).remove();
 	
 	TCIns.AIObj.Data.Values.splice(rowNum,1);
 		
@@ -421,7 +422,9 @@ function editCell(event)
 	
 	TCIns.isEditing = true;
 	
-	var cellLoc = $(this).data("cellLoc");
+	var cellRow = $(this).data("cellRow");
+	var cellCol = $(this).data("cellCol");
+	
 
 	$(this).unbind("click");
 	
@@ -429,7 +432,7 @@ function editCell(event)
 	$(this).append($("<input>", {
 		"type": "text",
 		"width": "100%",
-		"value": TCIns.AIObj.Data.Values[cellLoc[0]][cellLoc[1]],
+		"value": TCIns.AIObj.Data.Values[cellRow][cellCol],
 		"id": "cellEditor"
 		}));
 	$(this).append("<br>");
@@ -437,7 +440,7 @@ function editCell(event)
 		"text": "SAVE",
 		"class": "mButton",
 		"click": saveCell,
-		"data": { "cellLoc": cellLoc, "cellPtr": this }
+		"data": { "cellRow": cellRow, "cellCol": cellCol , "cellPtr": this }
 		}));
 }
 
@@ -445,17 +448,24 @@ function saveCell(event)
 {
 	TCIns.isEditing = false;
 	
-	var cellLoc = $(this).data("cellLoc");
+	var cellRow = $(this).data("cellRow");
+	var cellCol = $(this).data("cellCol");
 	var cellPtr = $(this).data("cellPtr");
 	
 	var val = $("#cellEditor").val();
 	
-	TCIns.AIObj.Data.Values[cellLoc[0]][cellLoc[1]] = val;
+	TCIns.AIObj.Data.Values[cellRow][cellCol] = val;
 	
 	$(cellPtr).empty();
 	$(cellPtr).text(val);
-
+	
 	$("table").trigger("updateCell", [cellPtr, false]);
+
+	$(cellPtr).bind("click", editCell);
+	
 	TCIns.dataCallBack();
+	
+	//Stops propagation of click up to the reattached cell
+	return false;
 }
 
