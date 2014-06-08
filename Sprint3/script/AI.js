@@ -243,7 +243,11 @@ function AI(parserData) {
 
 	determineVisualizationsToRequest(AIdataStructure);
 
+	console.log("AI: determineVisualizationsToRequest produced this data: " + JSON.stringify(AIdataStructure));
+
 	rankDatasets(AIdataStructure);
+
+	console.log("AI: rankDatasets  produced this data: " + JSON.stringify(AIdataStructure));
 	
 	// remove empty visualizations
 	for (var i = 0; i < AIdataStructure.length; i++) {
