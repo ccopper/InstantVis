@@ -252,7 +252,7 @@ function AI(parserData) {
 		}
 	}
 	
-	console.log("AI removed " + visualizationsRemoved + " and produced this data: " + JSON.stringify(AIdataStructure));
+	console.log("AI removed " + visualizationsRemoved + " visualizations (perhaps all string data encountered) and produced this data: " + JSON.stringify(AIdataStructure));
 
 	return AIdataStructure;
 }
