@@ -239,6 +239,8 @@ function AI(parserData) {
 
 	setTypes(AIdataStructure); 
 
+	console.log("AI: typeHandler produced this data: " + JSON.stringify(AIdataStructure));
+
 	determineVisualizationsToRequest(AIdataStructure);
 
 	rankDatasets(AIdataStructure);
