@@ -26,9 +26,13 @@ function readyFunction()
 		submitForm();
 	});
 	
-	$(document).bind("keypress.key13", function(e) 
+	$("#urlTextbox").bind("keypress", function(event)
 	{
+		var code = event.keyCode || event.which;
+		if(code == 13) 
+		{ 
 			submitForm();
+		}
 	});
 
 	//Handle Split Pane
@@ -125,7 +129,7 @@ function parseComplete(data)
 	}
 	
 	//Remove Keypress handler
-	$(document).unbind("keypress.key13");
+	$("#urlTextbox").unbind("keypress");
 	
 	tables = AI(data); // Call AI
 
