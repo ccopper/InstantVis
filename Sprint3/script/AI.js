@@ -132,7 +132,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 			var twoColumnOnlyVisTypes = ["Pie", "Tree", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
-			var twoOrThreeColumnVisTypes = ["Bar", "Line", "BarHorizontal"];
+			var twoOrThreeColumnVisTypes = ["Bar", "Line"]; // , "BarHorizontal"];
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
 			var threeColumnVisTypes = twoOrThreeColumnVisTypes.concat(threeColumnOnlyVisTypes);
 
@@ -239,27 +239,28 @@ function AI(parserData) {
 
 	setTypes(AIdataStructure); 
 
-	console.log("AI: typeHandler produced this data: " + JSON.stringify(AIdataStructure));
-
 	determineVisualizationsToRequest(AIdataStructure);
-
-	console.log("AI: determineVisualizationsToRequest produced this data: " + JSON.stringify(AIdataStructure));
 
 	rankDatasets(AIdataStructure);
 
-	console.log("AI: rankDatasets  produced this data: " + JSON.stringify(AIdataStructure));
-	
+	var visualizationsRemoved = 0;
 	// remove empty visualizations
 	for (var i = 0; i < AIdataStructure.length; i++) {
 		if (AIdataStructure[i].Visualizations.length == 0) {
 			AIdataStructure.splice(i, 1);
+			visualizationsRemoved = visualizationsRemoved + 1;
 		}
 	}
 	
+	var consoleRemovedMessage = "";
+
+	if (visualizationsRemoved > 0) { 
+		consoleRemovedMessage = " removed " + visualizationsRemoved + 
+			" visualizations (perhaps all string data was encountered in a table) and ";
+	}
 	
-	
-	
-	console.log("AI produced this data: " + JSON.stringify(AIdataStructure));
+	console.log("AI " + consoleRemovedMessage + " produced this data " 
+			+ JSON.stringify(AIdataStructure));
 
 	return AIdataStructure;
 }

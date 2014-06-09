@@ -36,7 +36,11 @@ TypeHandler.prototype.processTable = function(table)
 	{
 		hasLabels = false;
 	}
+	
+	this.removeEmpty(table.Data.Values);
+	
 	//Loop through all items
+
 	for(var col in table.Data.Values[0])
 	{
 		//Get all types
@@ -44,6 +48,7 @@ TypeHandler.prototype.processTable = function(table)
 		var setData = new SimpleSet();
 		for(var row in table.Data.Values)
 		{	
+
 			//Retrive the raw data and get the valid types for this data
 			var rawData = table.Data.Values[row][col];
 			columnData.push(this.acceptingTypes(rawData));
@@ -94,6 +99,31 @@ TypeHandler.prototype.processTable = function(table)
 	}	
 
 }
+
+TypeHandler.prototype.removeEmpty = function(data)
+{
+	var i = 0;
+	while(i != data.length)
+	{
+		if(this.isEmptyRow(data[i]))
+		{
+			data.splice(i,1);
+		} else
+		{
+			i++;
+		}
+	}
+}
+TypeHandler.prototype.isEmptyRow = function(row)
+{
+	var res = false;
+	for(var i in row)
+	{
+		res = res || (row[i].trim() == "");
+	}
+	return res;
+};
+
 /**
  *
  *
@@ -200,8 +230,8 @@ TypeHandler.prototype.TypeLibrary =
 	"Default": "String",
 	"Precedence": 
 	[ 
-		"Integer",
 		"Float",
+		"Integer",
 		"String"
 	],
 	"Types": 
@@ -212,17 +242,18 @@ TypeHandler.prototype.TypeLibrary =
 			"DefaultVal": function() { return 0; },
 			"accept": function (obj)
 			{
-				regEx = /^(\-?\d*)$/;
 				obj["Type"] = "Integer";
-				if(!regEx.test(obj.RawVal.trim()))
+				var fVal = parseInt(obj.RawVal.trim());
+				
+				if(isNaN(fVal))
 				{
 					obj["isValid"] = false;
 					obj["Val"] = 0;
 					return
 				}
-				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				var pVal = parseInt(obj.RawVal.trim());
-				obj["Val"] = isNaN(pVal)? 0 : pVal;
+
+				obj["isValid"] = true;
+				obj["Val"] = fVal;
 				
 			}
 		},
@@ -231,20 +262,19 @@ TypeHandler.prototype.TypeLibrary =
 			"Parent": "String",
 			"DefaultVal": function() { return 0.0; },
 			"accept": function (obj)
-			{
-				
-				var regEx = /^(\-?\d*(\.?\d*)?)$/;
+			{	
 				obj["Type"] = "Float";
-				if(!regEx.test(obj.RawVal.trim()))
+				var fVal = parseFloat(obj.RawVal.trim());
+
+				if(isNaN(fVal))
 				{
 					obj["isValid"] = false;
-					obj["Val"] = 0.0;
+					obj["Val"] = 0;
 					return
 				}
 
-				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				var pVal = parseFloat(obj.RawVal.trim());
-				obj["Val"] = isNaN(pVal)? 0 : pVal;
+				obj["isValid"] = true;
+				obj["Val"] = fVal;
 			}
 		}]
  };
