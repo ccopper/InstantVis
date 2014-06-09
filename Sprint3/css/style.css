@@ -161,7 +161,10 @@
 	vertical-align: middle;
 	border-bottom: 0px;
 }
-
+#DTHead td:first-child
+{
+	width:75px;
+}
 #DTHead td:nth-child(2)
 {	
 	border-radius: 5px 0px 0px 0px;
@@ -174,7 +177,6 @@
 
 #DTHeadEdit th:first-child
 {	
-
 	background:rgba(0,0,0,0);
 	background-color:rgba(0,0,0,0);
 	text-align: center;
@@ -199,7 +201,7 @@
 }
 #DTCaption
 {
-	margin-left: 15%;
+	margin-left: 80px;
 	text-align: left;
 	font-size: 14pt;
 	font-weight: bold;

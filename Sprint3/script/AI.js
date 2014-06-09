@@ -228,6 +228,7 @@ function AI(parserData) {
 			"Visualizations" : [],
 			"Data" : {
 				"Rows" : currentTable.Rows,
+				"Caption" : currentTable.Caption,
 				"Cols" : currentTable.Cols,
 				"ColumnLabel" : currentTable.ColumnLabel,
 				"Values" : currentTable.Values,
