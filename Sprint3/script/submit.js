@@ -149,7 +149,7 @@ function parseComplete(data)
 	$("#logo").hide();
 	$("#testButton").hide();
 	$("#visualizationToolbox").show();
-	$("#visualizationToolbox").height($(window).height());
+	$("#visualizationToolbox").height($(window).height()-50);
 	$("#loadingContent").slideUp();
 
 
