@@ -1,10 +1,10 @@
-/* Take raw data from the parser and make sense of it, then pass the new massaged data
+/* Take raw data from the parser and analyze it, then pass the new data
  * to the visualizer.
  */
 
 
+// have the type checker assign column type to each column in each table/ 
 var setTypes = function(datasets) {
-
 	var TH = new TypeHandler();
 	
 	for (var i = 0; i < datasets.length; i++) {
@@ -13,14 +13,68 @@ var setTypes = function(datasets) {
 
 }
 
+// calculate the average uniqueness of selected columns of a dataset
 var determineVisualizationScore = function(dataset, columnsToUse) {
-	var score = 0;
+	var scoreNumerator= 0;
 
 	for (var i = 0; i < columnsToUse.length; i++) {
-		score = score + dataset.Data.ColumnUnique[columnsToUse[i]];
+		scoreNumerator = scoreNumerator + dataset.Data.ColumnUnique[columnsToUse[i]];
 	}
 
-	return score;
+	return scoreNumerator / columnsToUse.length;
+}
+
+// find the leftmost most unique column that excludes any column numbers in the exclude array
+// if excludeStrings == true, do not select a string column
+// return -1 if no columns were found
+var findNextBestAvailableColumn = function(currentDataset, excludeColumns, excludeStrings) {
+	var usableColumns = []; // columns that are not on the exclude list
+
+	var anExcludeColumnWasFound;
+	
+	for (var i = 0; i < currentDataset.Data.Cols; i++) {
+		anExcludeColumnWasFound = false;
+		if (excludeStrings == true) {
+			if (currentDataset.Data.ColumnType[i] == "String") {
+				anExcludeColumnWasFound = true;
+			}
+		} 
+		for (var j = 0; j < excludeColumns.length; j++) {
+			if (i == excludeColumns[j]) { // i is an exclude column
+				anExcludeColumnWasFound = true;
+			} 
+		}
+		if (anExcludeColumnWasFound == false) { 
+			usableColumns.push(i);
+		}
+	} 
+
+	// sort the usableColumns with the highest uniqueness score at the index 0 of the array, 
+	// for ties in uniqueness, the lefter column moves more toward the 0 index of the array.
+	usableColumns.sort( function(a, b) {
+		if ((currentDataset.Data.ColumnUnique[a] > currentDataset.Data.ColumnUnique[b]) ||
+			((currentDataset.Data.ColumnUnique[a] == currentDataset.Data.ColumnUnique[b]) && (a < b)))  {
+			return -1;
+		} else if (currentDataset.Data.ColumnUnique[a] < currentDataset.Data.ColumnUnique[b]) {
+			return 1;
+		} else {
+			return 0;
+		}
+	});
+
+	if (usableColumns.length == 0) { // nothing was found
+		return -1;
+	} else {
+		return usableColumns[0];
+	}
+}
+
+// find the best independent variable
+// return -1 if none was found
+var findIndependentVariable = function(currentDataset) {
+	var excludeList = [];
+	var excludeStrings = false;
+	return findNextBestAvailableColumn(currentDataset, excludeList, excludeStrings);
 }
 
 // look at each dataset, see what column types it has and determine what groups of columns can be visualized
@@ -51,165 +105,107 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 			}
 		}
 
-		if (nonStringFound) { // not only string data was found
+		if (nonStringFound && currentDataset.Data.Cols >= 2 ) { // not only string data was found and there are at least 2 columns
 
+			var selectedColumns = []; 	// columns in this array from being selected as variables to visualize
+			var haveOnlyTwoColumns; 	// is true if only two columns of data can be visualized for this dataset
 			// find default columns to be used with each applicable visualization type
 			
-			//
-			// bubble chart
-			//
-			if (numberColumns.length >= 3) { // need at least 3 numeric columns for bubble chart
-				var numericColumnsSorted = [];
-				// gather the numeric columns found, but exclude the first one found
-				// as that will be the independent variable (the first data col in the
-				// visualization request).
-				for (var i = 1; i < numberColumns.length; i++) {
-					numericColumnsSorted.push(numberColumns[i]);
-				}
-				// sort the columns based on their ColumnUnique score, the highest score goes at the end
-				// of the array
-				numericColumnsSorted.sort(function(a, b) {
-						if (currentDataset.Data.ColumnUnique[a] > currentDataset.Data.ColumnUnique[b]) {
-							return 1; // put a after b because a has a higher score
-						} else if (currentDataset.Data.ColumnUnique[a] < currentDataset.Data.ColumnUnique[b]) {
-							return -1;
-						} else {
-							return 0; // they are equal
-						}
-					}
-				);
+			// select independent variable
+			var independentVariableColumn = findIndependentVariable(currentDataset);
+			selectedColumns.push(independentVariableColumn);
+		
+			// select first dependent variable, exclude strings
+			var firstDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
+			selectedColumns.push(firstDependentVariable);
 
-				var columnsToUse = [
-						numberColumns[0],
-						numericColumnsSorted.pop(),
-						numericColumnsSorted.pop()
-					];
+			// look for a second dependent variable
+			var secondDependentVariable ;
+			secondDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
+			selectedColumns.push(secondDependentVariable);
+
+			if (secondDependentVariable == -1) {
+				haveOnlyTwoColumns = true;
+			} else {
+				haveOnlyTwoColumns = false;
+			}
+
+			var twoColumnOnlyVisTypes = ["Pie", "Tree", "Scatter"];
+			var threeColumnOnlyVisTypes = ["Bubble"];
+			var twoOrThreeColumnVisTypes = ["Bar", "Line", "BarHorizontal"];
+			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
+			var threeColumnVisTypes = twoOrThreeColumnVisTypes.concat(threeColumnOnlyVisTypes);
+
+			var columnsToVisualize = [];
+			var visTypes = [];
+
+			if (haveOnlyTwoColumns) { // request visualizations that only require two variables
+				columnsToVisualize.push(selectedColumns[0]);
+				columnsToVisualize.push(selectedColumns[1]);
+				for (var i = 0; i < twoColumnVisTypes.length; i++) {
+					visTypes.push(twoColumnVisTypes[i]);
+				}
+			} else {
+				for (var i = 0; i < selectedColumns.length; i++) {
+					columnsToVisualize.push(selectedColumns[i]);
+				}
+				for (var i = 0; i < threeColumnVisTypes.length; i++) {
+					visTypes.push(threeColumnVisTypes[i]);
+				}
+			}
+
+			for (var i = 0; i < visTypes.length; i++) {
 
 				visualizations.push(
-					{
-						"Type" : "Bubble",
-						"DataColumns" : columnsToUse,
-						"Score" : determineVisualizationScore(currentDataset, columnsToUse)
-					}
-				);
-			}
-								
-
-			//
-			// pie, tree, and bar chart default
-			//
-			
-
-			// look for string and numeric sets
-			if (stringColumns.length > 0 && numberColumns.length > 0) {
-				// find most unique string column
-				var mostUniqueStringColumn = stringColumns[0];
-				for (var stringDataCurrentCol = 1; stringDataCurrentCol < stringColumns.length; 
-						stringDataCurrentCol++) {
-
-					if (currentDataset.Data.ColumnUnique[stringColumns[stringDataCurrentCol]] > 
-							currentDataset.Data.ColumnUnique[mostUniqueStringColumn]) {
-						mostUniqueStringColumn = stringColumns[stringDataCurrentCol];
-					}
-				}
-				
-				// find most unique numeric column
-				var mostUniqueNumericColumn = numberColumns[0];
-				for (var numericCurrentCol = 1; numericCurrentCol < numberColumns.length; numericCurrentCol++) {
-					if (currentDataset.Data.ColumnUnique[numberColumns[numericCurrentCol]] > 
-							currentDataset.Data.ColumnUnique[mostUniqueNumericColumn]) {
-
-							mostUniqueNumericColumn = numberColumns[numericCurrentCol];
-					}
-				}
-				
-				var chartsToRequest = ["Pie", "Bar", "Tree"];
-				for (var c = 0; c < chartsToRequest.length; c++) {
-					visualizations.push(
 						{
-							"Type" : chartsToRequest[c],
-							"DataColumns" : [mostUniqueStringColumn, mostUniqueNumericColumn],
-							"Score" : determineVisualizationScore(currentDataset, [mostUniqueStringColumn,
-								mostUniqueNumericColumn])
+							"Type" : visTypes[i],
+							"DataColumns" : columnsToVisualize,
+							"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
 						}
 					);
-				}
 			}
 
-			//
-			// look for numeric vs numeric data
-			// make one of each of these graphs for each combo: Line, Bar, Scatter
-			if (numberColumns.length >= 2) {
-				var graphTypes = ["Line", "Scatter"];
-				var indepententVariableColumn;
-				var dependentVariableColumn;
-				var hasTwoDependentVariables = false;
-
-				if (numberColumns.length > 2) {
-					hasTwoDependentVariables = true;
-				}
-
-				// find independent variable
-				// select the leftmost numeric column to be the independent variable
-				indepententVariableColumn = numberColumns[0];
-
-				// find dependent variable
-				// select the most unique numeric column that is not the independent variable
-				var mostUniqueDependentColumn = numberColumns[1];
-				if (hasTwoDependentVariables) { // select a second dependent variable
-					var secondMostUniqueDependentColumn = numberColumns[2];
-				}
-				for (var i = 1; i < numberColumns.length; i++) {
-					if (currentDataset.Data.ColumnUnique[numberColumns[i]] > 
-							currentDataset.Data.ColumnUnique[mostUniqueDependentColumn]) {
-
-						if (hasTwoDependentVariables) {
-							secondMostUniqueDependentColumn = mostUniqueDependentColumn;
-						}
-						mostUniqueDependentColumn = numberColumns[i];
-					}
-				}
-
-				var dataColumnsToGraph = [];
-				dataColumnsToGraph.push(indepententVariableColumn);
-				dataColumnsToGraph.push(mostUniqueDependentColumn);
-				if (hasTwoDependentVariables) {
-					dataColumnsToGraph.push(secondMostUniqueDependentColumn);
-				}
-				for (var graphType = 0; graphType < graphTypes.length; graphType++) {
+			if (currentDataset.Data.Cols > 2) { // add the twoColumnOnly vis types
+				
+				for (var i = 0; i < twoColumnOnlyVisTypes.length; i++) {
 					visualizations.push(
-						{
-							"Type" : graphTypes[graphType],
-							"DataColumns" : dataColumnsToGraph,
-							"Score" : determineVisualizationScore(currentDataset, dataColumnsToGraph)
-						}
-					);
+							{
+								"Type" : twoColumnOnlyVisTypes[i],
+								"DataColumns" : [selectedColumns[0], selectedColumns[1]],
+								"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
+							}
+						);
 				}
-
 			}
-
-			currentDataset.Visualizations = visualizations;
 
 		}
+
+		// add the selected visualizations array to the dataset, note that this could be an empty array
+		// in the case that no suitable visualizations were found
+		currentDataset.Visualizations = visualizations;
+
 	}	
 
 }
  
-
+// give each dataset a score using this algorithm:
+// DataSetScore = (the sum of all column unique scores for the dataset) * (data set rows) * (data set cols)
 var rankDatasets = function(AIdataStructure) {
 	
 	for (var datasetIndex = 0; datasetIndex < AIdataStructure.length; datasetIndex++) {
+		
 		var currentDataset = AIdataStructure[datasetIndex];
-		var bestVisScoreFound = 0;
-		for (var visIndex = 0; visIndex < currentDataset.Visualizations.length; visIndex++) {
-			var currentVis = currentDataset.Visualizations[visIndex];
-			if (currentVis.Score > bestVisScoreFound) {
-				bestVisScoreFound = currentVis.Score;
-			}
+		var colUniqueSum = 0;
+
+		for (var col = 0; col < currentDataset.Data.Cols; col++) {
+			colUniqueSum = colUniqueSum + currentDataset.Data.ColumnUnique[col];
 		}
-		currentDataset.Data.DataSetScore = bestVisScoreFound;
+
+		currentDataset.Data.DataSetScore = colUniqueSum * currentDataset.Data.Cols * 
+			currentDataset.Data.Rows;
 	}
 }
+
 
 /**
  * Take raw parser data and return a data object to be used by the visualizer.
@@ -241,11 +237,17 @@ function AI(parserData) {
 
 	}
 
-	setTypes(AIdataStructure); // have the type checker assign column type to each column in each table
+	setTypes(AIdataStructure); 
+
+	console.log("AI: typeHandler produced this data: " + JSON.stringify(AIdataStructure));
 
 	determineVisualizationsToRequest(AIdataStructure);
 
+	console.log("AI: determineVisualizationsToRequest produced this data: " + JSON.stringify(AIdataStructure));
+
 	rankDatasets(AIdataStructure);
+
+	console.log("AI: rankDatasets  produced this data: " + JSON.stringify(AIdataStructure));
 	
 	// remove empty visualizations
 	for (var i = 0; i < AIdataStructure.length; i++) {

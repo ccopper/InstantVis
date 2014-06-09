@@ -78,8 +78,13 @@
  						<img src="images/save.png" id="saveIcon" alt="Save" height="50" width="50">
  				</div>
 			</div>
+			<br>
 			<div id="visWrapper">				
-				<div id="visualizationContainer"></div>
+				<div id="visualizationContainer">
+					<br>
+					<div id="visSVG" class="visualization">
+					</div>
+				</div>
 				<div id="sPaneDiv"></div>
 				<div id="tableContainer">
 					<table id="DataTable" class="tablesorter">
@@ -96,7 +101,9 @@
 						</caption>
 						<thead id="DTHead"></thead>
 						<tbody id="DTHeadEdit" class="tablesorter-infoOnly"></tbody>
-						<tbody id="DTSelMat" class="tablesorter-infoOnly"></tbody>
+						<tbody id="DTSelMatInd" class="tablesorter-infoOnly DTSelMat"></tbody>
+						<tbody id="DTSelMatD1" class="tablesorter-infoOnly DTSelMat"></tbody>
+						<tbody id="DTSelMatD2" class="tablesorter-infoOnly DTSelMat"></tbody>
 						<tbody id="DTBody"></tbody>
 					</table>
 				</div>
