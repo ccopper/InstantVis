@@ -242,18 +242,17 @@ TypeHandler.prototype.TypeLibrary =
 			"DefaultVal": function() { return 0; },
 			"accept": function (obj)
 			{
+				regEx = /^(\-?\d*)$/;
 				obj["Type"] = "Integer";
-				var fVal = parseInt(obj.RawVal.trim());
-				
-				if(isNaN(fVal))
+				if(!regEx.test(obj.RawVal.trim()))
 				{
 					obj["isValid"] = false;
 					obj["Val"] = 0;
 					return
 				}
-
-				obj["isValid"] = true;
-				obj["Val"] = fVal;
+				obj["isValid"] = regEx.test(obj.RawVal.trim());
+				var pVal = parseInt(obj.RawVal.trim());
+				obj["Val"] = isNaN(pVal)? 0 : pVal;
 				
 			}
 		},
@@ -263,18 +262,18 @@ TypeHandler.prototype.TypeLibrary =
 			"DefaultVal": function() { return 0.0; },
 			"accept": function (obj)
 			{	
+				var regEx = /^(\-?\d*(\.?\d*)?)$/;
 				obj["Type"] = "Float";
-				var fVal = parseFloat(obj.RawVal.trim());
-
-				if(isNaN(fVal))
+				if(!regEx.test(obj.RawVal.trim()))
 				{
 					obj["isValid"] = false;
-					obj["Val"] = 0;
+					obj["Val"] = 0.0;
 					return
 				}
 
-				obj["isValid"] = true;
-				obj["Val"] = fVal;
+				obj["isValid"] = regEx.test(obj.RawVal.trim());
+				var pVal = parseFloat(obj.RawVal.trim());
+				obj["Val"] = isNaN(pVal)? 0 : pVal;
 			}
 		}]
  };

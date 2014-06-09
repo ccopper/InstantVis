@@ -112,8 +112,8 @@ function populateTable(data, vis)
 		$("#DTHeadEdit tr").append(createHeaderEditor(hItem));
 		
 		$("#DTSelMatInd tr").append(createRadio("Ind", hItem, false));
-		$("#DTSelMatD1 tr").append(createRadio("D1", hItem, true));
-		$("#DTSelMatD2 tr").append(createRadio("D2", hItem, true));
+		$("#DTSelMatD1 tr").append(createRadio("D1", hItem, false));
+		$("#DTSelMatD2 tr").append(createRadio("D2", hItem, false));
 	}
   
 	//Populate the body
