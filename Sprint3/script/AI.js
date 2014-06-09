@@ -132,7 +132,7 @@ var determineVisualizationsToRequest = function(AIdataStructure) {
 
 			var twoColumnOnlyVisTypes = ["Pie", "Tree", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
-			var twoOrThreeColumnVisTypes = ["Bar", "Line", "BarHorizontal"];
+			var twoOrThreeColumnVisTypes = ["Bar", "Line"]; // , "BarHorizontal"];
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
 			var threeColumnVisTypes = twoOrThreeColumnVisTypes.concat(threeColumnOnlyVisTypes);
 
@@ -252,7 +252,15 @@ function AI(parserData) {
 		}
 	}
 	
-	console.log("AI removed " + visualizationsRemoved + " visualizations (perhaps all string data encountered) and produced this data: " + JSON.stringify(AIdataStructure));
+	var consoleRemovedMessage = "";
+
+	if (visualizationsRemoved > 0) { 
+		consoleRemovedMessage = " removed " + visualizationsRemoved + 
+			" visualizations (perhaps all string data was encountered in a table) and ";
+	}
+	
+	console.log("AI " + consoleRemovedMessage + " produced this data " 
+			+ JSON.stringify(AIdataStructure));
 
 	return AIdataStructure;
 }
