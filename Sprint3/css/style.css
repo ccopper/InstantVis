@@ -334,9 +334,15 @@
 }
 
 
-.iconBorder
+.iconBorderDefault
 {
 	border: solid white;
+	border-radius: 3px;
+}
+
+.iconBorderHighlight
+{
+	border: groove;
 	border-radius: 3px;
 }
 

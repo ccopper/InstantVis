@@ -317,9 +317,10 @@ function visTypeClickHandler(event)
 	console.log(iconId + 'Clicked');
 	$('#iconContainer img').each(function()
 	{
-		$(this).removeClass('iconBorder');
+		$(this).removeClass('iconBorderHighlight');
+		$(this).addClass('iconBorderDefault')
 	});
-	$('#'+iconId).addClass('iconBorder');
+	$('#'+iconId).addClass('iconBorderHighlight');
 
 	//Draw the visualization
 	var visType = iconId.replace('_icon','');
@@ -408,7 +409,7 @@ function loadVisTypeIcons(visTypes)
 				console.log('Encountered unexpected visualization type: '+visTypes[i]);
 		}
 		if(imagePath != NaN && iconId != NaN){
-			$("#iconContainer").append("<img id='" + iconId + "'' src='"+imagePath+"' height='50',width='50'/>");
+			$("#iconContainer").append("<img id='" + iconId + "'' src='"+imagePath+"' class='iconBorderDefault' height='50',width='50'/>");
 			$("#"+iconId).click(visTypeClickHandler);
 		}
 	}
