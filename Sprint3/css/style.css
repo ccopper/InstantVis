@@ -16,7 +16,7 @@
 {
 	height: 100px;
 	width: 100%;
-	background-color: #001942
+	background-color: #FFFFFF
 	display: inline;
 }
 
@@ -264,7 +264,7 @@
 	margin-right: auto;
 	width: 150px;
 	height: 40px;
-	/*background: #246894;*/
+	background: #FFFFFF;
 	background: black;
 	color: #FFFFFF;
 	border-radius:5px;
