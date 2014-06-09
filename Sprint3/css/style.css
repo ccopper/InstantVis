@@ -328,6 +328,11 @@
 	color: red;
 }
 
+.imageButton
+{
+	cursor: pointer;
+}
+
 
 .iconBorder
 {
