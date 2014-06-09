@@ -85,6 +85,11 @@ function readyFunction()
 	
 }
 
+function refreshPage()
+{
+	location.reload()
+}
+
 //Called to fix table and graph size
 function resizeVisWrapper()
 {
