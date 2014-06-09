@@ -594,8 +594,10 @@ function exportVisualization()
 
     var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
   	var img = '<img src="'+imgsrc+'">'; 
-  	window.open(imgsrc)
-  	// d3.select("#visExport").html(img);
+  	d3.select("#visExport").html(img);
+  	var w = window.open()
+  	w.document.write($("#visExport").html());
+  	w.document.close()
 }
 
 function submitForm(urlToParse)
