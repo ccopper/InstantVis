@@ -98,13 +98,13 @@ function populateTable(data, vis)
 	$("#DTHeadEdit tr").append("<th />");
 	//Selections matricies
 	$("#DTSelMatInd").append("<tr />");
-	$("#DTSelMatInd tr").append("<th>Independent</th>");
+	$("#DTSelMatInd tr").append("<th id=\"IndLbl\">Independent</th>");
 	
 	$("#DTSelMatD1").append("<tr /><");
-	$("#DTSelMatD1 tr").append("<th>Dependent</th>");
+	$("#DTSelMatD1 tr").append("<th id=\"D1Lbl\">Dependent</th>");
 	
 	$("#DTSelMatD2").append("<tr /><");
-	$("#DTSelMatD2 tr").append("<th>Dependent</th>");
+	$("#DTSelMatD2 tr").append("<th id=\"D2Lbl\">Dependent</th>");
 	
 	for(var hItem in data.Data.ColumnLabel)
 	{
@@ -119,10 +119,18 @@ function populateTable(data, vis)
 	//Populate the body
 	for(var row in data.Data.Values)
 	{
-		$("#DTBody").append($("<tr>", {
+		var rowEle = $("<tr>", {
 			"id": "DTRow" + row,
 			"data": { "rowNum" : row }
-		}));
+		}).hover(function ()
+		{
+			$(this).children("td:first-child").children().show();
+		}, function ()
+		{
+			$(this).children("td:first-child").children().hide();
+		});
+		
+		$("#DTBody").append(rowEle);
 		$("#DTBody tr:last").append(createDelRow(row));
 		for(var col in data.Data.Values[row])
 		{
@@ -239,10 +247,22 @@ function createHeaderLabel(colNum)
 function createHeaderEditor(colNum)
 {
 	
-	var cont = $("<th>", { })
+	var cont = $("<th>", 
+	{ 
+		"data": { "colNum": colNum }
+	});
+	cont.hover(function ()
+	{
+		var col = $(this).data("colNum");
+		$("#hDel" + col).css("visibility", "visible");
+	}, function ()
+	{
+		var col = $(this).data("colNum");
+		$("#hDel" + col).css("visibility", "hidden");
+	});
 	
 	cont.append($("<span>",{ 
-		"id": "hEdit" + colNum, 
+		"id": "hEdit" + colNum,
 		"class": "mButton",
 		"text": "EDIT",
 		"click": editHeader,
@@ -251,6 +271,7 @@ function createHeaderEditor(colNum)
 	cont.append("<br>");
 	cont.append($("<span>",{ 
 		"id": "hDel" + colNum, 
+		"style": "visibility: hidden;",
 		"class": "mButton",
 		"text": "DEL",
 		"click": deleteColumn,
@@ -279,6 +300,7 @@ function createDelRow(rowNum)
 	cont.append($("<span>", {
 		"text": "DEL",
 		"class": "mButton",
+		"style": "display: none;",
 		"click": deleteRow,
 		"data": { "rowNum": rowNum }
 		}));
