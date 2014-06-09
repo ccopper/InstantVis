@@ -58,7 +58,7 @@
 	width: 100%;
 	height: 100%;
 	display: none;
-	background-color: #0A1429;
+	background-color: #FFFFFF;
 }
 
 #iconContainer
@@ -114,7 +114,7 @@
 	padding: 0px;
 	text-align: center;
 	vertical-align: middle;
-	background-color: #0066CC;
+	background-color: #FFFFFF;
 
 }
 #visSVG
@@ -143,7 +143,7 @@
 	width: 5px;
 	height: 90%;
 	overflow: auto;
-	background-color: #0066CC;
+	background-color: #FFFFFF;
 
 }
 /* TABLE FORMATTING */
