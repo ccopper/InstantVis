@@ -27,8 +27,14 @@ function TypeHandler() {}
  */
 TypeHandler.prototype.processTable = function(table)
 {
+	if(typeof table.Data.Values == "undefined")
+	{
+		table.Data.Values = [[""]]
+		table.Data.ColumnLabel = [""];
+		table.Data.ColumnUnique = [1];
+		table.Data.ColumnType = ["String"];
+	}
 	table.Data.ColumnUnique = []
-
 	
 	//Check for labels
 	var hasLabels = true;
@@ -96,8 +102,16 @@ TypeHandler.prototype.processTable = function(table)
 		table.Data.ColumnType[col] = vTypes[0];
 		table.Data.ColumnUnique[col] = setData.getUniqueCount() / table.Data.Values.length;
 		
-	}	
+	}
 
+	if(!hasLabels)
+	{
+		table.Data.ColumnLabel = [];
+		for(var col in table.Data.Values[0])
+		{
+			table.Data.ColumnLabel.push("Col. " + col);
+		}
+	}
 }
 
 TypeHandler.prototype.removeEmpty = function(data)
