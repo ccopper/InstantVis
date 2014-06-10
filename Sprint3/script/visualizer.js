@@ -1115,6 +1115,7 @@ Scatter.prototype.draw = function(divId)
         })
         .attr("r", defaultRadius)
         .attr("fill", color)
+        .style("stroke", "black")
         .on("mouseover", function(d, i) {
             if(!toggle[i]) {
                 var x = xScale(d[0]);
@@ -1275,6 +1276,7 @@ Scatter.prototype.draw = function(divId)
             })
             .attr("r", defaultRadius)
             .attr("fill", color2)
+            .style("stroke", "black")
             .on("mouseover", function(d, i) {
                 if(!toggle[numValuesPerDataSet + i]) {
                     var x2 = xScale(d[0]);
