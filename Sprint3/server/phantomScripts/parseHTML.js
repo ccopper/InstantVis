@@ -1,7 +1,8 @@
 /**
-*	Phantom JS HTML Parsing/Scraping
+*	Phantom JS HTML Parsing/Scraping.
 *	
-*	@module parseHTML.js
+*
+*	@module parseHTML
 */
 
 /*=========================================================
@@ -26,7 +27,7 @@ var outputData =
 	 "E64":""
 }
 /**
- *	Outputs the result to stdout and exits
+ *	Outputs the result to stdout and exits.
  *
  *	@method writeQuit
  *	@param {json} Data		The output data
@@ -62,6 +63,13 @@ var page = webpage.create();
 	writeQuit(outputData);
 }*/
 
+/**
+ *	Loads the page. Writes any tables to stdout and then exits.
+ *
+ *	@method Main
+ *	@param {json} Data		The output data
+ *	
+ */
 page.onError = function(msg, trace) 
 {
 	system.stderr.writeLine(msg);

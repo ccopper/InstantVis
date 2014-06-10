@@ -234,6 +234,79 @@ test("-.2 is a valid Float", function()
 	equal(obj.Type, "Float", "obj.isValid == Float");
 	equal(obj.isValid, true, "obj.isValid == true");
 });
+test("$-.2% is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "$-.2%"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -.2, "obj.Val == -.2");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+
+test("$-0.2m/s^2 is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "$-0.2m/s^2"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -.2, "obj.Val == -.2");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+
+test("$-999,455.55% is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "$-999,455.55%"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -999455.55, "obj.Val == -999455.55");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+test("$999,455.55% is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "$999,455.55%"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 999455.55, "obj.Val == 999455.55");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+test("-999,455.55% is a valid Float", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "-999,455.55%"
+	}	
+	TH.testType(obj, "Float");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, -999455.55, "obj.Val == 999455.55");
+	equal(obj.Type, "Float", "obj.isValid == Float");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+
 
 test("one is an invalid Float", function()
 {
@@ -294,6 +367,38 @@ test("-4.75 is not a valid Integer", function()
 	equal(obj.Type, "Integer", "obj.isValid == Integer");
 	equal(obj.isValid, false, "obj.isValid == false");
 });
+
+test("$555% is  a valid Integer", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "$555%"
+	}	
+	TH.testType(obj, "Integer");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 555, "obj.Val == 555");
+	equal(obj.Type, "Integer", "obj.isValid == Integer");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+
+test("555m/s^2 is  a valid Integer", function()
+{
+	var TH = new TypeHandler();
+	var obj = 
+	{
+		"RawVal": "555m/s^2"
+	}	
+	TH.testType(obj, "Integer");
+	
+	equal(true, true, "Raw Data:" + JSON.stringify(obj));
+	equal(obj.Val, 555, "obj.Val == 555");
+	equal(obj.Type, "Integer", "obj.isValid == Integer");
+	equal(obj.isValid, true, "obj.isValid == true");
+});
+
+
 
 test("one is not a valid Integer", function()
 {

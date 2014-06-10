@@ -130,10 +130,10 @@ TypeHandler.prototype.removeEmpty = function(data)
 }
 TypeHandler.prototype.isEmptyRow = function(row)
 {
-	var res = false;
+	var res = true;
 	for(var i in row)
 	{
-		res = res || (row[i].trim() == "");
+		res = res && (row[i].trim() == "");
 	}
 	return res;
 };
@@ -244,8 +244,8 @@ TypeHandler.prototype.TypeLibrary =
 	"Default": "String",
 	"Precedence": 
 	[ 
-		"Float",
 		"Integer",
+		"Float",
 		"String"
 	],
 	"Types": 
@@ -256,16 +256,29 @@ TypeHandler.prototype.TypeLibrary =
 			"DefaultVal": function() { return 0; },
 			"accept": function (obj)
 			{
-				regEx = /^(\-?\d*)$/;
+				var raw = obj.RawVal.trim().replace(",", "");
+				var regEx = /^([^\d\-\.]+)?(\-?\d*)([^\:\d\.]+.*)?$/;
+				
 				obj["Type"] = "Integer";
-				if(!regEx.test(obj.RawVal.trim()))
+				if(!regEx.test(raw))
 				{
 					obj["isValid"] = false;
 					obj["Val"] = 0;
 					return
 				}
-				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				var pVal = parseInt(obj.RawVal.trim());
+
+				var res = regEx.exec(raw);
+				console.log(res)
+				if(typeof(res[2]) == "undefined" || res[2] == "")
+				{
+					obj["isValid"] = false;
+					obj["Val"] = 0;
+					return
+				}
+				
+				obj["isValid"] = regEx.test(raw);
+
+				var pVal = parseInt(res[2]);
 				obj["Val"] = isNaN(pVal)? 0 : pVal;
 				
 			}
@@ -276,17 +289,29 @@ TypeHandler.prototype.TypeLibrary =
 			"DefaultVal": function() { return 0.0; },
 			"accept": function (obj)
 			{	
-				var regEx = /^(\-?\d*(\.?\d*)?)$/;
+				var raw = obj.RawVal.trim().replace(",", "");
+				var regEx = /^([^\d\-\.]+)?(\-?\d*(\.?\d*)?)([^\:\d]+.*)?$/;
+				
 				obj["Type"] = "Float";
-				if(!regEx.test(obj.RawVal.trim()))
+				if(!regEx.test(raw))
 				{
 					obj["isValid"] = false;
 					obj["Val"] = 0.0;
 					return
 				}
 
-				obj["isValid"] = regEx.test(obj.RawVal.trim());
-				var pVal = parseFloat(obj.RawVal.trim());
+				var res = regEx.exec(raw);
+
+				if(typeof(res[2]) == "undefined" || res[2] == "")
+				{
+					obj["isValid"] = false;
+					obj["Val"] = 0.0;
+					return
+				}
+				
+				obj["isValid"] = regEx.test(raw);
+
+				var pVal = parseFloat(res[2]);
 				obj["Val"] = isNaN(pVal)? 0 : pVal;
 			}
 		}]
