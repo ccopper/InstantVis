@@ -421,9 +421,7 @@ function exportVisualization()
 	 
 		var canvasdata = canvas.toDataURL("image/png");
 	 
-		var pngimg = '<img src="'+canvasdata+' width=">'; 
-	  	d3.select("#pngdataurl").html(pngimg);
-	 
+		var pngimg = '<img src="'+canvasdata+'" width="1000" height="1000">'; 	 
 		var a = document.createElement("a");
 		a.download = "visualization.png";
 		a.href = canvasdata;
