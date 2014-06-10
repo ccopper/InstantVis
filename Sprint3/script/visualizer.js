@@ -374,7 +374,13 @@ Bubble.prototype.draw = function(divId)
             transform: "translate(0," + (height) + ")"
             })
         .attr("width", width)
-        .call(xAxis); 
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)"); 
 
     // Draw the y-axis.
     svg.append("g")
@@ -1002,7 +1008,13 @@ Scatter.prototype.draw = function(divId)
             transform: "translate(0," + (height) + ")"
             })
         .attr("width", width)
-        .call(xAxis); 
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)"); 
 
     // Draw the y-axis.
     svg.append("g")
@@ -1709,7 +1721,13 @@ Line.prototype.draw = function (divId) {
         .attr("class", "axis")
         .attr("transform", "translate(0," + (height) + ")")
         .attr("width", width)
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)");
 
 
     // Display the y-axis. 
@@ -1986,7 +2004,7 @@ function Bar (dataSet, labels, columnTypes, title, width, height) {
 
 Bar.prototype.draw = function(divId) {
 
-    var margin = {top: 50, right: 55, bottom: 40, left: 55};
+    var margin = {top: 50, right: 55, bottom: 55, left: 55};
 
     var numValuesPerDataSet = this.dataSet.length;
     var numDataSets = this.dataSet[0].length;
@@ -2475,7 +2493,13 @@ Bar.prototype.draw = function(divId) {
                 class: "x-axis",
                 "transform": "translate(" + (barWidth + barPadding/2) + "," + height + ")"
             })
-            .call(xAxis);
+            .call(xAxis)
+            .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)");
 
         // Create y-axis
         svg.append("g")
@@ -2492,7 +2516,13 @@ Bar.prototype.draw = function(divId) {
             class: "x-axis",
             "transform": "translate(" + (barWidth/2) + "," + height + ")"
         })
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)");
     }
 
     // Create y-axis
