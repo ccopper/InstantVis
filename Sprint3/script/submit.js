@@ -405,15 +405,30 @@ function exportVisualization()
         .node().parentNode.innerHTML;
 
     var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
-  	var img = '<img src="'+imgsrc+'">'; 
-  	d3.select("#visExport").html(img);
-  	var download = document.createElement('a');
-  	download.href = imgsrc;
-  	download.download = "visualization.png";
-  	download.click();
+  	//var img = '<img src="'+imgsrc+'">'; 
+  	//d3.select("#visExport").html(img);
   	// var w = window.open()
   	// w.document.write($("#visExport").html());
   	// w.document.close()
+
+  	var canvas = document.querySelector("canvas"),
+	context = canvas.getContext("2d");
+ 
+	var image = new Image;
+	image.src = imgsrc;
+	image.onload = function() {
+		context.drawImage(image, 0, 0);
+	 
+		var canvasdata = canvas.toDataURL("image/png");
+	 
+		var pngimg = '<img src="'+canvasdata+'">'; 
+	  	d3.select("#pngdataurl").html(pngimg);
+	 
+		var a = document.createElement("a");
+		a.download = "visualization.png";
+		a.href = canvasdata;
+		a.click();
+	  };
 }
 
 /**
