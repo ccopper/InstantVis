@@ -1,7 +1,7 @@
-/*
- * tableScraper() and associated functions that tableScraper() uses to scrape html tabular data.
- * Call tableScraper() from within the html document in question.
- *
+/**
+ * @file Scrape HTML tabular data.
+ * @example
+ * Call tableScraper() from within the HTML document in question.
  */
 
 
