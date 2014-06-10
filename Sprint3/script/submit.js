@@ -418,10 +418,10 @@ function exportVisualization()
 	image.src = imgsrc;
 	image.onload = function() {
 		context.drawImage(image, 0, 0);
-	 
 		var canvasdata = canvas.toDataURL("image/png");
-	 
-		var pngimg = '<img src="'+canvasdata+'" width="1000" height="1000">'; 	 
+	 	canvas.width = $("#visSVG").width;
+	 	canvas.height = $("#visSVG").height;
+		var pngimg = '<img src="'+canvasdata+'">'; 	 
 		var a = document.createElement("a");
 		a.download = "visualization.png";
 		a.href = canvasdata;
