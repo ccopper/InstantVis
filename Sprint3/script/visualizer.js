@@ -434,6 +434,7 @@ Bubble.prototype.draw = function(divId)
             return rScale(d[2]); 
         })
         .attr("fill", color)
+        .style("stroke", "black")
         .on("mouseover", function(d, i) {
             this.setAttribute("fill", highlightColor);
             if (!toggle[i]) {
@@ -462,7 +463,7 @@ Bubble.prototype.draw = function(divId)
 
                 svg.append("path")
                     .attr("id", ("bubble-line-label"+i))
-                    .style("stroke", color)
+                    .style("stroke", "black")
                     .attr("d", line(lineData));
                 svg.append("rect")
                     .attr("id", ("bubble-rect-label"+i))
@@ -471,7 +472,7 @@ Bubble.prototype.draw = function(divId)
                     .attr("width", rectWidth)
                     .attr("height", highlightTextHeight + 2*highlightTextPadding)
                     .attr("fill", highlightRectFillColor)
-                    .style("stroke", color);
+                    .style("stroke", 'black');
                 svg.append("text")
                     .attr("id", ("bubble-text-label"+i))
                     .attr("x", textX)
@@ -483,6 +484,7 @@ Bubble.prototype.draw = function(divId)
             }
         })
         .on("click", function(d, i) {
+            d3.select(this).moveToFront()
             // Remove the popup created by the mouseover.
             d3.select(("#bubble-text-label"+i)).remove();
             d3.select(("#bubble-rect-label"+i)).remove();  
@@ -524,7 +526,7 @@ Bubble.prototype.draw = function(divId)
 
             svg.append("path")
                 .attr("id", ("bubble-line-label"+i))
-                .style("stroke", color)
+                .style("stroke", "black")
                 .attr("d", line(lineData));
             svg.append("rect")
                 .attr("id", ("bubble-rect-label"+i))
@@ -533,7 +535,7 @@ Bubble.prototype.draw = function(divId)
                 .attr("width", rectWidth)
                 .attr("height", highlightTextHeight + 2*highlightTextPadding)
                 .attr("fill", highlightRectFillColor)
-                .style("stroke", color);
+                .style("stroke", "black");
             svg.append("text")
                 .attr("id", ("bubble-text-label"+i))
                 .attr("x", textX)
