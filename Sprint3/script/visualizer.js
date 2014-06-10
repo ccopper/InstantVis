@@ -1050,6 +1050,7 @@ Scatter.prototype.draw = function(divId)
             transform: "translate(0," + (height) + ")"
             })
         .attr("width", width)
+        .attr("style","font-family:sans-serif;font-size: 11px;")
         .call(xAxis); 
 
     // Draw the y-axis.
