@@ -110,7 +110,7 @@ function resizeVisWrapper()
 /**
  * This function is called when the user selects a table from the drop down list.
  * It is also called manually to automatically select the first table and display its visualizations.
- * @param {event} event - The listbox change event that triggers this function. Or a number representing a table to select.
+ * @param {Object} event - The listbox change event that triggers this function. Or a number representing a table to select.
 */
 function tableSelectHandler(event)
 {
@@ -137,7 +137,7 @@ function tableSelectHandler(event)
 
 /**
  * This function is called once the parser has completed parsing. The data is analyzed and then loaded into the interface.
- * @param {data} data - The table data that the parser found.
+ * @param {Object} data - The table data that the parser found.
 */
 function parseComplete(data)
 {
@@ -199,7 +199,7 @@ function populateTableSelect()
 /**
  * This function takes a table and its corresponding number 
  * and adds an entry in the table selection list box for it.
- * @param {table} table - The table object to get a caption from if possible.
+ * @param {Object} table - The table object to get a caption from if possible.
  * @param {number} tableNumber - The order of the table in the Analyzer data
 */
 function addTable(table,tableNumber)
@@ -219,7 +219,7 @@ function addTable(table,tableNumber)
 
 /**
  * This function is called whenever a visualization type icon is clicked. It finds and loads the appropriate visualization.
- * @param {event} event - The event that triggers this function or a string representing the icon id being clicked.
+ * @param {Object} event - The event that triggers this function or a string representing the icon id being clicked.
 */
 function visTypeClickHandler(event)
 {
@@ -264,7 +264,7 @@ function visTypeClickHandler(event)
 
 /**
  * This function loads the appropriate visualization type icons for the current selected table.
- * @param {[string]} visTypes - An array of strings representing the visualization types to be shown.
+ * @param {Array} visTypes - An array of strings representing the visualization types to be shown.
 */
 function loadVisTypeIcons(visTypes)
 {
@@ -355,8 +355,8 @@ function getGraphTypes(tableNumber)
 
 /**
  * This function will return if a given element exists in a given array.
- * @param {array} array - The array to check for the given element
- * @param {anything} element - The element to check for in the array
+ * @param {Array} array - The array to check for the given element
+ * @param {Object} element - The element to check for in the array
 */
 function arrayContains(array,element)
 {
