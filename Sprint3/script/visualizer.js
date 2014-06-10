@@ -315,7 +315,7 @@ Bubble.prototype.draw = function(divId)
     if (this.columnTypes[0] != "String") {
 
         var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .domain([d3.min(this.dataSet, function(d) { return d[0]; }), d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([0, width]);
 
     } else {
@@ -910,12 +910,8 @@ Scatter.prototype.draw = function(divId)
 
     if (this.columnTypes[0] != "String") {
         var xScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                        .domain([d3.min(this.dataSet, function(d) { return d[0]; }), d3.max(this.dataSet, function(d) { return d[0]; })])
                         .range([0, width]);
-
-        var reverseXScale = d3.scale.linear()
-                        .domain([0, width])
-                        .range([0, d3.max(this.dataSet, function(d) { return d[0]; })]);
     } else {
         for (var i = 0; i < this.dataSet.length; i++) {
             xValues.push(this.dataSet[i][0]);
@@ -924,10 +920,6 @@ Scatter.prototype.draw = function(divId)
         var xScale = d3.scale.ordinal()
                         .domain(xValues)
                         .rangePoints([0,width]);
-
-        var reverseXScale = d3.scale.ordinal()
-                        .domain([0,width])
-                        .rangePoints(xValues);
     }
 
     var yScale = d3.scale.linear()
@@ -935,20 +927,10 @@ Scatter.prototype.draw = function(divId)
                         .range([height, 0])
                         .clamp(true);
 
-    var reverseYScale = d3.scale.linear()
-                        .domain([height, 0])
-                        .range([0, maxY])
-                        .clamp(true);
-
     if (multiset) {
         var yScale2 = d3.scale.linear()
                         .domain([0, maxY2])
                         .range([height, 0])
-                        .clamp(true);
-
-        var reverseYScale2 = d3.scale.linear()
-                        .domain([height, 0])
-                        .range([0, maxY2])
                         .clamp(true);
     }
 
@@ -1108,7 +1090,7 @@ Scatter.prototype.draw = function(divId)
         .append("circle")
         .attr("class", ("data-point-set" + 1))
         .attr("cx", function(d, i) {
-            return xScale(d[0])
+            return xScale(d[0]);
         })
         .attr("cy", function(d, i) {
             return yScale(d[1]);
@@ -1550,7 +1532,7 @@ Line.prototype.draw = function (divId) {
     if (this.columnTypes[0] != "String") {
 
         var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .domain([d3.min(this.dataSet, function(d) { return d[0]; }), d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([0, width])
                  .clamp(true);
 
