@@ -8,7 +8,9 @@ var isDrag = false;
 
 $(document).ready(readyFunction);
 	
-
+/**
+ * this function adds various event handlers to the interface components.
+*/
 function readyFunction()
 {
 
@@ -134,7 +136,8 @@ function tableSelectHandler(event)
 
 
 /**
- * This
+ * This function is called once the parser has completed parsing. The data is analyzed and then loaded into the interface.
+ * @param {data} data - The table data that the parser found.
 */
 function parseComplete(data)
 {
@@ -177,6 +180,11 @@ function parseComplete(data)
 	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
 }
+
+/**
+ * This function takes the list of tables received from the
+ * Analyzer and adds entries in the table selection list box for each.
+*/
 function populateTableSelect()
 {
 	var sel = $('#tableSelectionBox').val();
@@ -188,117 +196,12 @@ function populateTableSelect()
 	$('#tableSelectionBox').val(sel);
 }
 
-function loadToolbox()
-{
-	$("#userInputArea").slideUp();
-	$("#logo").hide();
-	$("#testButton").hide();
-	$("#visualizationToolbox").show();
-	$("#visualizationToolbox").height($(window).height()-$('#toolBar').height()+40);
-
-	var table1 = {		
- 		"Visualizations":		
- 			[{			
- 				"Type": "Bar",			
- 				"DataColumns": [0, 1]		
- 			},{			
- 				"Type": "Line",			
- 				"DataColumns": [0, 1, 2, 3]		
- 			},{			
- 				"Type": "Scatter",			
- 				"DataColumns": [0, 1]		
- 			},{         
-                 "Type": "Area",          
-                 "DataColumns": [0, 1]       
-             }],		
- 		"Data":		
- 			{			
- 				"ColumnLabel": ["X", "Y"],			
- 				"ColumnType": ["Integer", "Integer"],			
- 				"Values":				
- 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
- 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
-                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [11, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [13, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [14, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [18, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [19, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [20, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
- 			}		
- 		};
- 	var table2 = {		
- 		"Visualizations":		
- 			[{			
- 				"Type": "Bar",			
- 				"DataColumns": [0, 1]		
- 			},{			
- 				"Type": "Line",			
- 				"DataColumns": [0, 1, 2, 3]		
- 			},{			
- 				"Type": "Scatter",			
- 				"DataColumns": [0, 1]		
- 			},{         
-                 "Type": "Area",          
-                 "DataColumns": [0, 1]       
-             }],		
- 		"Data":		
- 			{		
- 				"Caption": "2014 Rain Fall",	
- 				"ColumnLabel": ["X", "Y"],			
- 				"ColumnType": ["Integer", "Integer"],			
- 				"Values":				
- 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
- 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[9,	19, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
-                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [12, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [13, 7, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [14, 9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [15, 12, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [17, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [18, 3, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [19, 4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [20, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [21, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
- 			}		
- 		};
- 	tables = [table1,table2];
-
- 	for(var i=0; i<tables.length; i++)
-	{
-		addTable(tables[i],i);
-	}
-
-	//Load first visualization
-	tableSelectHandler(0);
-	//Select first table in selection box
-	$('#tableSelectionBox').val("0");
-}
-
-
+/**
+ * This function takes a table and its corresponding number 
+ * and adds an entry in the table selection list box for it.
+ * @param {table} table - The table object to get a caption from if possible.
+ * @param {number} tableNumber - The order of the table in the Analyzer data
+*/
 function addTable(table,tableNumber)
 {
 	//If the table has a name, insert it instead of 'table: #'
@@ -314,10 +217,13 @@ function addTable(table,tableNumber)
 }
 
 
-
+/**
+ * This function is called whenever a visualization type icon is clicked. It finds and loads the appropriate visualization.
+ * @param {event} event - The event that triggers this function or a string representing the icon id being clicked.
+*/
 function visTypeClickHandler(event)
 {
-	//Add a border to the icon clicked and remove any existing borders
+	//First check to see if the function was called via an event or manually with a string
 	var iconId = NaN;
 	if(typeof(event) == 'string')
 	{
@@ -327,47 +233,19 @@ function visTypeClickHandler(event)
 		iconId = event.target.id;
 	}
 	console.log(iconId + 'Clicked');
+
+	//Set all icon borders to white so they can't be seen.
 	$('#iconContainer img').each(function()
 	{
 		$(this).removeClass('iconBorderHighlight');
 		$(this).addClass('iconBorderDefault')
 	});
+	//Highlight the border of the clicked icon to show it has been clicked
 	$('#'+iconId).addClass('iconBorderHighlight');
 
 	//Draw the visualization
 	var visType = iconId.replace('_icon','');
-/*	var visDivId = 'table_'+currentTable+'_visType_'+visType;
 
-	//Check if visualization already exists, if not make it.
-	if($('#'+visDivId).length)
-	{
-		console.log('Found existing div: '+visDivId);
-		//If the requested graph is already shown, do nothing.
-		if($('#'+visDivId).is(':visible'))
-		{
-			return;
-		}else{
-			//Hide all other visualizations and show the current visualization and tools
-			$('#'+visDivId).siblings().hide();
-			$('#'+visDivId).show();
-			$('#options').show();
-		}
-	}else{
-		console.log('Creating new visualization div for '+visDivId);
-		createDiv('visualizationContainer',visDivId,"","",'visualization');
-		var visualization = getVisualization(tables[currentTable],visType);
-		if(!visualization)
-		{
-			console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
-		}else{
-			visualization.draw(visDivId);
-			$('#'+visDivId).show();
-			$('#'+visDivId).siblings().hide();
-			$('#options').show();	
-		}
-		
-	}
-	*/
 	$("#visSVG").empty();
 	var visualization = getVisualization(tables[currentTable],visType);
 	if(!visualization)
@@ -384,9 +262,15 @@ function visTypeClickHandler(event)
 	resizeVisWrapper();
 }
 
+/**
+ * This function loads the appropriate visualization type icons for the current selected table.
+ * @param {[string]} visTypes - An array of strings representing the visualization types to be shown.
+*/
 function loadVisTypeIcons(visTypes)
 {
+	//Remove all existing icons
 	$('#iconContainer').empty();
+	//For every visualization type load the appropriate icon
 	for(var i = 0; i<visTypes.length; i++)
 	{
 		var imagePath = NaN;
@@ -427,6 +311,9 @@ function loadVisTypeIcons(visTypes)
 	}
 }
 
+/**
+ * This function will hide the table from the interface and center the visualization in the middle.
+*/
 function toggleDataTable()
 {
 	if($("#tableContainer").is(":visible"))
@@ -443,6 +330,10 @@ function toggleDataTable()
 	resizeVisWrapper();
 }
 
+/**
+ * This function will return the appropriate visualization types for a specified table.
+ * @param {number} tableNumber - A number representing a table to be pulled from the analyzer data.
+*/
 function getGraphTypes(tableNumber)
 {
 	var currentTable = tables[tableNumber];
@@ -462,15 +353,11 @@ function getGraphTypes(tableNumber)
 	return graphTypes;
 }
 
-function printArray(array)
-{
-	console.log("Printing array...")
-	for(var i = 0; i < array.length; i++)
-	{
-		console.log('\t'+i+': '+array[i]);
-	}
-}
-
+/**
+ * This function will return if a given element exists in a given array.
+ * @param {array} array - The array to check for the given element
+ * @param {anything} element - The element to check for in the array
+*/
 function arrayContains(array,element)
 {
 	if(array.length == 0)
@@ -488,6 +375,10 @@ function arrayContains(array,element)
 }
 
 
+/**
+ * This function checks the url for a supplied ?URL= parameter
+ * and tries to parse the url automatically.
+*/
 function getURLParams()
 {
 	var match,
@@ -503,13 +394,11 @@ function getURLParams()
 	return urlParams
 }
 
+/**
+ * This function translates the svg information into an image and opens that image in a new page.
+*/
 function exportVisualization()
 {
-	// if(d3.select("visSvg") != "null")
- //    {
- //    	alert("Could not find visualization to save")
- //    	return
- //    }
 	var html = d3.select("svg")
 		.attr("version", 1.1)
         .attr("xmlns", "http://www.w3.org/2000/svg")
@@ -518,11 +407,19 @@ function exportVisualization()
     var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
   	var img = '<img src="'+imgsrc+'">'; 
   	d3.select("#visExport").html(img);
-  	var w = window.open()
-  	w.document.write($("#visExport").html());
-  	w.document.close()
+  	var download = document.createElement('a');
+  	download.href = imgsrc;
+  	download.download = "visualization.png";
+  	download.click();
+  	// var w = window.open()
+  	// w.document.write($("#visExport").html());
+  	// w.document.close()
 }
 
+/**
+ * This function sends a url to the server to parse.
+ * @param {string} urlToParse - The url to send to the server to pares for table data.
+*/
 function submitForm(urlToParse)
 {
 	var url = NaN;
@@ -556,99 +453,10 @@ function submitForm(urlToParse)
 	console.log("url: " + url);
 }
 
-
-
-
-function tableClickHandler(event)
-{
-	var callerId = event.target.id;
-	//Do not handle column set clicks
-	if(!/table\d+/.test(callerId))
-	{
-		return;
-	}
-	var tableNumber = parseInt(callerId.substring(5));
-	var columnSet = tableColumnSets[tableNumber][0][0];
-	var visType = tables[tableNumber].Visualizations[0].Type;
-
-	console.log(callerId+' clicked.')
-	//If opening a different table, clear all visualizations
-	if(!$('#'+$('#'+callerId).children()[0].id).is(':visible'))
-	{
-		$('#visualizationContainer').children().hide();
-	}
-	//Collapse other open tables
-	var children = $('#'+callerId).parent().children();
-	for(childIndex = 0; childIndex < children.length; childIndex++)
-	{
-		if(children[childIndex].id != callerId)
-		{
-			collapseTable(children[childIndex].id);
-		}else{
-			expandTable(children[childIndex].id);
-		}
-	}
-	var columnSetId = $('#'+callerId).children()[0].id;
-	loadVisTypeIcons(getGraphTypes(columnSetId),columnSetId);
-	//Automatically draw first table and load vis options
-	visTypeClickHandler('table_'+tableNumber+'_columnSet0'+'_'+visType);
-	//getVisualization(tables[tableNumber],columnSet,visType).draw('visualization');
-}
-
-function columnSetClickHandler(event)
-{
-	var iconId = NaN;
-	//This function can be called by an event or by another function
-	//The parameter may be either a string or an event
-	if(typeof(event)=='string')
-	{
-		iconId = event;
-	} else{
-		iconId = event.target.id;
-	}
-	console.log('Column set click: '+iconId);
-	$('#visualization').empty();
-	//Draw first graph type automatically
-	var tableNumber = parseInt(iconId.charAt(6));
-	var columnSetNumber = parseInt(iconId.charAt(17));
-	var columnSet = tableColumnSets[tableNumber][0][columnSetNumber];
-	var graphs = getGraphTypes(iconId);
-	loadVisTypeIcons(graphs,iconId);
-	visTypeClickHandler('table_'+tableNumber+'_columnSet'+columnSetNumber+'_'+graphs[0]);
-}
-
-
-function arrayContainsSubArray(array,element)
-{
-	if(array.length == 0)
-	{
-		return false;
-	}
-	for(k=0; k < array.length; k++)
-	{
-		if(arraysAreEqual(array[k],element))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-function arraysAreEqual(arrayA,arrayB)
-{
-	if(arrayA.length != arrayB.length)
-	{
-		return false;
-	}
-	for(index = 0; index < arrayA.length; index++)
-	{
-		if(arrayA[index] != arrayB[index]){
-			return false;
-		}
-	}
-	return true;
-}
-
+/**
+ * This function displays an error message if a non-recoverable error is reached.
+ * @param {string} errMessage - The message to be displayed
+*/
 function nonRecoverableError(errMessage)
 {
 	$("#resultsMessage").html(errMessage);
