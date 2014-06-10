@@ -788,75 +788,6 @@ Pie.prototype.draw = function(divId)
         }
 }
 
-function Area(dataSet, width, height) 
-{
-    this.dataSet = dataSet;
-    this.width = width;
-    this.height = height;
-}
-
-Area.prototype.draw = function(divId)
-{
-    // TODO: Make the number of ticks on an axis somehow dynamic.
-
-    var w = this.width;
-    var h = this.height;
-    var padding = 20;
-
-    var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([globalPadding, w - globalPadding]);
-
-    var yScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
-                        .range([h - globalPadding, globalPadding]);
-
-    var rScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
-                        .range([2, 5]);
-
-    var xAxis = d3.svg.axis()
-                    .scale(xScale)
-                    .orient("bottom")
-                    .ticks(5);
-
-    var yAxis = d3.svg.axis()
-                    .scale(yScale)
-                    .orient("left")
-                    .ticks(5);
-
-    var area = d3.svg.area()
-                    .x(function(d) { return xScale(d[0]); })
-                    .y0(yScale(0))
-                    .y1(function(d) { return yScale(d[1]); });
-
-    var svg = d3.select("#" + divId)
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
-
-    svg.append("g")
-        .attr({
-            class: "axis",
-            transform: "translate(0," + (h-globalPadding) + ")"
-            })
-        .call(xAxis);
-
-    svg.append("g")
-        .attr({
-            class: "y-axis",
-            transform: "translate(" + globalPadding + ",0)"
-            })
-        .call(yAxis); 
-
-    svg.append("path")
-        .datum(this.dataSet)
-        .attr("class", "area")
-        .attr("d", area);
-
-};
-
-
 function Scatter(dataSet, labels, columnTypes, width, height) {
     this.dataSet = dataSet;
     this.labels = labels;
@@ -2661,10 +2592,6 @@ function getVisualization(dataPackage,type)
                 case "Scatter":
                     v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height);
                     break;  
-
-                case "Area":
-                    v = new Area(getData(columnSet, values), width, height);
-                    break; 
 
                 case "Pie":
                     v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), pieWidth, height);
