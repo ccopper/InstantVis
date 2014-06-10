@@ -1,5 +1,6 @@
 /** 
  * @file Take raw data from the parser and analyze it, then pass the new data to the visualizer.
+ * @module AI
  */
 
 
@@ -31,7 +32,7 @@
  * @property {Integer} Cols Number of columns in the data
  * @property {String} Caption Caption (title) taken from the source data
  * @property {String[]} Column heading for each column
- * @property Values A two dimentional array of the values that make up the dataset
+ * @property Values A two dimensional array of the values that make up the dataset
  * @property {String[]} ColumnType Type of column as determined by the type handler
  * @property {Float[]} ColumnUnique The uniqueness of each column as calculated by the type handler
  */
@@ -314,6 +315,7 @@ var rankDatasets = function(AIdataStructure)
 /**
  * Take raw parser data and return an {@link AIdataStructure} object to be used by the visualizer.
  *
+ * @global
  * @function
  * @param 	{Data} parserData	Dataset data from the parser
  * @returns {AIdataStructure} Data and requested visualizations for different columns in each dataset
