@@ -2079,28 +2079,15 @@ Bar.prototype.draw = function(divId) {
 
 
 
-    if (this.columnTypes[0] != "String") {
-
-        var xScale = d3.scale.linear()
-                    .domain([0, d3.max(condensedXValues)])
-                    .range([barPadding, width - barPadding - barWidth]);
-
+    if (multiset) {
+        var xScale = d3.scale.ordinal()
+                        .domain(condensedXValues)
+                        .rangePoints([barPadding,width - 2*barPadding - 2*barWidth]);
     } else {
-
-        // for (var i = 0; i < this.dataSet.length; i++) {
-        //     xValues.push(this.dataSet[i][0]);
-        // }
-
-        if (multiset) {
-            var xScale = d3.scale.ordinal()
-                            .domain(condensedXValues)
-                            .rangePoints([barPadding,width - 2*barPadding - 2*barWidth]);
-        } else {
-            var xScale = d3.scale.ordinal()
-                            .domain(condensedXValues)
-                            .rangePoints([barPadding,width - barPadding - barWidth]);
-        }
-    }  
+        var xScale = d3.scale.ordinal()
+                        .domain(condensedXValues)
+                        .rangePoints([barPadding,width - barPadding - barWidth]);
+    }
 
 
 
