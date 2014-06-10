@@ -268,7 +268,7 @@ TypeHandler.prototype.TypeLibrary =
 				}
 
 				var res = regEx.exec(raw);
-				console.log(res)
+
 				if(typeof(res[2]) == "undefined" || res[2] == "")
 				{
 					obj["isValid"] = false;
