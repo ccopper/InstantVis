@@ -411,16 +411,18 @@ function exportVisualization()
   	// w.document.write($("#visExport").html());
   	// w.document.close()
 
-  	var canvas = document.querySelector("canvas"),
-	context = canvas.getContext("2d");
  
 	var image = new Image;
 	image.src = imgsrc;
 	image.onload = function() {
-		context.drawImage(image, 0, 0);
-		var canvasdata = canvas.toDataURL("image/png");
-	 	canvas.width = $("#visSVG").width;
-	 	canvas.height = $("#visSVG").height;
+		var canvas = document.querySelector("canvas");
+	 	canvas.width = image.width;
+	 	canvas.height = image.height;
+	 	context = canvas.getContext("2d");
+
+	 	context.drawImage(image, 0, 0);
+	 	var canvasdata = canvas.toDataURL("image/png");
+
 		var pngimg = '<img src="'+canvasdata+'">'; 	 
 		var a = document.createElement("a");
 		a.download = "visualization.png";
