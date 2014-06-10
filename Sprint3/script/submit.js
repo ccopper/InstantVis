@@ -169,7 +169,7 @@ function parseComplete(data)
 	$("#logo").hide();
 	$("#testButton").hide();
 	$("#visualizationToolbox").show();
-	$("#visualizationToolbox").height($(window).height()-60);
+	$("#visualizationToolbox").height($(window).height());
 	$("#loadingContent").slideUp();
 
 
@@ -421,7 +421,7 @@ function exportVisualization()
 	 
 		var canvasdata = canvas.toDataURL("image/png");
 	 
-		var pngimg = '<img src="'+canvasdata+'">'; 
+		var pngimg = '<img src="'+canvasdata+' width=">'; 
 	  	d3.select("#pngdataurl").html(pngimg);
 	 
 		var a = document.createElement("a");
