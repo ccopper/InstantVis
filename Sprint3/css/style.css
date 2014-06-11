@@ -162,9 +162,9 @@
 	vertical-align: middle;
 	border-bottom: 0px;
 }
-#DTHead td:first-child
+#DataTable td:first-child
 {
-	width:40px;
+	width: 40px;
 }
 #DTHead td:nth-child(2)
 {	
