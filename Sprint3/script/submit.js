@@ -282,10 +282,10 @@ function loadVisTypeIcons(visTypes)
 				imagePath = 'images/bar_grey.png';
 				break;
 			case 'Line':
-				imagePath = 'images/line_grey.png';
+				imagePath = 'images/line.png';
 				break;
 			case 'Scatter':
-				imagePath = 'images/scatter_grey.png';
+				imagePath = 'images/scatter.png';
 				break;
 			case 'Area':
 				imagePath = 'images/area_grey.png';
