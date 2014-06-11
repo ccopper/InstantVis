@@ -164,7 +164,8 @@
 }
 #DataTable td:first-child
 {
-	width: 40px;
+	max-width: 40px;
+	min-width: 40px;
 }
 #DTHead td:nth-child(2)
 {	
