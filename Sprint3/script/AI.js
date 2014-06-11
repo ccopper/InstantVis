@@ -332,14 +332,14 @@ var generateVisTitle = function(AIdataStructure)
 
 			if (visualization.DataColumns.length == 2) // one independent and one dependent 
 			{
-				visTitle = "" + element.ColumnLabel[visualization.DataColumns[2]] + " vs " + 
-					element.ColumnLabel[visualization.DataColumns[1]];
+				visTitle = "" + element.ColumnLabel[visualization.DataColumns[1]] + " vs " + 
+					element.ColumnLabel[visualization.DataColumns[0]];
 			}
 			else if (visualization.DataColumns.length == 3) // one independent and two dependents
 			{
-				visTitle = "" +  element.ColumnLabel[visualization.DataColumns[2]] + " and " + 
-				  	element.ColumnLabel[visualization.DataColumns[3]] + " vs " + 
-					element.ColumnLabel[visualization.DataColumns[1]];
+				visTitle = "" +  element.ColumnLabel[visualization.DataColumns[1]] + " and " + 
+				  	element.ColumnLabel[visualization.DataColumns[2]] + " vs " + 
+					element.ColumnLabel[visualization.DataColumns[0]];
 			}
 			else // some other combo of vars, just use the independent var name as the title
 			{
