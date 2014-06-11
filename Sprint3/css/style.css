@@ -422,30 +422,30 @@
 	shape-rendering: crispEdges;
 }
 
-.axis path,
-.axis line,
-.y-axis path,
+/*.axis path,*/
+/*.axis line,*/
+./*y-axis path,
 .y-axis line,
 .x-axis line 
 {
 	fill: none;
 	stroke: black;
 	shape-rendering: crispEdges;
-}
+}*/
 
-.axis text,
-.x-axis text, 
+/*.axis text,*/
+/*.x-axis text, 
 .y-axis text
 {
 	font-family: sans-serif;
 	font-size: 11px;
-}
+}*/
 
-.line 
+/*.line 
 {
 	fill: none;
 	stroke: black;
-}
+}*/
 
 .area
 {
