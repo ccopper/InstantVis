@@ -380,20 +380,27 @@ function AI(parserData)
 		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
 
-		var visDataElement = 
-			{
-				"Visualizations" : [],
-				"Data" : {
-					"Rows" : currentTable.Rows,
-					"Caption" : currentTable.Caption,
-					"Cols" : currentTable.Cols,
-					"ColumnLabel" : currentTable.ColumnLabel,
-					"Values" : currentTable.Values,
-					"ColumnType" : columnType
-				}
-			};
+		if (currentTable.Rows > 1 && currentTable.Cols > 1) // ignore single dimension tables
+		{
+			var visDataElement = 
+				{
+					"Visualizations" : [],
+					"Data" : {
+						"Rows" : currentTable.Rows,
+						"Caption" : currentTable.Caption,
+						"Cols" : currentTable.Cols,
+						"ColumnLabel" : currentTable.ColumnLabel,
+						"Values" : currentTable.Values,
+						"ColumnType" : columnType
+					}
+				};
 
-		AIdataStructure.push(visDataElement);
+			AIdataStructure.push(visDataElement);
+		}
+		else
+		{
+			console.log("AI: ignoring a single dimension table.");
+		}
 
 	}
 
