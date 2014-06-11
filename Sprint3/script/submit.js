@@ -271,28 +271,28 @@ function loadVisTypeIcons(visTypes)
 		switch(visTypes[i])
 		{
 			case 'Table':
-				imagePath = 'images/table.png';
+				imagePath = 'images/table_grey.png';
 				break;
 			case 'Bar':
-				imagePath = 'images/bar.png';
+				imagePath = 'images/bar_grey.png';
 				break;
 			case 'Line':
-				imagePath = 'images/line.png';
+				imagePath = 'images/line_grey.png';
 				break;
 			case 'Scatter':
-				imagePath = 'images/scatter.png';
+				imagePath = 'images/scatter_grey.png';
 				break;
 			case 'Area':
-				imagePath = 'images/area.png';
+				imagePath = 'images/area_grey.png';
 				break;
 			case 'Pie':
-				imagePath = 'images/pie.png';
+				imagePath = 'images/pie_grey.png';
 				break;
 			case 'Tree':
-				imagePath = 'images/tree.png';
+				imagePath = 'images/tree_grey.png';
 				break;
 			case 'Bubble':
-				imagePath = 'images/bubble.png'
+				imagePath = 'images/bubble_grey.png'
 				break;
 			default:
 				console.log('Encountered unexpected visualization type: '+visTypes[i]);
