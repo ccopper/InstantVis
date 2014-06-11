@@ -1,32 +1,27 @@
 /**
  *	JS Type Handling and prediction	
+ *	Predicts type and if necessary converts data.
  *
- *
+ *	@module TypeHandler
  */
  
 /**
-	Example Object for type checker acceptFunction
-	
-	{
-		"RawVal": (String Value),	INPUT		Raw Value
-		"Type": (TypeName),			OUTPUT		Type checked
-		"isValid": (0 | 1),			OUTPUT		Is a valid instance of Type?
-		"Val": (TypeName)			OUTPUT		Converted Value
-		"MetaData": ()				OUTPUT		Associated metadata
-	}
- 
- */
-/**
- *	 Constructor
+ * Create a new TypeHandler Class
+ *
+ * @constructor
  */
 function TypeHandler() {}
  
 /**
- *		Processs a table (converts columns, checks for headers and metadata)
+ *	Processs a table (converts columns, checks for headers and metadata)
+ *	Processing is done in place.  The object reference passed in is modified.
  *
+ *	@method processTable	
+ *	@param {ParserOutPut} table	A single table that was returned from the parser
  */
 TypeHandler.prototype.processTable = function(table)
 {
+	//If there was no data present modify the table to be rejected
 	if(typeof table.Data.Values == "undefined")
 	{
 		table.Data.Values = [[""]]
@@ -103,7 +98,7 @@ TypeHandler.prototype.processTable = function(table)
 		table.Data.ColumnUnique[col] = setData.getUniqueCount() / table.Data.Values.length;
 		
 	}
-
+	//If no columns were found provide defaults ex Col. 1
 	if(!hasLabels)
 	{
 		table.Data.ColumnLabel = [];
@@ -114,6 +109,12 @@ TypeHandler.prototype.processTable = function(table)
 	}
 }
 
+/**
+ *	Remove all rows that are only empty strings("")
+ *
+ *	@method removeEmpty	
+ *	@param {Array[][]} data	A reference to the Values section of the data object
+ */
 TypeHandler.prototype.removeEmpty = function(data)
 {
 	var i = 0;
@@ -128,6 +129,13 @@ TypeHandler.prototype.removeEmpty = function(data)
 		}
 	}
 }
+/**
+ *	Check if a row is completly empty.
+ *
+ *	@method isEmptyRow
+ *	@param {Array[]} row A row of the table
+ *	@returns {bool} true of false for emptyness
+ */
 TypeHandler.prototype.isEmptyRow = function(row)
 {
 	var res = true;
@@ -139,17 +147,22 @@ TypeHandler.prototype.isEmptyRow = function(row)
 };
 
 /**
+ *	After processing an entire column. This will return the list of valid types for the column
  *
- *
+ *	@method validTypes
+ *	@param {Array[Record]} cData A listing of accepting records from a column
+ *	@returns {String}	String list of valid types
  */
 TypeHandler.prototype.validTypes = function(cData)
 {
+	//Create a copy of the typs avaible
 	var vTypes = this.TypeLibrary.Precedence.slice(0);
-	
+	//Check all types and remove non applicable ones from the list availble
 	for(var row in cData)
 	{
 		for(var rec in cData[row])
 		{
+			//Skip valid entrys in the data list
 			if(cData[row][rec].isValid)
 			{
 				continue;
@@ -164,7 +177,13 @@ TypeHandler.prototype.validTypes = function(cData)
 	return vTypes;
 }
 
-
+/**
+ * 	Checks all types for provided data types
+ *
+ *	@method acceptingTypes
+ *	@param {String} rawVal	A raw value for a single entry
+ *	@returns {Array[Records]}	An array of records for all types 
+ */
 TypeHandler.prototype.acceptingTypes = function(rawVal)
 {
 	var vTypes = []
@@ -192,6 +211,12 @@ TypeHandler.prototype.acceptingTypes = function(rawVal)
 	
  };
 
+ /**
+ * 	Provides a default record
+ *
+ *	@method DefaultEntry
+ *	@returns {Array[Records]}	An array of records for all type's default value
+ */
 TypeHandler.prototype.DefaultEntry = function()
 {
 	var vTypes = []
@@ -213,9 +238,12 @@ TypeHandler.prototype.DefaultEntry = function()
 	return vTypes;
 }
  
- 
-/**
+ /**
+ * 	Tests a single type
  *
+ *	@method testType
+ *	@param {Record} obj		A blank Record reference
+ *	@param {Sring} typeName The name of the type to test 
  */
  TypeHandler.prototype.testType = function(obj,typeName)
  {
@@ -236,8 +264,24 @@ TypeHandler.prototype.DefaultEntry = function()
 		"Type": (TypeName),			OUTPUT		Type checked
 		"isValid": (True | False),	OUTPUT		Is a valid instance of Type?
 		"Val": (TypeName)			OUTPUT		Converted Value
-		"MetaData": ()				OUTPUT		Associated metadata
 	}
+ */
+ 
+/**
+ * 	The Typelibrary
+ *
+ *	@typedef {Object} TypeLibrary
+ *	@property {String} Default		The default type
+ *	@property {String[]} Precedence	The precedence of the types (High to Low)
+ * 	@property {Type[]} Types 	An array of all Types	
+ */
+ /**
+ * 	Type
+ *
+ *	@typedef {Object} Type
+ *	@property {String} Name	Type name
+ *	@property {function} DefaultVal	 A no parameter function that returns the defaul value.
+ * 	@property {function(Record)} accept A function that tests and modifies the passes in Record 
  */
 TypeHandler.prototype.TypeLibrary =
  {
@@ -316,6 +360,7 @@ TypeHandler.prototype.TypeLibrary =
 			}
 		}]
  };
+ 
  
 function SimpleSet() 
 {

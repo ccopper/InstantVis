@@ -1,7 +1,7 @@
-/**
+/*
  *	Instant Vis TypeHandler Tests
  *
- *	@module TypeHandlerTests
+ *
  */
 	//Sample data tale 1 (float, integer)
 	var sTbl =
