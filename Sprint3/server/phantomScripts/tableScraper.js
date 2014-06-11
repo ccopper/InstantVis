@@ -114,6 +114,24 @@ function TableData()
 		this._cols = maxRowLengthFound;
 	}
 
+	// look for tables that have missing elements and report the number found
+	this.numberOfMissingElements = function()
+	{
+		var holesFound = 0; // how many missing elements have been found
+		for (var row = 0; row < this._rows; row++)
+		{
+			for (var col = 0; col < this._cols; col++)
+			{
+				if (this._data[row][col] == undefined)
+				{
+					holesFound++;
+				}
+			}
+		}
+
+		return holesFound;
+	}
+
 }
 
 /** 
@@ -264,7 +282,14 @@ function getTableData()
 			}
 		}
 		tableData.calcDimensions();
-		allTableData.addTable(tableData);
+		if (tableData.numberOfMissingElements() == 0)
+		{
+			allTableData.addTable(tableData);
+		}
+		else
+		{
+			console.log("Parser: table with missing elements found, cannot parse.");
+		}
 	});
 
 	return allTableData;

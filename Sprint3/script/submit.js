@@ -102,7 +102,12 @@ function refreshPage()
 function resizeVisWrapper()
 {
 	//Let the graph auto size
-	$("#visualizationContainer").width($("#visSCG").outerWidth());
+	var actWidth = $("#visSVG").outerWidth();
+	if(actWidth > (document.body.clientWidth * 0.6))
+	{
+		actWidth = document.body.clientWidth * 0.6;
+	}
+	$("#visualizationContainer").width(actWidth + 15);
 	//Fix table width
 	$("#tableContainer").width($("#visWrapper").width() - $("#sPaneDiv").outerWidth() - $("#visualizationContainer").outerWidth() - 25);
 }
