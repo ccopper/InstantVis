@@ -192,6 +192,8 @@ function updateTableVis(visType)
 	$("#DTSelMatD1").show();
 	$("#DTSelMatD2").show();
 	
+	$("#D1Lbl").css("border-radius", "0px 0px 0px 0px");
+	
 	for(var id in TCIns.AIObj.Visualizations)
 	{
 		if(TCIns.AIObj.Visualizations[id].Type == visType)
@@ -219,13 +221,14 @@ function updateTableVis(visType)
 		
 		case "Tree":
 		case "Pie":
+			$("#D1Lbl").css("border-radius", "0px 0px 0px 5px");
 			$("#DTSelMatD2").hide();
 		break;
 		
 		case "Bubble":
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y");
-			$("#D2Lbl").text("Size");
+			$("#D2Lbl").text("SIZE");
 		break;
 		
 		default:
