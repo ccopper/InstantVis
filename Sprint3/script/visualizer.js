@@ -292,9 +292,13 @@ Bubble.prototype.draw = function(divId)
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
+    var minY = 0;
     for (var j = 0; j < numValuesPerDataSet; j++) {
         if (this.dataSet[j][1] > maxY) {
             maxY = this.dataSet[j][1];
+        }
+        if (this.dataSet[j][1] < minY) {
+            minY = this.dataSet[j][1];
         }
     }
     
@@ -330,7 +334,7 @@ Bubble.prototype.draw = function(divId)
     }             
 
     var yScale = d3.scale.linear()
-                        .domain([0, maxY])
+                        .domain([minY, maxY])
                         .range([height, 0])
                         .clamp(true);
 
@@ -366,6 +370,14 @@ Bubble.prototype.draw = function(divId)
 
     var color = randRGB(50,200);
     var highlightColor = "orange";
+
+
+    if (minY < 0) {
+        svg.append("path")
+            .attr("id", ("bubble-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", line([[0, yScale(0)], [width, yScale(0)]]));
+    }
 
     // Draw the x-axis.
     svg.append("g")
@@ -866,10 +878,14 @@ Scatter.prototype.draw = function(divId)
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
+    var minY = 0;
     for (var i = 0; i < numValuesPerDataSet; i++) {
         yValues.push(this.dataSet[i][1]);
         if (this.dataSet[i][1] > maxY) {
             maxY = this.dataSet[i][1];
+        }
+        if (this.dataSet[i][1] < minY) {
+            minY = this.dataSet[i][1];
         }
     }
 
@@ -900,10 +916,14 @@ Scatter.prototype.draw = function(divId)
     if (multiset) {
         var yValues2 = [];
         var maxY2 = 0;
+        var minY2 = 0;
         for (var i = 0; i < numValuesPerDataSet; i++) {
             yValues2.push(this.dataSet[i][2]);
             if (this.dataSet[i][2] > maxY2) {
                 maxY2 = this.dataSet[i][2];
+            }
+            if (this.dataSet[i][2] < minY2) {
+                minY2 = this.dataSet[i][2];
             }
         }
     }
@@ -923,13 +943,13 @@ Scatter.prototype.draw = function(divId)
     }
 
     var yScale = d3.scale.linear()
-                        .domain([0, maxY])
+                        .domain([minY, maxY])
                         .range([height, 0])
                         .clamp(true);
 
     if (multiset) {
         var yScale2 = d3.scale.linear()
-                        .domain([0, maxY2])
+                        .domain([minY2, maxY2])
                         .range([height, 0])
                         .clamp(true);
     }
@@ -984,6 +1004,13 @@ Scatter.prototype.draw = function(divId)
     var line = d3.svg.line()
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; });
+
+    if (!multiset && minY < 0) {
+        svg.append("path")
+            .attr("id", ("scatter-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", line([[0, yScale(0)], [width, yScale(0)]]));
+    }
 
     // Draw the x-axis.
     svg.append("g")
@@ -1488,10 +1515,14 @@ Line.prototype.draw = function (divId) {
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
+    var minY = 0;
     for (var i = 1; i < numValues; i++) {
         //for (var j = 0; j < numValues; j++) {
             if (this.dataSet[i][1] > maxY) {
                 maxY = this.dataSet[i][1];
+            }
+            if (this.dataSet[i][1] < minY) {
+                minY = this.dataSet[i][1];
             }
         //}
     }
@@ -1506,10 +1537,14 @@ Line.prototype.draw = function (divId) {
 
     if (multiline) {
         var maxY2 = 0;
+        var minY2 = 0;
         for (var i = 1; i < numValues; i++) {
            // for (var j = 0; j < numValues; j++) {
                 if (this.dataSet[i][2] > maxY2) {
                     maxY2 = this.dataSet[i][2];
+                }
+                if (this.dataSet[i][2] < minY2) {
+                    minY2 = this.dataSet[i][2];
                 }
             //}
         }
@@ -1547,14 +1582,15 @@ Line.prototype.draw = function (divId) {
                         .rangePoints([0,width]);
     }                 
 
+
     var yScale = d3.scale.linear()
-                        .domain([0, maxY])
+                        .domain([minY, maxY])
                         .range([height, 0])
                         .clamp(true);
 
     if (multiline) {
         var yScale2 = d3.scale.linear()
-                        .domain([0, maxY2])
+                        .domain([minY2, maxY2])
                         .range([height, 0])
                         .clamp(true);
     }
@@ -1586,7 +1622,7 @@ Line.prototype.draw = function (divId) {
 
     var line2 = d3.svg.line()
             .x(function(d) { return xScale(d[0]); })
-            .y(function(d) { return yScale2(d[1]); }); 
+            .y(function(d) { return yScale2(d[1]); });
 
     var unscaledLine = d3.svg.line()
             .x(function(d) { return d[0]; })
@@ -1600,6 +1636,13 @@ Line.prototype.draw = function (divId) {
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+    if (!multiline && minY < 0) {
+        svg.append("path")
+            .attr("id", ("line-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", unscaledLine([[0, yScale(0)], [width, yScale(0)]]));
+    }
 
     // Setup the guideline.
     var focus = svg.append("g")
@@ -2137,12 +2180,12 @@ Bar.prototype.draw = function(divId) {
   
 
     var yScale = d3.scale.linear()
-                    .domain([0, d3.max(condensedYValues)])
+                    .domain([d3.min(condensedYValues), d3.max(condensedYValues)])
                     .range([height, 0]);
 
     if (multiset) {
         var yScale2 = d3.scale.linear()
-                        .domain([0, d3.max(condensedY2Values)])
+                        .domain([d3.min(condensedY2Values), d3.max(condensedY2Values)])
                         .range([height, 0]);
     }
 
@@ -2186,6 +2229,17 @@ Bar.prototype.draw = function(divId) {
         if (multiset) {
             toggle.push(false);
         }
+    }
+
+    var unscaledLine = d3.svg.line()
+            .x(function(d) { return d[0]; })
+            .y(function(d) { return d[1]; }); 
+
+    if (!multiset && (d3.min(condensedYValues)) < 0) {
+        svg.append("path")
+            .attr("id", ("bar-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", unscaledLine([[0, yScale(0)], [width, yScale(0)]]));
     }
 
     //Create bars
