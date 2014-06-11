@@ -347,6 +347,7 @@ function toggleEditControls()
 	else
 	{
 		$("#editVisualization").show();
+		resizeVisWrapper()
 	}
 }
 
