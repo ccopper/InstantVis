@@ -227,9 +227,9 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				haveOnlyTwoColumns = false;
 			}
 
-			var twoColumnOnlyVisTypes = ["Pie", "Tree", "Scatter"];
+			var twoColumnOnlyVisTypes = ["Bar", "Pie", "Tree", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
-			var twoOrThreeColumnVisTypes = ["Bar", "Line"]; 
+			var twoOrThreeColumnVisTypes = ["Line"]; 
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
 			var threeColumnVisTypes = twoOrThreeColumnVisTypes.concat(threeColumnOnlyVisTypes);
 
