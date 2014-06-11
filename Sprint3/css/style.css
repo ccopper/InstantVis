@@ -134,6 +134,7 @@
 #visTextOptions
 {
 	float: left;
+	text-align: left;
 }
 
 #sPaneDiv
