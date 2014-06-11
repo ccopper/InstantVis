@@ -20,6 +20,7 @@ function TypeHandler() {}
  */
 TypeHandler.prototype.processTable = function(table)
 {
+
 	//If there was no data present modify the table to be rejected
 	if(typeof table.Data.Values == "undefined")
 	{
@@ -32,9 +33,11 @@ TypeHandler.prototype.processTable = function(table)
 	
 	//Check for labels
 	var hasLabels = true;
+	var origHead = table.Data.Values[0].slice(0);
 	if(table.Data.ColumnLabel[0] == "")
 	{
 		hasLabels = false;
+
 	}
 	
 	this.removeEmpty(table.Data.Values);
@@ -64,7 +67,8 @@ TypeHandler.prototype.processTable = function(table)
 			if(hType[0] != cTypes[0])
 			{
 
-				table.Data.ColumnLabel = table.Data.Values.splice(0,1)[0]
+				table.Data.ColumnLabel = origHead;
+				table.Data.Values.splice(0,1)[0]
 				hasLabels = true				
 			} else
 			{
