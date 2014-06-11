@@ -1470,6 +1470,8 @@ function Line(dataSet, labels, columnTypes, title, width, height, showPoints) {
     this.width = width;
     this.height = height;
     this.showPoints = showPoints; // Boolean (show points?)
+
+    console.log("labels: " + labels.toString());
 }
 
 Line.prototype.draw = function (divId) {
@@ -2670,6 +2672,7 @@ function getVisualization(dataPackage,type)
     {
         var visType = dataPackage.Visualizations[i].Type;
         var columnSet = dataPackage.Visualizations[i].DataColumns;
+        console.log("columnSet: " + columnSet.toString());
         var columnTypes = dataPackage.Data.ColumnType;
         var values = dataPackage.Data.Values;
         var labels = dataPackage.Data.ColumnLabel;
@@ -2748,7 +2751,7 @@ function getLabels(columns, labels)
 {
     var labelSet = [];
     for (var i = 0; i < columns.length; i++) {
-        labelSet.push(labels[i]);
+        labelSet.push(labels[columns[i]]);
     }
     return labelSet;
 }
@@ -2757,7 +2760,7 @@ function getColumnTypes(columns, types)
 {
     var typeSet = [];
     for (var i = 0; i < columns.length; i++) {
-        typeSet.push(types[i]);
+        typeSet.push(types[columns[i]]);
     }
     return typeSet;
 }
