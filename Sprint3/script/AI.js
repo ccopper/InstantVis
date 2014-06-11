@@ -135,7 +135,7 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 }
 
 /**
- * Find the best independent variable for a given dataset.
+ * Find the best independent variable for a given dataset, this is the least unique column.
  *
  * @function
  * @param currentDataset An element from {@link AIdataStructure}
@@ -144,9 +144,17 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
  */
 var findIndependentVariable = function(currentDataset) 
 {
-	var excludeList = [];
-	var excludeStrings = false;
-	return findNextBestAvailableColumn(currentDataset, excludeList, excludeStrings);
+	var leastUniqueColumnFound = 0;
+
+	for (var col = 1; col < currentDataset.Cols; col++)
+	{
+		if (currentDataset.ColumnUnique[col] < currentDataset.ColumnUnique[leastUniqueColumnFound])
+		{
+			leastUniqueColumnFound = col;
+		}
+	}
+
+	return leastUniqueColumnFound;
 }
 
 /**
