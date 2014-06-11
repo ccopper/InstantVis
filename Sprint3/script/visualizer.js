@@ -380,28 +380,31 @@ Bubble.prototype.draw = function(divId)
     }
 
     // Draw the x-axis.
-    svg.append("g")
+    var xAxisObject = svg.append("g")
         .attr({
             class: "axis",
             transform: "translate(0," + (height) + ")"
             })
         .attr("width", width)
         .call(xAxis)
-        .selectAll("text")
-                .style("text-anchor", "end")
-                .style("letter-spacing", "0.1em")
-                .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr("transform", "rotate( -45)"); 
+
+    styleXAxis(xAxisObject);
 
     // Draw the y-axis.
-    svg.append("g")
+    var yAxisObject = svg.append("g")
         .attr("height", height)
         .attr({
             class: "y-axis",
             transform: "translate(" + 0 + ",0)"
             })
+        .style("stroke", "black")
+        .style("shape-rendering", "crispEdges")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+        .attr("font-style", "normal")
         .call(yAxis);
+
+    styleYAxis(yAxisObject, "end");
 
     base.append("text")
         .attr("class", "x-label")
@@ -1013,22 +1016,18 @@ Scatter.prototype.draw = function(divId)
     }
 
     // Draw the x-axis.
-    svg.append("g")
+    var xAxisObject = svg.append("g")
         .attr({
             class: "axis",
             transform: "translate(0," + (height) + ")"
             })
         .attr("width", width)
-        .call(xAxis)
-        .selectAll("text")
-                .style("text-anchor", "end")
-                .style("letter-spacing", "0.1em")
-                .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr("transform", "rotate( -45)"); 
+        .call(xAxis);
+
+    styleXAxis(xAxisObject);
 
     // Draw the y-axis.
-    svg.append("g")
+    var yAxisObject = svg.append("g")
         .attr("height", height)
         .attr({
             class: "y-axis",
@@ -1037,9 +1036,11 @@ Scatter.prototype.draw = function(divId)
             })
         .call(yAxis);
 
+    styleYAxis(yAxisObject, "end");
+
     if (multiset) {
         // Draw the y-axis.
-        svg.append("g")
+        var y2AxisObject = svg.append("g")
             .attr("height", height)
             .attr({
                 class: "y-axis",
@@ -1047,6 +1048,8 @@ Scatter.prototype.draw = function(divId)
                 transform: "translate(" + width + ",0)"
                 })
             .call(yAxis2);
+
+        styleYAxis(y2AxisObject, "start");
     }
 
     base.append("text")
@@ -1748,21 +1751,16 @@ Line.prototype.draw = function (divId) {
     }
 
     // Display the x-axis.
-    svg.append("g")
+    var xAxisObject = svg.append("g")
         .attr("class", "axis")
         .attr("transform", "translate(0," + (height) + ")")
         .attr("width", width)
-        .call(xAxis)
-        .selectAll("text")
-                .style("text-anchor", "end")
-                .style("letter-spacing", "0.1em")
-                .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr("transform", "rotate( -45)");
+        .call(xAxis);
 
+    styleXAxis(xAxisObject);
 
     // Display the y-axis. 
-    svg.append("g")
+    var yAxisObject = svg.append("g")
         .attr("height", height)
         .attr({
             class: "y-axis",
@@ -1770,9 +1768,11 @@ Line.prototype.draw = function (divId) {
             })
         .call(yAxis);
 
+    styleYAxis(yAxisObject, "end");
+
     if (multiline) {
         // Display the y-axis.        
-        svg.append("g")
+        var y2AxisObject = svg.append("g")
             .attr("height", height)
             .attr({
                 class: "y-axis",
@@ -1781,6 +1781,7 @@ Line.prototype.draw = function (divId) {
                 })
             .call(yAxis2);
 
+        styleYAxis(y2AxisObject, "start");
     }   
 
     base.append("text")
@@ -1849,7 +1850,8 @@ Line.prototype.draw = function (divId) {
 
         // Display the line for the dataset.
         svg.append("path")
-            .attr("class", "line")
+            // .attr("class", "line")
+            .attr("fill", "none")
             .attr("style", "stroke: " + colors[i-1])
             .attr("d", function() {
                 if (i == 1) {
@@ -2537,53 +2539,51 @@ Bar.prototype.draw = function(divId) {
 
     if (multiset) {
         // Create x-axis
-        svg.append("g")
+        var xAxisObject = svg.append("g")
             .attr({
                 class: "x-axis",
                 "transform": "translate(" + (barWidth + barPadding/2) + "," + height + ")"
             })
-            .call(xAxis)
-            .selectAll("text")
-                .style("text-anchor", "end")
-                .style("letter-spacing", "0.1em")
-                .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr("transform", "rotate( -45)");
+            .call(xAxis);
+
+        styleXAxis(xAxisObject);
 
         // Create y-axis
-        svg.append("g")
+        var y2AxisObect = svg.append("g")
             .attr({
                 class: "y-axis",
                 "transform": "translate(" + width + ",0)"
             })
             .call(yAxis2);
 
+        styleYAxis(y2AxisObect, "start");
+
     } else {
         // Create x-axis
-        svg.append("g")
+        var xAxisObject = svg.append("g")
         .attr({
             class: "x-axis",
             "transform": "translate(" + (barWidth/2) + "," + height + ")"
         })
-        .call(xAxis)
-        .selectAll("text")
-                .style("text-anchor", "end")
-                .style("letter-spacing", "0.1em")
-                .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr("transform", "rotate( -45)");
+        .call(xAxis);
+
+        styleXAxis(xAxisObject);
     }
 
     // Create y-axis
-    svg.append("g")
+    var yAxisObject = svg.append("g")
         .attr({
             class: "y-axis",
             "transform": "translate(" + 0 + ",0)"
         })
         .call(yAxis);
 
+    styleYAxis(yAxisObject, "end");
+
     svg.append("path")
-        .attr("class", "line")
+        // .attr("class", "line")
+        .style("stroke", "black")
+        // .style("fill", "black")
         .attr("d", xAxisLine(xAxisLineCoords));
 
     base.append("text")
@@ -2835,3 +2835,45 @@ d3.selection.prototype.moveToFront = function() {
     });
 };
 
+function styleXAxis(object) {
+    object.selectAll(".domain")
+        .style("stroke", "black")
+        .style("fill", "none")
+        .style("shape-rendering", "crispEdges")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+
+    object.selectAll(".tick")
+        .style("stroke", "black")
+        .style("shape-rendering", "crispEdges")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+
+    object.selectAll("text")
+        .style("text-anchor", "end")
+        .style("stroke", "none")
+        .style("letter-spacing", "0.1em")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate( -45)");
+}
+
+function styleYAxis(object, textAnchor) {
+    object.selectAll(".domain")
+        .style("stroke", "black")
+        .style("fill", "none")
+        .style("shape-rendering", "crispEdges")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+
+    object.selectAll(".tick")
+        .style("stroke", "black")
+        .style("shape-rendering", "crispEdges")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+
+    object.selectAll("text")
+        .style("text-anchor", textAnchor)
+        .style("stroke", "none")
+        .style("letter-spacing", "0.1em")
+}
