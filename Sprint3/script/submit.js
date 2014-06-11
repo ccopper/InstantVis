@@ -7,6 +7,8 @@ var tableColumnSets = [];
 var isDrag = false;
 //Toggle color icon mode
 var useColorIcons = false;
+//Turn this on to test on local machine
+var runLocal = false;
 
 $(document).ready(readyFunction);
 	
@@ -96,6 +98,123 @@ function readyFunction()
 function refreshPage()
 {
 	location.reload()
+}
+
+/**
+ * This function is for testing purposes only. It will simulate the server sending data back and load that data.
+*/
+function testLocally()
+{
+	var table1 = {		
+ 		"Visualizations":		
+ 			[{			
+ 				"Type": "Bar",			
+ 				"DataColumns": [0, 1]		
+ 			},{			
+ 				"Type": "Line",			
+ 				"DataColumns": [0, 1, 2, 3]		
+ 			},{			
+ 				"Type": "Scatter",			
+ 				"DataColumns": [0, 1]		
+ 			},{         
+                 "Type": "Area",          
+                 "DataColumns": [0, 1]       
+             }],		
+ 		"Data":		
+ 			{			
+ 				"ColumnLabel": ["X", "Y"],			
+ 				"ColumnType": ["Integer", "Integer"],			
+ 				"Values":				
+ 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+ 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [11, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [13, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [14, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [18, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [19, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [20, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+ 			}		
+ 		};
+ 	var table2 = {		
+ 		"Visualizations":		
+ 			[{			
+ 				"Type": "Bar",			
+ 				"DataColumns": [0, 1]		
+ 			},{			
+ 				"Type": "Line",			
+ 				"DataColumns": [0, 1, 2, 3]		
+ 			},{			
+ 				"Type": "Scatter",			
+ 				"DataColumns": [0, 1]		
+ 			},{         
+                 "Type": "Area",          
+                 "DataColumns": [0, 1]       
+             }],		
+ 		"Data":		
+ 			{		
+ 				"Caption": "2014 Rain Fall",	
+ 				"ColumnLabel": ["X", "Y"],			
+ 				"ColumnType": ["Integer", "Integer"],			
+ 				"Values":				
+ 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
+ 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
+ 					[9,	19, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
+                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [12, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [13, 7, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [14, 9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [15, 12, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [17, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [18, 3, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [19, 4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [20, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
+                     [21, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+ 			}		
+ 		};
+ 	tables = [table1,table2];
+
+ 	$("#userInputArea").slideUp();
+	$("#logo").hide();
+	$("#testButton").hide();
+	$("#visualizationToolbox").show();
+	$("#visualizationToolbox").height($(window).height());
+	$("#loadingContent").slideUp();
+
+
+	populateTableSelect();
+
+	//Load first visualization
+	tableSelectHandler(0);
+	//Select first table in selection box
+	$('#tableSelectionBox').val("0");
+
+ 	for(var i=0; i<tables.length; i++)
+	{
+		addTable(tables[i],i);
+	}
 }
 
 /**
@@ -342,12 +461,11 @@ function toggleEditControls()
 {
 	if($("#editVisualization").is(":visible"))
 	{
-		$("#editVisualization").hide();	
+		$("#editVisualization").css("display","none");
 	}
 	else
 	{
-		$("#editVisualization").show();
-		resizeVisWrapper()
+		$("#editVisualization").css("display","inline-block");
 	}
 }
 
@@ -458,6 +576,11 @@ function exportVisualization()
 */
 function submitForm(urlToParse)
 {
+	if(runLocal)
+	{
+		testLocally();
+		return;
+	}
 	var url = NaN;
 	if(urlToParse)
 	{
