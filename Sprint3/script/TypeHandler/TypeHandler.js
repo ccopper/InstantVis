@@ -15,9 +15,7 @@ function TypeHandler() {}
 /**
  *	Processs a table (converts columns, checks for headers and metadata)
  *	Processing is done in place.  The object reference passed in is modified.
- *
- *	@memberof TypeHandler
- *	@method processTable	
+ *	
  *	@param {ParserOutPut} table	A single table that was returned from the parser
  */
 TypeHandler.prototype.processTable = function(table)
@@ -112,8 +110,6 @@ TypeHandler.prototype.processTable = function(table)
 
 /**
  *	Remove all rows that are only empty strings("")
- *	@memberof TypeHandler
- *	@method removeEmpty	
  *	@param {Array[]} data	A reference to the Values section of the data object
  */
 TypeHandler.prototype.removeEmpty = function(data)
@@ -132,8 +128,6 @@ TypeHandler.prototype.removeEmpty = function(data)
 }
 /**
  *	Check if a row is completly empty.
- *	@memberof TypeHandler
- *	@method isEmptyRow
  *	@param {Array[]} row A row of the table
  *	@returns {bool} true of false for emptyness
  */
@@ -149,8 +143,7 @@ TypeHandler.prototype.isEmptyRow = function(row)
 
 /**
  *	After processing an entire column. This will return the list of valid types for the column
- *	@memberof TypeHandler
- *	@method validTypes
+ *
  *	@param {Record[]} cData A listing of accepting records from a column
  *	@returns {String}	String list of valid types
  */
@@ -180,8 +173,7 @@ TypeHandler.prototype.validTypes = function(cData)
 
 /**
  * 	Checks all types for provided data types
- *	@memberof TypeHandler
- *	@method acceptingTypes
+ *
  *	@param {String} rawVal	A raw value for a single entry
  *	@returns {Record[]}	An array of records for all types 
  */
@@ -215,7 +207,6 @@ TypeHandler.prototype.acceptingTypes = function(rawVal)
  /**
  * 	Provides a default record
  *
- *	@method DefaultEntry
  *	@returns {Record[]}	An array of records for all type's default value
  */
 TypeHandler.prototype.DefaultEntry = function()
@@ -242,7 +233,6 @@ TypeHandler.prototype.DefaultEntry = function()
  /**
  * 	Tests a single type
  *
- *	@method testType
  *	@param {Record} obj		A blank Record reference
  *	@param {Sring} typeName The name of the type to test 
  */
@@ -283,8 +273,6 @@ TypeHandler.prototype.DefaultEntry = function()
  * 	@property {function(Record)} accept A function that tests and modifies the passes in Record 
  */
  /**
-  *	@memberof TypeHandler
-  *	@property TypeLibrary
   *	@default
   */
 TypeHandler.prototype.TypeLibrary =
@@ -380,8 +368,6 @@ function SimpleSet()
  /**
  * 	Adds a record to the set
  *
- *	@memberof	SimpleSet
- *	@method add		
  *	@param {Object} entry	Item to add
  */
 SimpleSet.prototype.add = function(entry)
@@ -398,8 +384,6 @@ SimpleSet.prototype.add = function(entry)
  /**
  * 	Gets the number of unique items in the set
  *
- *	@memberof	SimpleSet
- *	@method getUniqueCount
  *	@returns {Integer} The number of unique iutems
  */
 SimpleSet.prototype.getUniqueCount = function()
