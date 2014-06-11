@@ -8,7 +8,7 @@ var isDrag = false;
 //Toggle color icon mode
 var useColorIcons = false;
 //Turn this on to test on local machine
-var runLocal = true;
+var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
 
