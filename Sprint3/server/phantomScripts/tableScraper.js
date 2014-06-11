@@ -118,6 +118,7 @@ function TableData()
 	this.numberOfMissingElements = function()
 	{
 		var holesFound = 0; // how many missing elements have been found
+
 		for (var row = 0; row < this._rows; row++)
 		{
 			for (var col = 0; col < this._cols; col++)
@@ -130,6 +131,26 @@ function TableData()
 		}
 
 		return holesFound;
+	}
+
+	// make sure each row and col match this._cols and this._rows
+	this.tableIsRectangular = function()
+	{
+		var misMatches = 0;
+
+		for (var row = 0; row < this._data.length; row++)
+		{
+			if (this._data[row].length != this._cols)
+			{
+				misMatches++;
+			}
+		}
+		if (this._data.length != this._rows)
+		{
+			misMatches++;
+		}
+
+		return (misMatches == 0) ? true : false;
 	}
 
 }
@@ -282,7 +303,8 @@ function getTableData()
 			}
 		}
 		tableData.calcDimensions();
-		if (tableData.numberOfMissingElements() == 0)
+		if (tableData.numberOfMissingElements() == 0 &&
+			 tableData.tableIsRectangular() == true)
 		{
 			allTableData.addTable(tableData);
 		}
