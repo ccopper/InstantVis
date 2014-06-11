@@ -414,7 +414,8 @@ function AI(parserData)
 	// remove empty visualizations
 	for (var i = 0; i < AIdataStructure.length; i++) 
 	{
-		if (AIdataStructure[i].Visualizations.length == 0) 
+		if (AIdataStructure[i].Visualizations.length == 0 ||
+		    AIdataStructure[i].Data.Values.length == 0)
 		{
 			AIdataStructure.splice(i, 1);
 			visualizationsRemoved = visualizationsRemoved + 1;
