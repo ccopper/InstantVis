@@ -146,9 +146,9 @@ var findIndependentVariable = function(currentDataset)
 {
 	var leastUniqueColumnFound = 0;
 
-	for (var col = 1; col < currentDataset.Cols; col++)
+	for (var col = 1; col < currentDataset.Data.Cols; col++)
 	{
-		if (currentDataset.ColumnUnique[col] < currentDataset.ColumnUnique[leastUniqueColumnFound])
+		if (currentDataset.Data.ColumnUnique[col] < currentDataset.Data.ColumnUnique[leastUniqueColumnFound])
 		{
 			leastUniqueColumnFound = col;
 		}
