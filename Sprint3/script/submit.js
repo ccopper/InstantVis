@@ -5,6 +5,8 @@ var currentTable = 0;
 var tableColumnSets = [];
 //var for Draggable splitpane
 var isDrag = false;
+//Toggle color icon mode
+var useColorIcons = false;
 
 $(document).ready(readyFunction);
 	
@@ -301,6 +303,10 @@ function loadVisTypeIcons(visTypes)
 				break;
 			default:
 				console.log('Encountered unexpected visualization type: '+visTypes[i]);
+		}
+		if(useColorIcons)
+		{
+			imagePath = imagePath.replace("_grey","");
 		}
 		if(imagePath != NaN && iconId != NaN){
 			$("#iconContainer").append("<img id='" + iconId + "'' src='"+imagePath+"' class='iconBorderDefault' height='50',width='50'/>");
