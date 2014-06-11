@@ -144,7 +144,7 @@ function parseComplete(data)
 	// Check if the request failed
 	if(data.Status == 0)
 	{
-		nonRecoverableError("<h3>No tables found<br>Refresh and try again</h3>");
+		nonRecoverableError("No tables found. Please try again.");
 		return
 	}
 	
@@ -157,11 +157,7 @@ function parseComplete(data)
 
 	if(numDataSets==0)
 	{
-		$("#submissionNotification").text("No meaningful data found. Please try again.");
-		$("#urlTextbox").val("");
-		$("#form").fadeIn(0);
-		$("#loadingContent").hide();
-		$("#examples").show();
+		nonRecoverableError("No meaningful data found. Please try again.");
 		return;
 	}
 
@@ -474,8 +470,9 @@ function submitForm(urlToParse)
 */
 function nonRecoverableError(errMessage)
 {
-	$("#resultsMessage").html(errMessage);
-	$("#graphArea").children().hide();
-	$("#resultsMessage").fadeIn(500);
-	
+	$("#submissionNotification").text(errMessage);
+	$("#urlTextbox").val("");
+	$("#form").fadeIn(0);
+	$("#loadingContent").hide();
+	$("#examples").show();
 }
