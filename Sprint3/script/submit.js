@@ -9,6 +9,8 @@ var isDrag = false;
 var useColorIcons = false;
 //Turn this on to test on local machine
 var runLocal = false;
+//Global reference to the current visualization type
+var currentVis = NaN;
 
 $(document).ready(readyFunction);
 	
@@ -256,6 +258,7 @@ function tableSelectHandler(event)
 	populateTable(tables[tableNumber]);
 	
 	//Load first visualization
+	currentVis = "initial"
 	visTypeClickHandler(tables[0].Visualizations[0].Type+'_icon');
 
 }
@@ -364,6 +367,13 @@ function visTypeClickHandler(event)
 
 	//Draw the visualization
 	var visType = iconId.replace('_icon','');
+	if(currentVis == visType)
+	{
+		return;
+	}else{
+		currentVis = visType	
+	}
+	
 
 	$("#visSVG").empty();
 	var visualization = getVisualization(tables[currentTable],visType);
