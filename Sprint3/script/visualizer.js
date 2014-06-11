@@ -2,9 +2,11 @@
 
 var globalPadding = 25;
 
-function Treemap(dataSet, labels, width, height) {
+function Treemap(dataSet, labels, title, width, height) 
+{
     this.dataSet = dataSet;
     this.labels = labels;
+    this.title = title;
     this.width = width;
     this.height = height;
 }
@@ -23,7 +25,10 @@ Treemap.prototype.draw = function(divId)
 
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
-    var title = yAxisLabel + " by " + xAxisLabel;
+    var title = this.title;
+    if (title == "") {
+        title = yAxisLabel + " by " + xAxisLabel;
+    }
 
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
@@ -235,10 +240,12 @@ Treemap.prototype.draw = function(divId)
         .text(title);  
 }
 
-function Bubble(dataSet, labels, columnTypes, width, height) {
+function Bubble(dataSet, labels, columnTypes, title, width, height) 
+{
     this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
+    this.title = title;
     this.width = width;
     this.height = height;
 }
@@ -273,9 +280,7 @@ Bubble.prototype.draw = function(divId)
     var yAxisLabelPaddingLeft = 2;
     var axisLabelHeight = 15;
 
-    var xAxisLabel = this.labels[0];
-    var yAxisLabel = this.labels[1];
-    var title = yAxisLabel + " vs. " + xAxisLabel;
+
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
@@ -287,9 +292,13 @@ Bubble.prototype.draw = function(divId)
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
+    var minY = 0;
     for (var j = 0; j < numValuesPerDataSet; j++) {
         if (this.dataSet[j][1] > maxY) {
             maxY = this.dataSet[j][1];
+        }
+        if (this.dataSet[j][1] < minY) {
+            minY = this.dataSet[j][1];
         }
     }
     
@@ -299,12 +308,18 @@ Bubble.prototype.draw = function(divId)
     var multiset = false;
     multiset = (numDataSets > 2) ? true : false;
 
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    var title = this.title;
+    if (title == "") {
+        title = yAxisLabel + " vs. " + xAxisLabel;
+    }
     
     var xValues = [];
     if (this.columnTypes[0] != "String") {
 
         var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .domain([d3.min(this.dataSet, function(d) { return d[0]; }), d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([0, width]);
 
     } else {
@@ -319,7 +334,7 @@ Bubble.prototype.draw = function(divId)
     }             
 
     var yScale = d3.scale.linear()
-                        .domain([0, maxY])
+                        .domain([minY, maxY])
                         .range([height, 0])
                         .clamp(true);
 
@@ -356,6 +371,14 @@ Bubble.prototype.draw = function(divId)
     var color = randRGB(50,200);
     var highlightColor = "orange";
 
+
+    if (minY < 0) {
+        svg.append("path")
+            .attr("id", ("bubble-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", line([[0, yScale(0)], [width, yScale(0)]]));
+    }
+
     // Draw the x-axis.
     svg.append("g")
         .attr({
@@ -363,7 +386,13 @@ Bubble.prototype.draw = function(divId)
             transform: "translate(0," + (height) + ")"
             })
         .attr("width", width)
-        .call(xAxis); 
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)"); 
 
     // Draw the y-axis.
     svg.append("g")
@@ -417,6 +446,7 @@ Bubble.prototype.draw = function(divId)
             return rScale(d[2]); 
         })
         .attr("fill", color)
+        .style("stroke", "black")
         .on("mouseover", function(d, i) {
             this.setAttribute("fill", highlightColor);
             if (!toggle[i]) {
@@ -445,7 +475,7 @@ Bubble.prototype.draw = function(divId)
 
                 svg.append("path")
                     .attr("id", ("bubble-line-label"+i))
-                    .style("stroke", color)
+                    .style("stroke", "black")
                     .attr("d", line(lineData));
                 svg.append("rect")
                     .attr("id", ("bubble-rect-label"+i))
@@ -454,7 +484,7 @@ Bubble.prototype.draw = function(divId)
                     .attr("width", rectWidth)
                     .attr("height", highlightTextHeight + 2*highlightTextPadding)
                     .attr("fill", highlightRectFillColor)
-                    .style("stroke", color);
+                    .style("stroke", 'black');
                 svg.append("text")
                     .attr("id", ("bubble-text-label"+i))
                     .attr("x", textX)
@@ -466,6 +496,7 @@ Bubble.prototype.draw = function(divId)
             }
         })
         .on("click", function(d, i) {
+            d3.select(this).moveToFront()
             // Remove the popup created by the mouseover.
             d3.select(("#bubble-text-label"+i)).remove();
             d3.select(("#bubble-rect-label"+i)).remove();  
@@ -507,7 +538,7 @@ Bubble.prototype.draw = function(divId)
 
             svg.append("path")
                 .attr("id", ("bubble-line-label"+i))
-                .style("stroke", color)
+                .style("stroke", "black")
                 .attr("d", line(lineData));
             svg.append("rect")
                 .attr("id", ("bubble-rect-label"+i))
@@ -516,7 +547,7 @@ Bubble.prototype.draw = function(divId)
                 .attr("width", rectWidth)
                 .attr("height", highlightTextHeight + 2*highlightTextPadding)
                 .attr("fill", highlightRectFillColor)
-                .style("stroke", color);
+                .style("stroke", "black");
             svg.append("text")
                 .attr("id", ("bubble-text-label"+i))
                 .attr("x", textX)
@@ -538,10 +569,11 @@ Bubble.prototype.draw = function(divId)
 }
 
 
-function Pie(dataSet, labels, width, height) 
+function Pie(dataSet, labels, title, width, height) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
+    this.title = title;
     this.width = width;
     this.height = height;
 }
@@ -574,7 +606,10 @@ Pie.prototype.draw = function(divId)
 
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
-    var title = yAxisLabel + " by " + xAxisLabel;
+    var title = this.title;
+    if (title == "") {
+        title = yAxisLabel + " by " + xAxisLabel;
+    }
 
     var rightGraphBoundary = width;
 
@@ -788,79 +823,12 @@ Pie.prototype.draw = function(divId)
         }
 }
 
-function Area(dataSet, width, height) 
+function Scatter(dataSet, labels, columnTypes, title, width, height) 
 {
-    this.dataSet = dataSet;
-    this.width = width;
-    this.height = height;
-}
-
-Area.prototype.draw = function(divId)
-{
-    // TODO: Make the number of ticks on an axis somehow dynamic.
-
-    var w = this.width;
-    var h = this.height;
-    var padding = 20;
-
-    var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
-                 .range([globalPadding, w - globalPadding]);
-
-    var yScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) { return d[1]; })])
-                        .range([h - globalPadding, globalPadding]);
-
-    var rScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
-                        .range([2, 5]);
-
-    var xAxis = d3.svg.axis()
-                    .scale(xScale)
-                    .orient("bottom")
-                    .ticks(5);
-
-    var yAxis = d3.svg.axis()
-                    .scale(yScale)
-                    .orient("left")
-                    .ticks(5);
-
-    var area = d3.svg.area()
-                    .x(function(d) { return xScale(d[0]); })
-                    .y0(yScale(0))
-                    .y1(function(d) { return yScale(d[1]); });
-
-    var svg = d3.select("#" + divId)
-            .append("svg")
-            .attr("width", w)
-            .attr("height", h);
-
-    svg.append("g")
-        .attr({
-            class: "axis",
-            transform: "translate(0," + (h-globalPadding) + ")"
-            })
-        .call(xAxis);
-
-    svg.append("g")
-        .attr({
-            class: "y-axis",
-            transform: "translate(" + globalPadding + ",0)"
-            })
-        .call(yAxis); 
-
-    svg.append("path")
-        .datum(this.dataSet)
-        .attr("class", "area")
-        .attr("d", area);
-
-};
-
-
-function Scatter(dataSet, labels, columnTypes, width, height) {
     this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
+    this.title = title;
     this.width = width;
     this.height = height;
 }
@@ -896,9 +864,6 @@ Scatter.prototype.draw = function(divId)
     var yAxisLabelPaddingRight = 2;
     var axisLabelHeight = 15;
 
-    var xAxisLabel = this.labels[0];
-    var yAxisLabel = this.labels[1];
-
     var yValues = [];
 
     var width = w - margin.left - margin.right;
@@ -913,10 +878,14 @@ Scatter.prototype.draw = function(divId)
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
+    var minY = 0;
     for (var i = 0; i < numValuesPerDataSet; i++) {
         yValues.push(this.dataSet[i][1]);
         if (this.dataSet[i][1] > maxY) {
             maxY = this.dataSet[i][1];
+        }
+        if (this.dataSet[i][1] < minY) {
+            minY = this.dataSet[i][1];
         }
     }
 
@@ -929,33 +898,40 @@ Scatter.prototype.draw = function(divId)
     var multiset = false;
     multiset = (numDataSets > 2) ? true : false;
 
-    var title;
-    if (!multiset) {
-        title = this.labels[1] + " vs. " + this.labels[0];
-    } else {
-        title = this.labels[1] + " and " + this.labels[2] + " vs. " + this.labels[0];
+
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
+    if (multiset) {
         var yAxisLabel2 = this.labels[2];
+    }
+    var title = this.title;
+    if (title == "") {
+        if (!multiset) {
+            title = yAxisLabel + " vs. " + xAxisLabel;
+        } else {
+            title = yAxisLabel + " and " + yAxisLabel2 + " vs. " + xAxisLabel;       
+        }
     }
 
     if (multiset) {
         var yValues2 = [];
         var maxY2 = 0;
+        var minY2 = 0;
         for (var i = 0; i < numValuesPerDataSet; i++) {
             yValues2.push(this.dataSet[i][2]);
             if (this.dataSet[i][2] > maxY2) {
                 maxY2 = this.dataSet[i][2];
+            }
+            if (this.dataSet[i][2] < minY2) {
+                minY2 = this.dataSet[i][2];
             }
         }
     }
 
     if (this.columnTypes[0] != "String") {
         var xScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                        .domain([d3.min(this.dataSet, function(d) { return d[0]; }), d3.max(this.dataSet, function(d) { return d[0]; })])
                         .range([0, width]);
-
-        var reverseXScale = d3.scale.linear()
-                        .domain([0, width])
-                        .range([0, d3.max(this.dataSet, function(d) { return d[0]; })]);
     } else {
         for (var i = 0; i < this.dataSet.length; i++) {
             xValues.push(this.dataSet[i][0]);
@@ -964,31 +940,17 @@ Scatter.prototype.draw = function(divId)
         var xScale = d3.scale.ordinal()
                         .domain(xValues)
                         .rangePoints([0,width]);
-
-        var reverseXScale = d3.scale.ordinal()
-                        .domain([0,width])
-                        .rangePoints(xValues);
     }
 
     var yScale = d3.scale.linear()
-                        .domain([0, maxY])
+                        .domain([minY, maxY])
                         .range([height, 0])
-                        .clamp(true);
-
-    var reverseYScale = d3.scale.linear()
-                        .domain([height, 0])
-                        .range([0, maxY])
                         .clamp(true);
 
     if (multiset) {
         var yScale2 = d3.scale.linear()
-                        .domain([0, maxY2])
+                        .domain([minY2, maxY2])
                         .range([height, 0])
-                        .clamp(true);
-
-        var reverseYScale2 = d3.scale.linear()
-                        .domain([height, 0])
-                        .range([0, maxY2])
                         .clamp(true);
     }
 
@@ -1043,6 +1005,13 @@ Scatter.prototype.draw = function(divId)
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; });
 
+    if (!multiset && minY < 0) {
+        svg.append("path")
+            .attr("id", ("scatter-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", line([[0, yScale(0)], [width, yScale(0)]]));
+    }
+
     // Draw the x-axis.
     svg.append("g")
         .attr({
@@ -1050,8 +1019,13 @@ Scatter.prototype.draw = function(divId)
             transform: "translate(0," + (height) + ")"
             })
         .attr("width", width)
-        .attr("style","font-family:sans-serif;font-size: 11px;")
-        .call(xAxis); 
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)"); 
 
     // Draw the y-axis.
     svg.append("g")
@@ -1143,13 +1117,14 @@ Scatter.prototype.draw = function(divId)
         .append("circle")
         .attr("class", ("data-point-set" + 1))
         .attr("cx", function(d, i) {
-            return xScale(d[0])
+            return xScale(d[0]);
         })
         .attr("cy", function(d, i) {
             return yScale(d[1]);
         })
         .attr("r", defaultRadius)
         .attr("fill", color)
+        .style("stroke", "black")
         .on("mouseover", function(d, i) {
             if(!toggle[i]) {
                 var x = xScale(d[0]);
@@ -1310,6 +1285,7 @@ Scatter.prototype.draw = function(divId)
             })
             .attr("r", defaultRadius)
             .attr("fill", color2)
+            .style("stroke", "black")
             .on("mouseover", function(d, i) {
                 if(!toggle[numValuesPerDataSet + i]) {
                     var x2 = xScale(d[0]);
@@ -1486,13 +1462,16 @@ Scatter.prototype.draw = function(divId)
  *  @param Boolean showPoints       Whether or not points should be displayed on the lines.
  *
  */
-function Line(dataSet, labels, columnTypes, width, height, showPoints) {
-	this.dataSet = dataSet;
+function Line(dataSet, labels, columnTypes, title, width, height, showPoints) {
+    this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
-	this.width = width;
-	this.height = height;
+    this.title = title;
+    this.width = width;
+    this.height = height;
     this.showPoints = showPoints; // Boolean (show points?)
+
+    console.log("labels: " + labels.toString());
 }
 
 Line.prototype.draw = function (divId) {
@@ -1526,10 +1505,7 @@ Line.prototype.draw = function (divId) {
     var colorIconWidth = 10;
     var colorIconHeight = 10;
 
-    var xAxisLabel = this.labels[0];
-    var yAxisLabel = this.labels[1];
-    var yAxisLabel2 = this.labels[2];
-    
+
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
@@ -1541,10 +1517,14 @@ Line.prototype.draw = function (divId) {
 
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
+    var minY = 0;
     for (var i = 1; i < numValues; i++) {
         //for (var j = 0; j < numValues; j++) {
             if (this.dataSet[i][1] > maxY) {
                 maxY = this.dataSet[i][1];
+            }
+            if (this.dataSet[i][1] < minY) {
+                minY = this.dataSet[i][1];
             }
         //}
     }
@@ -1559,25 +1539,37 @@ Line.prototype.draw = function (divId) {
 
     if (multiline) {
         var maxY2 = 0;
+        var minY2 = 0;
         for (var i = 1; i < numValues; i++) {
            // for (var j = 0; j < numValues; j++) {
                 if (this.dataSet[i][2] > maxY2) {
                     maxY2 = this.dataSet[i][2];
                 }
+                if (this.dataSet[i][2] < minY2) {
+                    minY2 = this.dataSet[i][2];
+                }
             //}
         }
     }
     
+    var xAxisLabel = this.labels[0];
+    var yAxisLabel = this.labels[1];
     if (multiline) {
-        var title = this.labels[1] + " and " + this.labels[2] + " vs. " + this.labels[0];
-    } else {
-        var title = this.labels[1] + " vs. " + this.labels[0];
+        var yAxisLabel2 = this.labels[2];
+    }
+    var title = this.title;
+    if (title == "") {
+        if (multiline) {
+            title = yAxisLabel + " and " + yAxisLabel2 + " vs. " + xAxisLabel;
+        } else {
+            title = yAxisLabel + " vs. " + xAxisLabel;
+        }
     }
 
     if (this.columnTypes[0] != "String") {
 
         var xScale = d3.scale.linear()
-                 .domain([0, d3.max(this.dataSet, function(d) { return d[0]; })])
+                 .domain([d3.min(this.dataSet, function(d) { return d[0]; }), d3.max(this.dataSet, function(d) { return d[0]; })])
                  .range([0, width])
                  .clamp(true);
 
@@ -1592,14 +1584,15 @@ Line.prototype.draw = function (divId) {
                         .rangePoints([0,width]);
     }                 
 
+
     var yScale = d3.scale.linear()
-                        .domain([0, maxY])
+                        .domain([minY, maxY])
                         .range([height, 0])
                         .clamp(true);
 
     if (multiline) {
         var yScale2 = d3.scale.linear()
-                        .domain([0, maxY2])
+                        .domain([minY2, maxY2])
                         .range([height, 0])
                         .clamp(true);
     }
@@ -1631,7 +1624,7 @@ Line.prototype.draw = function (divId) {
 
     var line2 = d3.svg.line()
             .x(function(d) { return xScale(d[0]); })
-            .y(function(d) { return yScale2(d[1]); }); 
+            .y(function(d) { return yScale2(d[1]); });
 
     var unscaledLine = d3.svg.line()
             .x(function(d) { return d[0]; })
@@ -1645,6 +1638,13 @@ Line.prototype.draw = function (divId) {
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+    if (!multiline && minY < 0) {
+        svg.append("path")
+            .attr("id", ("line-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", unscaledLine([[0, yScale(0)], [width, yScale(0)]]));
+    }
 
     // Setup the guideline.
     var focus = svg.append("g")
@@ -1752,7 +1752,13 @@ Line.prototype.draw = function (divId) {
         .attr("class", "axis")
         .attr("transform", "translate(0," + (height) + ")")
         .attr("width", width)
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)");
 
 
     // Display the y-axis. 
@@ -2018,17 +2024,18 @@ Line.prototype.draw = function (divId) {
    
 };
 
-function Bar (dataSet, labels, columnTypes, width, height) {
-	this.dataSet = dataSet;
+function Bar (dataSet, labels, columnTypes, title, width, height) {
+    this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
-	this.width = width;
-	this.height = height;
+    this.title = title;
+    this.width = width;
+    this.height = height;
 }
 
 Bar.prototype.draw = function(divId) {
 
-    var margin = {top: 50, right: 55, bottom: 40, left: 55};
+    var margin = {top: 50, right: 55, bottom: 55, left: 55};
 
     var numValuesPerDataSet = this.dataSet.length;
     var numDataSets = this.dataSet[0].length;
@@ -2041,19 +2048,19 @@ Bar.prototype.draw = function(divId) {
         multiset = true;
     }
 
-	xValues = [];
-	yValues = [];
+    xValues = [];
+    yValues = [];
     y2Values = [];
 
-	numBars = this.dataSet.length;
+    numBars = this.dataSet.length;
 
-	for(var i = 0; i < numBars; i++) {
-		xValues[i] = this.dataSet[i][0];
-		yValues[i] = this.dataSet[i][1];
+    for(var i = 0; i < numBars; i++) {
+        xValues[i] = this.dataSet[i][0];
+        yValues[i] = this.dataSet[i][1];
         if (multiset) {
             y2Values[i] = this.dataSet[i][2];
-        }		
-	}
+        }       
+    }
     
     var condensedXValues = [];
     var condensedYValues = [];
@@ -2098,43 +2105,62 @@ Bar.prototype.draw = function(divId) {
     // numBars = d3.max(condensedXValues);
     numBars = condensedXValues.length;
 
-	//Width and height
+    //Width and height
     var w = this.width;
     var h = this.height;
     var highlightTextHeight = 12;
     var highlightTextPadding = 2;
     var padding = 20;
     var barPadding = 5;
-    var barSetPadding = 10;
+    var barSetPadding = 15;
     
     var xAxisLabelPaddingBottom = 2;
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
     var yAxisLabelPaddingRight = 2;
-    var axisLabelHeight = 15;
+    var axisLabelHeight = 10;
 
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
+    var title = this.title;
     if (multiset) {
         var y2AxisLabel = this.labels[2];
-        var title = yAxisLabel + " and " + y2AxisLabel + " vs. " + xAxisLabel;   
+        if (title == "") {
+            title = yAxisLabel + " and " + y2AxisLabel + " vs. " + xAxisLabel;   
+        }
     } else {
-        var title = yAxisLabel + " vs. " + xAxisLabel;    
+        if (title == "") {
+            title = yAxisLabel + " vs. " + xAxisLabel;    
+        }
     }
-    
+
+    var totalWidth;
+    var minBarWidth = 10;
+    if (!multiset) {
+        totalWidth = (numBars * (minBarWidth+barPadding)) + barPadding;
+    } else {
+        totalWidth = (numBars * ((2*minBarWidth)+(barPadding)+(barSetPadding))) + barPadding - barSetPadding;
+    }
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
 
-    var numYAxisTicks = height/15;
 
-    if (!multiset) {
-        var barWidth = (width / numBars) - barPadding;
+    if (totalWidth > width) {
+        width = totalWidth;
+        barWidth = minBarWidth;
     } else {
-        var barWidth = ((width - ((numBars-1)*barSetPadding) - ((3*numBars)*barPadding))/(2*numBars));
+        if (!multiset) {
+            var barWidth = ((width - barPadding) / numBars) - barPadding;
+        } else {
+            var barWidth = ((width - ((numBars-1)*barSetPadding) - ((3*numBars)*barPadding))/(2*numBars));
+        }
     }
 
+    var numYAxisTicks = height/15;
+
+    console.log("BarWidth: " + barWidth);
 
     //console.log("(width / numBars) - barPadding: " +  "(" + width + "/" + numBars + ")" + " - " + barPadding);
 
@@ -2144,57 +2170,36 @@ Bar.prototype.draw = function(divId) {
     var highlightColor = "rgb(240,209,86)";
       
 
-
-
-
-
-    if (this.columnTypes[0] != "String") {
-
-        var xScale = d3.scale.linear()
-                    .domain([0, d3.max(condensedXValues)])
-                    .range([barPadding, width - barPadding - barWidth]);
-
+    if (multiset) {
+        var xScale = d3.scale.ordinal()
+                        .domain(condensedXValues)
+                        .rangePoints([barPadding,width - 2*barPadding - 2*barWidth]);
     } else {
-
-        // for (var i = 0; i < this.dataSet.length; i++) {
-        //     xValues.push(this.dataSet[i][0]);
-        // }
-
-        if (multiset) {
-            var xScale = d3.scale.ordinal()
-                            .domain(condensedXValues)
-                            .rangePoints([barPadding,width - 2*barPadding - 2*barWidth]);
-        } else {
-            var xScale = d3.scale.ordinal()
-                            .domain(condensedXValues)
-                            .rangePoints([barPadding,width - barPadding - barWidth]);
-        }
-    }  
-
-
-
-
-
+        var xScale = d3.scale.ordinal()
+                        .domain(condensedXValues)
+                        .rangePoints([barPadding,width - barPadding - barWidth]);
+    }
+  
 
     var yScale = d3.scale.linear()
-                    .domain([0, d3.max(condensedYValues)])
+                    .domain([d3.min(condensedYValues), d3.max(condensedYValues)])
                     .range([height, 0]);
 
     if (multiset) {
         var yScale2 = d3.scale.linear()
-                        .domain([0, d3.max(condensedY2Values)])
+                        .domain([d3.min(condensedY2Values), d3.max(condensedY2Values)])
                         .range([height, 0]);
     }
 
- 	var xAxis = d3.svg.axis()
- 					.scale(xScale)
- 					.orient("bottom")
- 					.ticks(numBars);
+    var xAxis = d3.svg.axis()
+                    .scale(xScale)
+                    .orient("bottom")
+                    .ticks(numBars);
 
- 	var yAxis = d3.svg.axis()
- 					.scale(yScale)
- 					.orient("left")
- 					.ticks(numYAxisTicks);
+    var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient("left")
+                    .ticks(numYAxisTicks);
 
     if (multiset) {
         var yAxis2 = d3.svg.axis()
@@ -2209,7 +2214,7 @@ Bar.prototype.draw = function(divId) {
 
     var xAxisLineCoords = [[0, height], [width, height]];
 
- 	var xAxisLine = d3.svg.line(xAxisLineCoords);
+    var xAxisLine = d3.svg.line(xAxisLineCoords);
 
     //Create SVG element
     var base = d3.select("#" + divId)
@@ -2228,24 +2233,35 @@ Bar.prototype.draw = function(divId) {
         }
     }
 
-	//Create bars
+    var unscaledLine = d3.svg.line()
+            .x(function(d) { return d[0]; })
+            .y(function(d) { return d[1]; }); 
+
+    if (!multiset && (d3.min(condensedYValues)) < 0) {
+        svg.append("path")
+            .attr("id", ("bar-zero-line"))
+            .style("stroke", "grey")
+            .attr("d", unscaledLine([[0, yScale(0)], [width, yScale(0)]]));
+    }
+
+    //Create bars
     svg.selectAll("rect.set1")
         .data(condensedDataSet)
         .enter()
         .append("rect")
         .attr("x", function(d) {
-	        return xScale(d[0]);
-	    })
-	    .attr("y", function(d) {
-	        return (yScale(d[1]));
-	    })
-	    .attr("width", barWidth)
+            return xScale(d[0]);
+        })
+        .attr("y", function(d) {
+            return (yScale(d[1]));
+        })
+        .attr("width", barWidth)
         .attr("height", function(d) {
             return height - yScale(d[1]);
         })
-	    .attr("fill", function(d) {
-	        return fillColor;
-	    })
+        .attr("fill", function(d) {
+            return fillColor;
+        })
         .attr("class", "bar-set1")
         .on("mouseover", function(d, i) {
 
@@ -2258,9 +2274,9 @@ Bar.prototype.draw = function(divId) {
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition + highlightTextHeight;
-            if (yTextPosition > height) {
-                yTextPosition = yPosition - highlightTextPadding;
+            var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+            if (yTextPosition < margin.top + highlightTextHeight) {
+                yTextPosition = yPosition + highlightTextHeight;
             }
         
             var barLineData = [ [0, yPosition], [width, yPosition] ];
@@ -2295,7 +2311,7 @@ Bar.prototype.draw = function(divId) {
                     .attr("font-size", highlightTextHeight)
                     .attr("font-weight", "bold")
                     .attr("fill", "black")
-                    .text(d[1]);               
+                    .text(Math.floor(d[1]*100)/100);               
             }
         })
         .on("click", function(d, i) {
@@ -2317,9 +2333,9 @@ Bar.prototype.draw = function(divId) {
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition + highlightTextHeight;
-            if (yTextPosition > height) {
-                yTextPosition = yPosition - highlightTextPadding;
+            var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+            if (yTextPosition < margin.top + highlightTextHeight) {
+                yTextPosition = yPosition + highlightTextHeight;
             }
             svg.append("text")
                 .attr("id", ("tooltip" + i))
@@ -2331,7 +2347,7 @@ Bar.prototype.draw = function(divId) {
                 .attr("font-size", highlightTextHeight)
                 .attr("font-weight", "bold")
                 .attr("fill", "black")
-                .text(d[1]);
+                .text(Math.floor(d[1]*100)/100);
 
             var barLineData = [ [0, yPosition], [width, yPosition] ];
 
@@ -2369,64 +2385,104 @@ Bar.prototype.draw = function(divId) {
                 .attr("fill", fillColor);             
         });
 
-    svg.selectAll("rect.set2")
-        .data(condensedDataSet2)
-        .enter()
-        .append("rect")
-        .attr("x", function(d) {
-            return (xScale(d[0]) + barWidth + barPadding);
-        })
-        .attr("y", function(d) {
-            return (yScale2(d[1]));
-        })
-        .attr("width", barWidth)
-        .attr("height", function(d) {
-            return height - yScale2(d[1]);
-        })
-        .attr("fill", function(d) {
-            return fillColor2;
-        })
-        .attr("class", "bar-set2")
-        .on("mouseover",function(d, i) {
 
-            // d3.select(this)
-            //         .attr("fill", highlightColor);
+    if (multiset) {
+        svg.selectAll("rect.set2")
+            .data(condensedDataSet2)
+            .enter()
+            .append("rect")
+            .attr("x", function(d) {
+                return (xScale(d[0]) + barWidth + barPadding);
+            })
+            .attr("y", function(d) {
+                return (yScale2(d[1]));
+            })
+            .attr("width", barWidth)
+            .attr("height", function(d) {
+                return height - yScale2(d[1]);
+            })
+            .attr("fill", function(d) {
+                return fillColor2;
+            })
+            .attr("class", "bar-set2")
+            .on("mouseover",function(d, i) {
+
+                // d3.select(this)
+                //         .attr("fill", highlightColor);
+                
+
+
+                
+                var xPosition = parseFloat(d3.select(this).attr("x"));
+                var xTextPosition = xPosition + barWidth/2;
+                var yPosition = parseFloat(d3.select(this).attr("y"));
+                var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+                if (yTextPosition < margin.top + highlightTextHeight) {
+                    yTextPosition = yPosition + highlightTextHeight;
+                }
             
+                var barLineData = [ [0, yPosition], [width, yPosition] ];
+
+                svg.append("path")
+                    .attr("class", "bar-line")
+                    .attr("id", "barline")
+                    .attr("style", "stroke: rgb(150,150,150)")
+                    .attr("d", unscaledLine(barLineData));
+
+                svg.selectAll(".bar-set2")
+                    .attr("fill", function() {
+                        if (this.getAttribute("y") < barLineData[0][1]) {
+                            return "rgb(161,219,136)";
+                        } else if (this.getAttribute("y") > barLineData[0][1]) {
+                            return "rgb(219,136,136)";
+                        } else {
+                            return "rgb(191,191,191)";
+                        }
+                    });
+
+                this.setAttribute("fill", highlightColor);
 
 
-            
-            var xPosition = parseFloat(d3.select(this).attr("x"));
-            var xTextPosition = xPosition + barWidth/2;
-            var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition + highlightTextHeight;
-            if (yTextPosition > height) {
-                yTextPosition = yPosition - highlightTextPadding;
-            }
-        
-            var barLineData = [ [0, yPosition], [width, yPosition] ];
+                if (!toggle[(numBars + i)]) {
+                
+                    svg.append("text")
+                        .attr("id", ("tooltip" + numBars + i))
+                        .attr("x", xTextPosition)
+                        .attr("y", yTextPosition)
+                        .style("pointer-events", "none")
+                        .attr("text-anchor", "middle")
+                        .attr("font-family", "sans-serif")
+                        .attr("font-size", highlightTextHeight)
+                        .attr("font-weight", "bold")
+                        .attr("fill", "black")
+                        .text(Math.floor(d[1]*100)/100);
 
-            svg.append("path")
-                .attr("class", "bar-line")
-                .attr("id", "barline")
-                .attr("style", "stroke: rgb(150,150,150)")
-                .attr("d", unscaledLine(barLineData));
+                    
+                }
+            })
+            .on("click", function(d, i) {
+                d3.select(("#tooltip" + numBars + i)).remove();
+                d3.select("#barline").remove();
 
-            svg.selectAll(".bar-set2")
-                .attr("fill", function() {
-                    if (this.getAttribute("y") < barLineData[0][1]) {
-                        return "rgb(161,219,136)";
-                    } else if (this.getAttribute("y") > barLineData[0][1]) {
-                        return "rgb(219,136,136)";
-                    } else {
-                        return "rgb(191,191,191)";
-                    }
-                });
+                // d3.select(this)
+                //     .attr("fill", highlightColor);
+                
 
-            this.setAttribute("fill", highlightColor);
+                toggle[(numBars + i)] = !toggle[(numBars + i)];
 
+                if (!toggle[(numBars + i)]) {
+                    d3.select(("#tooltip" + numBars + i)).remove();
+                    d3.select("#barline").remove();
+                    return;
+                }
 
-            if (!toggle[(numBars + i)]) {
-            
+                var xPosition = parseFloat(d3.select(this).attr("x"));
+                var xTextPosition = xPosition + barWidth/2;
+                var yPosition = parseFloat(d3.select(this).attr("y"));
+                var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+                if (yTextPosition < margin.top + highlightTextHeight) {
+                    yTextPosition = yPosition + highlightTextHeight;
+                }
                 svg.append("text")
                     .attr("id", ("tooltip" + numBars + i))
                     .attr("x", xTextPosition)
@@ -2437,84 +2493,47 @@ Bar.prototype.draw = function(divId) {
                     .attr("font-size", highlightTextHeight)
                     .attr("font-weight", "bold")
                     .attr("fill", "black")
-                    .text(d[1]);
+                    .text(Math.floor(d[1]*100)/100);
+
+                var barLineData = [ [0, yPosition], [width, yPosition] ];
+
+                svg.append("path")
+                    .attr("class", "bar-line")
+                    .attr("id", "barline")
+                    .attr("style", "stroke: rgb(150,150,150)")
+                    .attr("d", unscaledLine(barLineData));
 
                 
-            }
-        })
-        .on("click", function(d, i) {
-            d3.select(("#tooltip" + numBars + i)).remove();
-            d3.select("#barline").remove();
 
-            // d3.select(this)
-            //     .attr("fill", highlightColor);
-            
+                svg.selectAll(".bar-set2")
+                    .attr("fill", function() {
+                        if (this.getAttribute("y") < barLineData[0][1]) {
+                            return "rgb(161,219,136)";
+                        } else if (this.getAttribute("y") > barLineData[0][1]) {
+                            return "rgb(219,136,136)";
+                        } else {
+                            return "rgb(191,191,191)";
+                        }
+                    });
 
-            toggle[(numBars + i)] = !toggle[(numBars + i)];
+                this.setAttribute("fill", highlightColor);  
 
-            if (!toggle[(numBars + i)]) {
-                d3.select(("#tooltip" + numBars + i)).remove();
-                d3.select("#barline").remove();
-                return;
-            }
+                
 
-            var xPosition = parseFloat(d3.select(this).attr("x"));
-            var xTextPosition = xPosition + barWidth/2;
-            var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition + highlightTextHeight;
-            if (yTextPosition > height) {
-                yTextPosition = yPosition - highlightTextPadding;
-            }
-            svg.append("text")
-                .attr("id", ("tooltip" + numBars + i))
-                .attr("x", xTextPosition)
-                .attr("y", yTextPosition)
-                .style("pointer-events", "none")
-                .attr("text-anchor", "middle")
-                .attr("font-family", "sans-serif")
-                .attr("font-size", highlightTextHeight)
-                .attr("font-weight", "bold")
-                .attr("fill", "black")
-                .text(d[1]);
-
-            var barLineData = [ [0, yPosition], [width, yPosition] ];
-
-            svg.append("path")
-                .attr("class", "bar-line")
-                .attr("id", "barline")
-                .attr("style", "stroke: rgb(150,150,150)")
-                .attr("d", unscaledLine(barLineData));
-
-            
-
-            svg.selectAll(".bar-set2")
-                .attr("fill", function() {
-                    if (this.getAttribute("y") < barLineData[0][1]) {
-                        return "rgb(161,219,136)";
-                    } else if (this.getAttribute("y") > barLineData[0][1]) {
-                        return "rgb(219,136,136)";
-                    } else {
-                        return "rgb(191,191,191)";
-                    }
-                });
-
-            this.setAttribute("fill", highlightColor);  
-
-            
-
-        })
-        .on("mouseout", function(d, i) {
-            if (!toggle[(numBars + i)]) {
-                d3.select(("#tooltip" + numBars + i)).remove();
-            }            d3.select("#barline").remove();
-            d3.select(this)
-                .attr("fill", fillColor2);
-            svg.selectAll(".bar-set2")
-                .attr("fill", fillColor2);
-            svg.selectAll(".bar-set1")
-                .attr("fill", fillColor);    
-            
-        });    
+            })
+            .on("mouseout", function(d, i) {
+                if (!toggle[(numBars + i)]) {
+                    d3.select(("#tooltip" + numBars + i)).remove();
+                }            d3.select("#barline").remove();
+                d3.select(this)
+                    .attr("fill", fillColor2);
+                svg.selectAll(".bar-set2")
+                    .attr("fill", fillColor2);
+                svg.selectAll(".bar-set1")
+                    .attr("fill", fillColor);    
+                
+            });    
+    }
 
     if (multiset) {
         // Create x-axis
@@ -2523,7 +2542,13 @@ Bar.prototype.draw = function(divId) {
                 class: "x-axis",
                 "transform": "translate(" + (barWidth + barPadding/2) + "," + height + ")"
             })
-            .call(xAxis);
+            .call(xAxis)
+            .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)");
 
         // Create y-axis
         svg.append("g")
@@ -2540,10 +2565,16 @@ Bar.prototype.draw = function(divId) {
             class: "x-axis",
             "transform": "translate(" + (barWidth/2) + "," + height + ")"
         })
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")
+                .style("text-anchor", "end")
+                .style("letter-spacing", "0.1em")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate( -45)");
     }
 
-   	// Create y-axis
+    // Create y-axis
     svg.append("g")
         .attr({
             class: "y-axis",
@@ -2551,9 +2582,9 @@ Bar.prototype.draw = function(divId) {
         })
         .call(yAxis);
 
-	svg.append("path")
-    	.attr("class", "line")
-    	.attr("d", xAxisLine(xAxisLineCoords));
+    svg.append("path")
+        .attr("class", "line")
+        .attr("d", xAxisLine(xAxisLineCoords));
 
     base.append("text")
         .attr("class", "x-label")
@@ -2581,8 +2612,8 @@ Bar.prototype.draw = function(divId) {
             .attr("font-size", axisLabelHeight)
             .attr("font-family", "sans-serif")
             .attr("y", h/2)
-            .attr("x", (w - yAxisLabelPaddingRight - axisLabelHeight))
-            .attr("transform", "rotate(90, " + (w - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
+            .attr("x", ((width + margin.left + margin.right) - yAxisLabelPaddingRight - axisLabelHeight))
+            .attr("transform", "rotate(90, " + ((width + margin.left + margin.right) - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
             .text(y2AxisLabel);
     }
 
@@ -2607,7 +2638,7 @@ Bar.prototype.draw = function(divId) {
 
         base.append("rect")
             .attr("id", "colorIcon2")
-            .attr("x", (w - (margin.right/2 - colorIconWidth/2)))
+            .attr("x", ((width + margin.left + margin.right) - (margin.right/2 - colorIconWidth/2)))
             .attr("y", (margin.top + (height - colorIconHeight)))
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
@@ -2641,9 +2672,11 @@ function getVisualization(dataPackage,type)
     {
         var visType = dataPackage.Visualizations[i].Type;
         var columnSet = dataPackage.Visualizations[i].DataColumns;
+        console.log("columnSet: " + columnSet.toString());
         var columnTypes = dataPackage.Data.ColumnType;
         var values = dataPackage.Data.Values;
         var labels = dataPackage.Data.ColumnLabel;
+        var caption = dataPackage.Data.Caption;
         console.log('Checking ' + visType + ' == ' + type + ' -> ' + (visType==type));
         if(type == visType)
         {
@@ -2651,31 +2684,27 @@ function getVisualization(dataPackage,type)
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
             switch(type) {
                 case "Line":
-                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height, true);
+                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height);
+                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height);
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height);
+                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height);
                     break;  
 
-                case "Area":
-                    v = new Area(getData(columnSet, values), width, height);
-                    break; 
-
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), pieWidth, height);
+                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), caption, pieWidth, height);
                     break;
 
                 case "Tree":
-                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), width, 1.3*height);
+                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), caption, width, 1.3*height);
                     break;
 
                 case "Bubble":
-                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), width, height);
+                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height);
                     break;
 
                 default:
@@ -2722,7 +2751,7 @@ function getLabels(columns, labels)
 {
     var labelSet = [];
     for (var i = 0; i < columns.length; i++) {
-        labelSet.push(labels[i]);
+        labelSet.push(labels[columns[i]]);
     }
     return labelSet;
 }
@@ -2731,7 +2760,7 @@ function getColumnTypes(columns, types)
 {
     var typeSet = [];
     for (var i = 0; i < columns.length; i++) {
-        typeSet.push(types[i]);
+        typeSet.push(types[columns[i]]);
     }
     return typeSet;
 }

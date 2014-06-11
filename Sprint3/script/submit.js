@@ -205,9 +205,6 @@ function addTable(table,tableNumber)
 	if(tables[tableNumber].Data.Caption)
 	{
 		tableName = tables[tableNumber].Data.Caption;
-	}else
-	{
-		tables[tableNumber].Data.Caption = tableName;
 	}
 	$('#tableSelectionBox').append('<option value="'+tableNumber+'">'+tableName+'</option>');
 }
@@ -459,7 +456,7 @@ function submitForm(urlToParse)
 
 	// SWAP THESE V ^
 
-	//parseComplete("kldhdjkshg");
+	// parseComplete("kldhdjkshg");
 
 	console.log("url: " + url);
 }

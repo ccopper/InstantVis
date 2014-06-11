@@ -5,10 +5,12 @@
  */
 
  /**
-  *	JSON For the default API Configuration. 
+  *	JSON For the default API Configuration.  Requires a host and relatve
+defaults to "" and "server" respectivly.
   *
   * @property InstantVisAPI_Config
   * @type JSON
+  * @default
   */
 var InstantVisAPI_Config = 
 { 
@@ -37,10 +39,8 @@ var errorCallBack = function(errorThrown)
  */
 function parseHTML(URL, APICallback)
 {
-	var start = URL.trim().substr(0,7);
-	start = start.toLowerCase();	
-	
-	if(start != "http://")
+
+	if(URL.indexOf("http://") != 0 && URL.indexOf("https://") != 0)
 	{
 		URL = "http://" + URL
 	}	
@@ -63,7 +63,8 @@ function parseHTML(URL, APICallback)
 }
 
 /**
- *	Requests that the provided URL be scraped for tables.
+ *	Error Handler if the API call fails to go through.  The call response
+may still return no data.
  *
  *	@method InstantVisAPI_Error
  *	@param {string} URL				The URL to Scrape

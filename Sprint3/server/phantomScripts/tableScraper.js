@@ -1,15 +1,18 @@
-/*
- * tableScraper() and associated functions that tableScraper() uses to scrape html tabular data.
- * Call tableScraper() from within the html document in question.
- *
+/**
+ * @file Scrape HTML tabular data.
+ * @example
+ * Call tableScraper() from within the HTML document in question.
+ * @module tableScraper
  */
 
 
-/*
+/**
  * Data contained within one table
+ *
+ * @function
  */
-
-function TableData() {
+function TableData() 
+{
 	this._rows = 0;
 	this._cols = 0;
 	this._data = [];	// an array of array of TableDataElement
@@ -19,73 +22,92 @@ function TableData() {
 	this._columnLabel = []; // labels for each column, default is an array of size 1 with the empty string
 	this._columnLabel[0] = "";
 
-	this._checkDimensions = function() {
-		if (this._data.length > this._rows) {
+	this._checkDimensions = function() 
+	{
+		if (this._data.length > this._rows) 
+		{
 			console.log("Table dimensions do not make sense, number of rows and columns might be wrong!");
 		}
 	}
 	
-	this.hasColumnLabel = function() {
+	this.hasColumnLabel = function() 
+	{
 		return (! (this._columnLabel[0] == "" && this._columnLabel.length == 1) );
 	}
 
-	this.addDataRow = function(dataRow) {
+	this.addDataRow = function(dataRow) 
+	{
 		this._data.push(dataRow);
 	}
 
-	this.getDataRow = function(rowNumber) {
+	this.getDataRow = function(rowNumber) 
+	{
 		return this._data[rowNumber];
 	}
 
-	this.getAllRows = function() {
+	this.getAllRows = function() 
+	{
 		return this._data;
 	}
 
-	this.getDataAt = function(row, col) {
+	this.getDataAt = function(row, col) 
+	{
 		return this._data[row][col];
 	}
 
-	this.setCaption = function(caption) {
+	this.setCaption = function(caption) 
+	{
 		this._caption = caption;
 	}
 
-	this.getCaption = function() {
+	this.getCaption = function()
+  	{
 		return this._caption;
 	}
 
-	this.getColumnLabel = function() {
+	this.getColumnLabel = function() 
+	{
 		return this._columnLabel;
 	}
 
 	// pass in an array of strings that are the column labels
-	this.setColumnLabel = function(columnLabel) {
+	this.setColumnLabel = function(columnLabel) 
+	{
 		this._columnLabel = columnLabel;
 	}
 
-	this.setRows = function(rows) {
+	this.setRows = function(rows) 
+	{
 		this._rows = rows;
 	}
 
-	this.setCols = function(cols) {
+	this.setCols = function(cols) 
+	{
 		this._cols = cols;
 	}
 	
-	this.getRows = function() {
+	this.getRows = function() 
+	{
 		this._checkDimensions();
 		return this._rows;
 	}
 
-	this.getCols = function() {
+	this.getCols = function() 
+	{
 		this._checkDimensions();
 		return this._cols;
 	}
 
-	this.calcDimensions = function() {
+	// determine the dimensions of a table based on this._data size
+	this.calcDimensions = function() 
+	{
 		this._rows = this._data.length;
 		var maxRowLengthFound = 0;
 
-		for (var row = 0; row < this._rows; row++) {
-			if (this._data[row].length > maxRowLengthFound) {
+		for (var row = 0; row < this._rows; row++) 
+		{
+			if (this._data[row].length > maxRowLengthFound) 
+			{
 				maxRowLengthFound = this._data[row].length;
 			}
 		}
@@ -94,69 +116,86 @@ function TableData() {
 
 }
 
-/* 
+/** 
  * Data contained in one table element (a single row/col location)
+ *
+ * @function
  */
-
-function TableDataElement() {
+function TableDataElement() 
+{
 	this._data = null;
 	this._attributes = null;
 
-	this.setData = function(data) {
+	this.setData = function(data) 
+	{
 		this._data = data;
 	}
 
-	this.getData = function() {
+	this.getData = function() 
+	{
 		return this._data;
 	}
 
-	this.getAttributes = function() {
+	this.getAttributes = function() 
+	{
 		return this._attributes;
 	}
 
-	this.setAttributes = function(attributes) {
+	this.setAttributes = function(attributes) 
+	{
 		this._attributes = attributes;
 	}
 }
 
-/*
- * Holds date for all the tables
+/**
+ * Holds data for all the tables
+ *
+ * @function
  */
-
-function AllTableData() {
+function AllTableData() 
+{
 	this._tables = [];
 
-	this.addTable = function(table) {
+	this.addTable = function(table) 
+	{
 		this._tables.push(table);
 	}
 
-	this.getTableCount = function() {
+	this.getTableCount = function() 
+	{
 		return this._tables.length;
 	}
 
-	this.getTable = function(index) {
+	this.getTable = function(index) 
+	{
 		return this._tables[index];
 	}
 
-	this.getTables = function() {
+	this.getTables = function() 
+	{
 		return this._tables;
 	}
 }
 
-/*
+/**
  * Do the table scraping
+ *
+ * @function
+ * @returns An AllTableData object
  */
-
-function getTableData() {
+function getTableData() 
+{
 	var allTableData = new AllTableData();
 
 	// iterate over each <table> in the document
-	$( 'table' ).each( function(currentTableIndex, currentTable) {
+	$( 'table' ).each( function(currentTableIndex, currentTable) 
+	{
 		var tableData = new TableData();
 
 		// find the table caption if it exists
 		var caption = $( $( currentTable ).find( 'caption' ) ).text();
-		if (caption != undefined) {
+		if (caption != undefined) 
+		{
 			tableData.setCaption(caption);
 		}
 
@@ -167,24 +206,28 @@ function getTableData() {
 		var tableHeadOuter = ['thead', 'tr'];
 		var tableHeadInner = ['th', 'th'];
 		
-		for (var i = 0; i < tableHeadOuter.length; i++) {
+		for (var i = 0; i < tableHeadOuter.length; i++) 
+		{
 			$( $( currentTable ).find( tableHeadOuter[i]) ).each( function(currentTableHeadIndex,
-					currentTableHead) {
+				currentTableHead) 
+			{
 
-					var currentTableHeadData = [];
+				var currentTableHeadData = [];
 
-					$( currentTableHead ).find( tableHeadInner[i] ).each( function(currentTableHeadColumnIndex,
-							currentTableHeadColumn) {
-
-								currentTableHeadData.push( $( currentTableHeadColumn ).text() );
-							});
-
-					if (currentTableHeadData.length > 0) {
-						tableData.setColumnLabel(currentTableHeadData);
-					}
-
+				$( currentTableHead ).find( tableHeadInner[i] ).each( function(currentTableHeadColumnIndex,
+					currentTableHeadColumn) 
+				{
+					currentTableHeadData.push( $( currentTableHeadColumn ).text() );
 				});
-			if (tableData.hasColumnLabel()) {
+
+				if (currentTableHeadData.length > 0) 
+				{
+					tableData.setColumnLabel(currentTableHeadData);
+				}
+
+			});
+			if (tableData.hasColumnLabel()) 
+			{
 				break;
 			}
 		}
@@ -192,26 +235,31 @@ function getTableData() {
 
 		var trSelector = ['tbody tr', 'tr'];
 
-		for (var i = 0; i < trSelector.length; i++) {
+		for (var i = 0; i < trSelector.length; i++) 
+		{
 			var dataAdded = false;
 			// iterate over each <tr> table row
-			$( $( currentTable ).find( trSelector[i] ) ).each( function(currentRowIndex, currentRow) {
+			$( $( currentTable ).find( trSelector[i] ) ).each( function(currentRowIndex, currentRow) 
+			{
 				var currentRowData = [];
 
 				// pick out each <td> table data element and make a new TableDataElement for that data	
-				$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) {
+				$( currentRow ).find( 'td' ).each( function(currentColumnIndex, currentData) 
+				{
 					var tableDataElement = new TableDataElement();
 					tableDataElement.setData( $( currentData ).text());
 					currentRowData.push(tableDataElement);
 				});
 				
-				if (currentRowData.length > 0) {
+				if (currentRowData.length > 0) 
+				{
 					dataAdded = true;
 					tableData.addDataRow(currentRowData);
 				}
 
 			});
-			if (dataAdded) {
+			if (dataAdded) 
+			{
 				break;
 			}
 		}
@@ -222,21 +270,31 @@ function getTableData() {
 	return allTableData;
 }
 
+/**
+ * @typedef Data
+ * @property {String[]} ColumnLabel Column headers picked up in the HTML table
+ * @property {String} Caption HTML table caption (title) if it exists
+ * @property {Integer} Rows Table rows
+ * @property {Integer} Cols Table columns
+ * @property Values A two dimensional array of table values, ordered as [row][col]
+ */
 
 /**
  * Wrapper function to be called from the outside, all the other functions in this file are unused outside
  * this file.
  *
- * @returns	Data : [] portion of parser to AI js object as documented in the wiki and in the function
+ * @public
+ * @returns	{Data[]} An array of {@link Data} objects, one for each table parsed
  */
-
-function tableScraper() {
+function tableScraper() 
+{
 	var allTables = getTableData(); 	// do the actual table scraping, the allTables var will contain all 
 												// tables and associated data
 	var exportableData = [];
 
 	/* for each table, get all associated data from all rows and cols */
-	for (table in allTables.getTables()) {
+	for (table in allTables.getTables()) 
+	{
 
 		var rows = allTables.getTable(table).getRows();
 		var cols = allTables.getTable(table).getCols();
@@ -245,9 +303,11 @@ function tableScraper() {
 		console.log('Table ' + table + ' (' + rows + ' rows by ' + 
 					cols + ' cols) :');
 
-		for (var row = 0; row < rows; row++) {
+		for (var row = 0; row < rows; row++) 
+		{
 			var exportableDataSingleSetDataRow = [];
-			for (var col = 0; col < cols; col++) {
+			for (var col = 0; col < cols; col++) 
+			{
 
 				// put the data minus any attributes into the exportableData structure
 				// if the data is undefined, insert 'Number.NaN' into that element
@@ -256,10 +316,13 @@ function tableScraper() {
 				if(element == undefined)
 				{
 					element = Number.NaN;
-				} else {
+				} 
+				else 
+				{
 					element = element.getData();
 				
-					if (element == undefined) {
+					if (element == undefined) 
+					{
 						element = Number.NaN;
 					}
 				}
@@ -283,20 +346,6 @@ function tableScraper() {
 		);
 	}
 	
-	/*
-	 * returns this object:
-	 *
-	 * {
-	 * 	Data : [
-	 * 		ColumnLabel : [(string)],
-	 * 		Caption : [(string)],
-	 * 		Rows : (integer),
-	 * 		Cols : (integer),
-	 * 		Values : [Rows][Cols]
-	 * 	]
-	 * }
-	 */
-
 	return (
 		{
 			Data : exportableData
