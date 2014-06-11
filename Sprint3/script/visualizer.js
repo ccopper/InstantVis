@@ -2311,7 +2311,7 @@ Bar.prototype.draw = function(divId) {
                     .attr("font-size", highlightTextHeight)
                     .attr("font-weight", "bold")
                     .attr("fill", "black")
-                    .text(d[1]);               
+                    .text(Math.floor(d[1]*100)/100);               
             }
         })
         .on("click", function(d, i) {
@@ -2347,7 +2347,7 @@ Bar.prototype.draw = function(divId) {
                 .attr("font-size", highlightTextHeight)
                 .attr("font-weight", "bold")
                 .attr("fill", "black")
-                .text(d[1]);
+                .text(Math.floor(d[1]*100)/100);
 
             var barLineData = [ [0, yPosition], [width, yPosition] ];
 
@@ -2455,7 +2455,7 @@ Bar.prototype.draw = function(divId) {
                         .attr("font-size", highlightTextHeight)
                         .attr("font-weight", "bold")
                         .attr("fill", "black")
-                        .text(d[1]);
+                        .text(Math.floor(d[1]*100)/100);
 
                     
                 }
@@ -2493,7 +2493,7 @@ Bar.prototype.draw = function(divId) {
                     .attr("font-size", highlightTextHeight)
                     .attr("font-weight", "bold")
                     .attr("fill", "black")
-                    .text(d[1]);
+                    .text(Math.floor(d[1]*100)/100);
 
                 var barLineData = [ [0, yPosition], [width, yPosition] ];
 
