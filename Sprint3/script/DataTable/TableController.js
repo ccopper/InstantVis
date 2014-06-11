@@ -1,9 +1,13 @@
-/*
+/**
  *	Table Controller JavaScript
  *
- *
+ *	@module TableController
  */
-  
+/**
+ *	Contains properties of the currently drawn table
+ *	@property TCIns
+ *	@type JSON
+ */  
 TCIns =
 {
 	"isInit": false,
@@ -38,7 +42,11 @@ TCIns =
 	},
 	"updCallBack": function() { console.log("CallBack Fired") }	
 };
-
+/**
+ *	Contains properties  for TableSorter
+ *	@property TSConfit
+ *	@type JSON
+ */  
 TSConfig =
 {
 	theme : 'blue',
@@ -195,24 +203,26 @@ function updateTableVis(visType)
 	{
 		case "Bar":
 		case "BarHorizontal":
-			
+		case "Line":
+		case "Scatter":
+			$("#IndLbl").text("Indpendent");
+			$("#D1Lbl").text("Dependent");
+			$("#D2Lbl").text("Dependent");
 		break;
 		
+		case "Tree":
 		case "Pie":
 			$("#DTSelMatD2").hide();
 		break;
 		
-		case "Tree":
-		
-		break;
 		case "Bubble":
-		
+			$("#IndLbl").text("Indpendent");
+			$("#D1Lbl").text("Dependent");
+			$("#D2Lbl").text("Size");
 		break;
 		
-		case "Line":
-		case "Scatter":
-		
-		break;
+
+
 		
 		default:
 		

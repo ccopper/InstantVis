@@ -10,6 +10,7 @@ defaults to "" and "server" respectivly.
   *
   * @property InstantVisAPI_Config
   * @type JSON
+  * @default
   */
 var InstantVisAPI_Config = 
 { 
