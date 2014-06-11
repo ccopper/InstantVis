@@ -100,13 +100,13 @@ function populateTable(data)
 	$("#DTHeadEdit tr").append("<th />");
 	//Selections matricies
 	$("#DTSelMatInd").append("<tr />");
-	$("#DTSelMatInd tr").append("<th id=\"IndLbl\">Independent</th>");
+	$("#DTSelMatInd tr").append("<th id=\"IndLbl\">X</th>");
 	
 	$("#DTSelMatD1").append("<tr /><");
-	$("#DTSelMatD1 tr").append("<th id=\"D1Lbl\">Dependent</th>");
+	$("#DTSelMatD1 tr").append("<th id=\"D1Lbl\">Y</th>");
 	
 	$("#DTSelMatD2").append("<tr /><");
-	$("#DTSelMatD2 tr").append("<th id=\"D2Lbl\">Dependent</th>");
+	$("#DTSelMatD2 tr").append("<th id=\"D2Lbl\">Y</th>");
 	
 	for(var hItem in data.Data.ColumnLabel)
 	{
@@ -212,9 +212,9 @@ function updateTableVis(visType)
 		case "BarHorizontal":
 		case "Line":
 		case "Scatter":
-			$("#IndLbl").text("Indpendent");
-			$("#D1Lbl").text("Dependent");
-			$("#D2Lbl").text("Dependent");
+			$("#IndLbl").text("X");
+			$("#D1Lbl").text("Y1");
+			$("#D2Lbl").text("Y2");
 		break;
 		
 		case "Tree":
@@ -223,8 +223,8 @@ function updateTableVis(visType)
 		break;
 		
 		case "Bubble":
-			$("#IndLbl").text("Indpendent");
-			$("#D1Lbl").text("Dependent");
+			$("#IndLbl").text("X");
+			$("#D1Lbl").text("Y");
 			$("#D2Lbl").text("Size");
 		break;
 		
