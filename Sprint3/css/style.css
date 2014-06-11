@@ -131,7 +131,10 @@
 {
     float: left;
 }
-
+#visTextOptions
+{
+	float: left;
+}
 
 #sPaneDiv
 {

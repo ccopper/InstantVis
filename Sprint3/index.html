@@ -89,23 +89,31 @@
 					<div id="editVisualization">
 						<div id="colorPalette">
 							<fieldset>
-                            	<legend>
-                                	Color Palette
-                            	</legend>
+                            	<legend>Color Palette</legend>
                             	Colors Here
                         	</fieldset>
     					</div>
     					<div id="visSize">
                         	<fieldset>
-                            	<legend>
-                                	Visualization Size
-	                            </legend>
+                            	<legend>Visualization Size</legend>
 	                            Height:<input type="number" name="visHeight" id="visHeight" min="100" max="1800" step="1" value="18">
 	                            <br>
 	                            Width:<input type="number" name="visWidth" id="visWidth" min="100" max="1800" step="1" value="18">
 	                            <br>
 	                            Data Points: <input type="number" name="dataPoints" id="dataPoints" min="1" max="100" step="1" value="18">
 	                        </fieldset>
+    					</div>
+    					<div id="visTextOptions">
+    						<fieldset>
+    							<legend>Label Orientation</legend>
+    							<form action="">
+									<input type="radio" name="vertical" value="vertical">Vertical
+									<br>
+									<input type="radio" name="horizontal" value="horizontal">Horizontal
+									<br>
+									<input type="radio" name="angle" value="angle">Angle
+								</form>
+    						</fieldset>
     					</div>
 					</div>
 				</div>
