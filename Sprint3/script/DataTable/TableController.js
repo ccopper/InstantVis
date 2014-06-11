@@ -17,6 +17,7 @@ TCIns =
 	"titleCallBack": function()
 	{
 		populateTableSelect();
+		visTypeClickHandler(TCIns.AIObj.Visualizations[TCIns.VisID].Type);
 	},
 	"headerCallBack": function ()
 	{
@@ -55,22 +56,10 @@ TSConfig =
 	widgets: ["zebra"],
 };
 
-function showSelectRows(rList)
-{ 	
-	$("#DTBody tr").hide();
-	
-	for(var row in rList)
-	{
-		$("#DTRow" + rList[row]).show();
-	}
-}
-
-function showAllRows()
-{
-	$("#DTBody tr").show();
-}
-
- 
+/**
+ *	Initializes the table
+ *
+ */
 function TableSorterInit()
 {
 	$("#editTitle").click(editTitle);
@@ -78,8 +67,13 @@ function TableSorterInit()
 
 	TCIns.isInit = true;
 } 
- 
-function populateTable(data, vis)
+
+ /**
+ *	Uses the provided object to display the table
+ *
+ *	@param {Object} data	The AI Data object to display
+ */
+function populateTable(data)
 {
 	if(!TCIns.isInit)
 	{
@@ -158,6 +152,13 @@ function populateTable(data, vis)
 	
 }
 
+ /**
+ *	Called when TableSorter sorts the table.  
+ *  This resorts the underlying structure to match the table and then orders a redraw.
+ *
+ *	@param {Object} e	jQuery Event
+ *	@param {Object} table	The table element
+ */
 function reSortData(e, table)
 {
 	var newData = []
@@ -179,6 +180,12 @@ function reSortData(e, table)
 	
 }
 
+ /**
+ *	Called when the vis changes 
+ *  The selection matrix is updated to reflect the new vis.
+ *
+ *	@param {String} visType	The vis type requested (Bar, Line, Pie, etc)
+ */
 function updateTableVis(visType)
 {
 	$("#DTSelMatInd").show();
@@ -221,17 +228,16 @@ function updateTableVis(visType)
 			$("#D2Lbl").text("Size");
 		break;
 		
-
-
-		
 		default:
 		
 		
 	}
 	
-	
 }
-
+ /**
+ *	Removes all existing data from the table
+ *
+ */
 function clearTable()
 {
 	$("#TitleLabels").empty();
@@ -242,18 +248,32 @@ function clearTable()
 	$("#DTSelMatD2").empty();
 	$("#DTBody").empty();
 }
-
+ /**
+ *	Creates a Header label item.  This is use in the construction of the table.
+ *
+ *	@param {Inteer} colNum	The Column Number this will be placed in
+ * 	@returns {Element} The constructed element.
+ */
 function createHeaderLabel(colNum)
 {
 	var cont = $("<td>", {});
 	
-	var label = $("<span>",{ "id": "hLbl" + colNum, "text": TCIns.AIObj.Data.ColumnLabel[colNum] });
+	var label = $("<span>",
+	{ 
+		"id": "hLbl" + colNum, 
+		"text": TCIns.AIObj.Data.ColumnLabel[colNum] 
+	});
 	
-	cont.append(label)
+	cont.append(label);
 	
 	return cont;
 }
-
+ /**
+ *	Creates a Header label item.  This is use in the construction of the table.
+ *
+ *	@param {Integer} colNum	The Column Number this will be placed in
+ * 	@returns {Element} The constructed element.
+ */
 function createHeaderEditor(colNum)
 {
 	
@@ -271,57 +291,74 @@ function createHeaderEditor(colNum)
 		$("#hDel" + col).css("visibility", "hidden");
 	});
 	
-	cont.append($("<span>",{ 
+	cont.append($("<span>",
+	{ 
 		"id": "hEdit" + colNum,
 		"class": "mButton",
 		"text": "EDIT",
 		"click": editHeader,
 		"data": { "colNum": colNum }
-		}));
+	}));
 	cont.append("<br>");
-	cont.append($("<span>",{ 
+	cont.append($("<span>",
+	{ 
 		"id": "hDel" + colNum, 
 		"style": "visibility: hidden;",
 		"class": "mButton",
 		"text": "DEL",
 		"click": deleteColumn,
 		"data": { "colNum": colNum }
-		}));
+	}));
 	
 	var save = $("<span>", { "id": "hEditor" + colNum }).css("display", "none");
 	save.append("<input type=\"text\"><br>");	
-	save.append($("<span>",{ 
+	save.append($("<span>",
+	{ 
 		"id": "hSave" + colNum, 
 		"style": {"display": "none"},
 		"class": "mButton",
 		"text": "SAVE",
 		"click": saveHeader,
 		"data": { "colNum": colNum }
-		}));
+	}));
 		
 	cont.append(save);
 		
 	return cont
 }
-
+/**
+ *	Creates the cell with del button for the ros
+ *
+ *	@param {Integer} rowNum	The Row Number this will be placed in
+ * 	@returns {Element} The constructed element.
+ */
 function createDelRow(rowNum)
 {
 	var cont = $("<td>", { })
-	cont.append($("<span>", {
+	cont.append($("<span>", 
+	{
 		"text": "DEL",
 		"class": "mButton",
 		"style": "display: none;",
 		"click": deleteRow,
 		"data": { "rowNum": rowNum }
-		}));
+	}));
 	return cont;
 }
 
-
+ /**
+ *	Creates a radio item.  This is use in the construction of the table.
+ *
+ *	@param {String} gName The group name for the radio 
+ *	@param {Integer} colNum	The Column Number this will be placed in
+ *  @param {bool} isDep This radio is for a dependent data column
+ * 	@returns {Element} The constructed element.
+ */
 function createRadio(gName,colNum,isDep)
 {
 	var cont = $("<th>", { })
-	cont.append($("<input>", {
+	cont.append($("<input>", 
+	{
 		"type": "radio",
 		"disabled": (isDep && TCIns.AIObj.Data.ColumnType[colNum] == "String"),
 		"name": gName,
@@ -330,10 +367,14 @@ function createRadio(gName,colNum,isDep)
 		"title": (isDep && TCIns.AIObj.Data.ColumnType[colNum] == "String")? "Inappropriate data for a dependent variable": "",
 		"click": updateSelMat,
 		"data": { "colNum": colNum }
-		}));
+	}));
 	return cont;
 }
-
+/**
+ *	Event handler to delete a column.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function deleteColumn(event)
 {
 	var colNum = $(this).data("colNum");
@@ -350,6 +391,11 @@ function deleteColumn(event)
 
 	TCIns.colDelCallBack();
 }
+/**
+ *	Event handler to delete a column.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function deleteRow(event)
 {
 	var rowNum = $(this).data("rowNum");
@@ -360,7 +406,11 @@ function deleteRow(event)
 
 	TCIns.rowDelCallBack();
 }
-
+/**
+ *	Event handler to edit a header.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function editHeader(event)
 {
 	var colNum = $(this).data("colNum")
@@ -374,6 +424,11 @@ function editHeader(event)
 	
 	
 }
+/**
+ *	Event handler to save a header.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function saveHeader()
 {
 	var colNum = $(this).data("colNum")
@@ -388,7 +443,11 @@ function saveHeader()
 	TCIns.headerCallBack();
 }
 
-
+/**
+ *	Event handler to edit title.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function editTitle()
 {
 	$("#TitleEditor input").val(TCIns.AIObj.Data.Caption);
@@ -396,7 +455,11 @@ function editTitle()
 	$("#TitleEditor").show();
 	
 }
-
+/**
+ *	Event handler to save title.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function saveTitle()
 {
 	TCIns.AIObj.Data.Caption = $("#TitleEditor input").val().trim();
@@ -409,6 +472,11 @@ function saveTitle()
 	TCIns.titleCallBack();
 }
 
+/**
+ *	Event handler for radio clicks.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function updateSelMat(event)
 {
 	var Ind = $("input:radio[name=Ind]:checked").val();
@@ -447,6 +515,11 @@ function updateSelMat(event)
 	TCIns.selUpdCallBack();
 }
 
+/**
+ *	Event handler to edit a cell.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function editCell(event)
 {
 	if(TCIns.isEditing)
@@ -476,6 +549,11 @@ function editCell(event)
 		}));
 }
 
+/**
+ *	Event handler to save cell.
+ *
+ *	@param {Event} event jQuery event object
+ */
 function saveCell(event)
 {
 	TCIns.isEditing = false;

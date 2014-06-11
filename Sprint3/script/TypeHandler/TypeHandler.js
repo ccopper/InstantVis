@@ -273,7 +273,9 @@ TypeHandler.prototype.DefaultEntry = function()
  * 	@property {function(Record)} accept A function that tests and modifies the passes in Record 
  */
  /**
-  *	@default
+  *	@property
+  *	@type TypeLibrary
+  *	
   */
 TypeHandler.prototype.TypeLibrary =
  {
