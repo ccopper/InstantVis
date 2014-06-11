@@ -2110,14 +2110,14 @@ Bar.prototype.draw = function(divId) {
     var highlightTextPadding = 2;
     var padding = 20;
     var barPadding = 5;
-    var barSetPadding = 10;
+    var barSetPadding = 15;
     
     var xAxisLabelPaddingBottom = 2;
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
     var yAxisLabelPaddingRight = 2;
-    var axisLabelHeight = 15;
+    var axisLabelHeight = 10;
 
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
@@ -2138,7 +2138,7 @@ Bar.prototype.draw = function(divId) {
     if (!multiset) {
         totalWidth = (numBars * (minBarWidth+barPadding)) + barPadding;
     } else {
-        totalWidth = (numBars * ((2*minBarWidth)+(2*barPadding))) + barPadding;
+        totalWidth = (numBars * ((2*minBarWidth)+(barPadding)+(barSetPadding))) + barPadding - barSetPadding;
     }
 
     var width = w - margin.left - margin.right;
@@ -2272,9 +2272,9 @@ Bar.prototype.draw = function(divId) {
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition + highlightTextHeight;
-            if (yTextPosition > height) {
-                yTextPosition = yPosition - highlightTextPadding;
+            var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+            if (yTextPosition < margin.top + highlightTextHeight) {
+                yTextPosition = yPosition + highlightTextHeight;
             }
         
             var barLineData = [ [0, yPosition], [width, yPosition] ];
@@ -2331,9 +2331,9 @@ Bar.prototype.draw = function(divId) {
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition + highlightTextHeight;
-            if (yTextPosition > height) {
-                yTextPosition = yPosition - highlightTextPadding;
+            var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+            if (yTextPosition < margin.top + highlightTextHeight) {
+                yTextPosition = yPosition + highlightTextHeight;
             }
             svg.append("text")
                 .attr("id", ("tooltip" + i))
@@ -2414,9 +2414,9 @@ Bar.prototype.draw = function(divId) {
                 var xPosition = parseFloat(d3.select(this).attr("x"));
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
-                var yTextPosition = yPosition + highlightTextHeight;
-                if (yTextPosition > height) {
-                    yTextPosition = yPosition - highlightTextPadding;
+                var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+                if (yTextPosition < margin.top + highlightTextHeight) {
+                    yTextPosition = yPosition + highlightTextHeight;
                 }
             
                 var barLineData = [ [0, yPosition], [width, yPosition] ];
@@ -2477,9 +2477,9 @@ Bar.prototype.draw = function(divId) {
                 var xPosition = parseFloat(d3.select(this).attr("x"));
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
-                var yTextPosition = yPosition + highlightTextHeight;
-                if (yTextPosition > height) {
-                    yTextPosition = yPosition - highlightTextPadding;
+                var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+                if (yTextPosition < margin.top + highlightTextHeight) {
+                    yTextPosition = yPosition + highlightTextHeight;
                 }
                 svg.append("text")
                     .attr("id", ("tooltip" + numBars + i))
