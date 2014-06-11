@@ -148,7 +148,8 @@
 }
 /* TABLE FORMATTING */
 #DataTable
-{
+{	
+	font-family: Arial;
 	font-size: 11pt;
 	border: none;
 	background:rgba(0,0,0,0);
@@ -163,7 +164,7 @@
 }
 #DTHead td:first-child
 {
-	width:35px;
+	width:40px;
 }
 #DTHead td:nth-child(2)
 {	
