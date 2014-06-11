@@ -470,7 +470,7 @@ function toggleDataTable()
 function toggleEditControls()
 {
 	$("#editVisualization").toggle();
-	dom.getComputedStyle();
+	window.getComputedStyle();
 
 }
 
