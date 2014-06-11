@@ -122,7 +122,11 @@
 	padding: 0px;
 	margin: 5px;
 }
-
+#editVisualization
+{
+	display: inline-block;
+	float: left;
+}
 #colorPalette
 {
     float: left;
@@ -130,6 +134,7 @@
 #visSize
 {
     float: left;
+    text-align: left;
 }
 #visTextOptions
 {

@@ -340,7 +340,7 @@ function toggleDataTable()
 */
 function toggleEditControls()
 {
-	$("#editVisualization").toggle();
+	$("#editVisualization").slideToggle();
 }
 
 /**
