@@ -340,8 +340,14 @@ function toggleDataTable()
 */
 function toggleEditControls()
 {
-	$("#editVisualization").toggle();
-
+	if($("#editVisualization").is(":visible"))
+	{
+		$("#editVisualization").hide();	
+	}
+	else
+	{
+		$("#editVisualization").show();
+	}
 }
 
 /**
