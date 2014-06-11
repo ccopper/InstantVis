@@ -122,7 +122,25 @@
 	padding: 0px;
 	margin: 5px;
 }
-
+#editVisualization
+{
+	display: inline-block;
+	float: left;
+}
+#colorPalette
+{
+    float: left;
+}
+#visSize
+{
+    float: left;
+    text-align: left;
+}
+#visTextOptions
+{
+	float: left;
+	text-align: left;
+}
 
 #sPaneDiv
 {
@@ -162,9 +180,10 @@
 	vertical-align: middle;
 	border-bottom: 0px;
 }
-#DTHead td:first-child
+#DataTable td:first-child
 {
-	width:40px;
+	max-width: 40px;
+	min-width: 40px;
 }
 #DTHead td:nth-child(2)
 {	

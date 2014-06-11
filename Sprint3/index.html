@@ -74,7 +74,7 @@
  				<div id="optionIconContainer">
  						<div class="divider"></div>
  						<img src="images/table_grey.png" onclick="toggleDataTable()" id="tableIcon" alt="Table" height="50" width="50">
- 						<img src="images/edit.png" onclick="toggleDataTable()" id="editIcon" alt="Edit" height="50" width="50">
+ 						<img src="images/edit.png" id="editIcon" onclick="toggleEditControls()" alt="Edit" height="50" width="50">
  						<img src="images/save_grey.png" id="saveIcon" onclick="exportVisualization()" alt="Save" height="50" width="50">
  				</div>
 			</div>
@@ -85,6 +85,39 @@
 					<br>
 					<div id="visSVG" class="visualization">
 					
+					</div>
+					<div id="editVisualization">
+						<fieldset>
+							<legend>Visualization Options</legend>
+							<div id="colorPalette">
+								<fieldset>
+	                            	<legend>Color Palette</legend>
+	                            	Colors Here
+	                        	</fieldset>
+	    					</div>
+	    					<div id="visSize">
+	                        	<fieldset>
+	                            	<legend>Size</legend>
+		                            Height:<input type="number" name="visHeight" id="visHeight" min="100" max="1800" step="1" value="18">
+		                            <br>
+		                            Width:<input type="number" name="visWidth" id="visWidth" min="100" max="1800" step="1" value="18">
+		                            <br>
+		                            Data Points: <input type="number" name="dataPoints" id="dataPoints" min="1" max="100" step="1" value="18">
+		                        </fieldset>
+	    					</div>
+	    					<div id="visTextOptions">
+	    						<fieldset>
+	    							<legend>Label Orientation</legend>
+	    							<form action="">
+										<input type="radio" name="orientation" value="vertical">Vertical
+										<br>
+										<input type="radio" name="orientation" value="horizontal">Horizontal
+										<br>
+										<input type="radio" name="orientation" value="angle">Angle
+									</form>
+	    						</fieldset>
+	    					</div>
+    					</fieldset>
 					</div>
 				</div>
 				<div id="sPaneDiv"></div>

@@ -31,7 +31,7 @@
  * @property {Integer} Rows Number of rows in the data
  * @property {Integer} Cols Number of columns in the data
  * @property {String} Caption Caption (title) taken from the source data
- * @property {String[]} Column heading for each column
+ * @property {String[]} ColumnLabel heading for each column
  * @property Values A two dimensional array of the values that make up the dataset
  * @property {String[]} ColumnType Type of column as determined by the type handler
  * @property {Float[]} ColumnUnique The uniqueness of each column as calculated by the type handler
@@ -135,7 +135,7 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 }
 
 /**
- * Find the best independent variable for a given dataset.
+ * Find the best independent variable for a given dataset, this is the least unique column.
  *
  * @function
  * @param currentDataset An element from {@link AIdataStructure}
@@ -144,9 +144,17 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
  */
 var findIndependentVariable = function(currentDataset) 
 {
-	var excludeList = [];
-	var excludeStrings = false;
-	return findNextBestAvailableColumn(currentDataset, excludeList, excludeStrings);
+	var leastUniqueColumnFound = 0;
+
+	for (var col = 1; col < currentDataset.Cols; col++)
+	{
+		if (currentDataset.ColumnUnique[col] < currentDataset.ColumnUnique[leastUniqueColumnFound])
+		{
+			leastUniqueColumnFound = col;
+		}
+	}
+
+	return leastUniqueColumnFound;
 }
 
 /**
@@ -221,7 +229,7 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 
 			var twoColumnOnlyVisTypes = ["Pie", "Tree", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
-			var twoOrThreeColumnVisTypes = ["Bar", "Line"]; // , "BarHorizontal"];
+			var twoOrThreeColumnVisTypes = ["Bar", "Line"]; 
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
 			var threeColumnVisTypes = twoOrThreeColumnVisTypes.concat(threeColumnOnlyVisTypes);
 
@@ -312,6 +320,45 @@ var rankDatasets = function(AIdataStructure)
 	}
 }
 
+
+/**
+ * Generate a visualization title based on the selected colums for each visualization. Adds the
+ * VisTitle field to the Visualization object for each visualization.
+ *
+ * @function
+ * @param {AIdataStructure}
+ */
+var generateVisTitle = function(AIdataStructure)
+{
+	for (var elementIndex = 0; elementIndex < AIdataStructure.length; elementIndex++)
+	{
+		var element = AIdataStructure[elementIndex];
+		for (var visIndex = 0; visIndex < element.Visualizations.length; visIndex++)
+		{
+			var visTitle;
+			var visualization = element.Visualizations[visIndex];
+
+			if (visualization.DataColumns.length == 2) // one independent and one dependent 
+			{
+				visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[1]] + " vs " + 
+					element.Data.ColumnLabel[visualization.DataColumns[0]];
+			}
+			else if (visualization.DataColumns.length == 3) // one independent and two dependents
+			{
+				visTitle = "" +  element.Data.ColumnLabel[visualization.DataColumns[1]] + " and " + 
+				  	element.Data.ColumnLabel[visualization.DataColumns[2]] + " vs " + 
+					element.Data.ColumnLabel[visualization.DataColumns[0]];
+			}
+			else // some other combo of vars, just use the independent var name as the title
+			{
+				visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[1]];
+			}
+			
+			visualization.VisTitle = visTitle;
+		}
+	}
+}
+
 /**
  * Take raw parser data and return an {@link AIdataStructure} object to be used by the visualizer.
  *
@@ -333,7 +380,7 @@ function AI(parserData)
 		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
 
-		AIdataStructure.push( 
+		var visDataElement = 
 			{
 				"Visualizations" : [],
 				"Data" : {
@@ -343,8 +390,10 @@ function AI(parserData)
 					"ColumnLabel" : currentTable.ColumnLabel,
 					"Values" : currentTable.Values,
 					"ColumnType" : columnType
-			}
-		} );
+				}
+			};
+
+		AIdataStructure.push(visDataElement);
 
 	}
 
@@ -364,6 +413,8 @@ function AI(parserData)
 			visualizationsRemoved = visualizationsRemoved + 1;
 		}
 	}
+
+	generateVisTitle(AIdataStructure);
 	
 	var consoleRemovedMessage = "";
 
