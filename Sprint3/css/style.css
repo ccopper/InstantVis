@@ -123,6 +123,15 @@
 	margin: 5px;
 }
 
+#colorPalette
+{
+    float: left;
+}
+#visSize
+{
+    float: left;
+}
+
 
 #sPaneDiv
 {
