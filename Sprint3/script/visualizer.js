@@ -2090,19 +2090,32 @@ Bar.prototype.draw = function(divId) {
         }
     }
 
-    
+    var totalWidth;
+    var minBarWidth = 10;
+    if (!multiset) {
+        totalWidth = (numBars * (minBarWidth+barPadding)) + barPadding;
+    } else {
+        totalWidth = (numBars * ((2*minBarWidth)+(2*barPadding))) + barPadding;
+    }
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
 
-    var numYAxisTicks = height/15;
 
-    if (!multiset) {
-        var barWidth = (width / numBars) - barPadding;
+    if (totalWidth > width) {
+        width = totalWidth;
+        barWidth = minBarWidth;
     } else {
-        var barWidth = ((width - ((numBars-1)*barSetPadding) - ((3*numBars)*barPadding))/(2*numBars));
+        if (!multiset) {
+            var barWidth = ((width - barPadding) / numBars) - barPadding;
+        } else {
+            var barWidth = ((width - ((numBars-1)*barSetPadding) - ((3*numBars)*barPadding))/(2*numBars));
+        }
     }
 
+    var numYAxisTicks = height/15;
+
+    console.log("BarWidth: " + barWidth);
 
     //console.log("(width / numBars) - barPadding: " +  "(" + width + "/" + numBars + ")" + " - " + barPadding);
 
@@ -2111,12 +2124,6 @@ Bar.prototype.draw = function(divId) {
     // var highlightColor = randRGB(100, 200);  
     var highlightColor = "rgb(240,209,86)";
       
-
-
-
-
-
- 
 
     if (multiset) {
         var xScale = d3.scale.ordinal()
@@ -2549,8 +2556,8 @@ Bar.prototype.draw = function(divId) {
             .attr("font-size", axisLabelHeight)
             .attr("font-family", "sans-serif")
             .attr("y", h/2)
-            .attr("x", (w - yAxisLabelPaddingRight - axisLabelHeight))
-            .attr("transform", "rotate(90, " + (w - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
+            .attr("x", ((width + margin.left + margin.right) - yAxisLabelPaddingRight - axisLabelHeight))
+            .attr("transform", "rotate(90, " + ((width + margin.left + margin.right) - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
             .text(y2AxisLabel);
     }
 
@@ -2575,7 +2582,7 @@ Bar.prototype.draw = function(divId) {
 
         base.append("rect")
             .attr("id", "colorIcon2")
-            .attr("x", (w - (margin.right/2 - colorIconWidth/2)))
+            .attr("x", ((width + margin.left + margin.right) - (margin.right/2 - colorIconWidth/2)))
             .attr("y", (margin.top + (height - colorIconHeight)))
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
