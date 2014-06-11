@@ -8,7 +8,7 @@ var isDrag = false;
 //Toggle color icon mode
 var useColorIcons = false;
 //Turn this on to test on local machine
-var runLocal = false;
+var runLocal = true;
 //Global reference to the current visualization type
 var currentVis = NaN;
 
@@ -469,14 +469,9 @@ function toggleDataTable()
 */
 function toggleEditControls()
 {
-	if($("#editVisualization").is(":visible"))
-	{
-		$("#editVisualization").css("display","none");
-	}
-	else
-	{
-		$("#editVisualization").css("display","inline-block");
-	}
+	$("#editVisualization").toggle();
+	$('#visualizationContainer').hide().show();
+
 }
 
 /**
