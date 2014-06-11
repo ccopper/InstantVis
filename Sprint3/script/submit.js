@@ -325,13 +325,22 @@ function toggleDataTable()
 		$("#tableContainer").hide()
 		$("#sPaneDiv").hide()
 		$("#visualizationContainer").width("100%");
-	}else{
+	}
+	else
+	{
 		$("#tableContainer").show();
 		$("#sPaneDiv").show()	
 		$("#visualizationContainer").width(document.body.clientWidth/2);
 		resizeVisWrapper();
-
 	}
+}
+
+/**
+ * This function will hide or show the controls to edit the visualization
+*/
+function toggleEditControls()
+{
+	$("#editVisualization").toggle();
 }
 
 /**
@@ -471,6 +480,7 @@ function submitForm(urlToParse)
 
 	console.log("url: " + url);
 }
+
 
 /**
  * This function displays an error message if a non-recoverable error is reached.
