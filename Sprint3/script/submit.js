@@ -470,7 +470,9 @@ function toggleDataTable()
 function toggleEditControls()
 {
 	$("#editVisualization").toggle();
-	window.getComputedStyle();
+	var widthBefore = $("#visualizationContainer").width();
+	$("#editVisualization").resize();
+	$("#visualizationContainer").width(widthBefore);
 
 }
 
