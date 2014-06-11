@@ -323,9 +323,9 @@ function toggleDataTable()
 		$("#tableContainer").show();
 		$("#sPaneDiv").show()	
 		$("#visualizationContainer").width(document.body.clientWidth/2);
-		
+		resizeVisWrapper();
+
 	}
-	resizeVisWrapper();
 }
 
 /**
