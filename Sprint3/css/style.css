@@ -136,6 +136,7 @@
 {
 	margin-right: auto;
 	margin-left: auto;
+	display: inline;
 }
 #colorPalette td
 {
@@ -363,6 +364,17 @@
 	color: red;
 }
 
+#colorTableX1
+{
+	float: left;
+	border: solid black 1px;
+}
+#colorTableX2
+{
+	float: right;
+	border: solid black 1px;
+}
+
 .imageButton
 {
 	cursor: pointer;
@@ -384,13 +396,13 @@
 .colorSquareHighLightOn
 {
 	border: solid black 2px;
-	border-radius: 15px;
+	/*border-radius: 15px;*/
 }
 
 .colorSquareHighLightOff
 {
 	border: solid white 2px;
-	border-radius: 15px;
+	/*border-radius: 15px;*/
 }
 
 .visualization

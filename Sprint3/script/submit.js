@@ -13,16 +13,13 @@ var useColorIcons = false;
 var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
+//Array of visualizations which do not require two color tables 
+var oneColorVisualizations = ["Bar","Scatter","Bubble"];
 //Global reference to active colors
-var col0ColorIndex = 0;
-var col1ColorIndex = 0;
+var x1ColorIndex = 0;
+var x2ColorIndex = 0;
 //Color table
 var colors =[	
-				{hue:116,saturation:"100%",lightness:"50%"},//Green
-				{hue:352,saturation:"100%",lightness:"50%"},//Red
-				{hue:250,saturation:"100%",lightness:"50%"},//Blue
-				{hue:29,saturation:"100%",lightness:"57%"}, //Orange
-				{hue:250,saturation:"0%",lightness:"50%"}//Grey
 				{hue:120,saturation:"41%",lightness:"64%"},	// Pale Green
 				{hue:265,saturation:"31%",lightness:"76%"},	// Lavendar
 				{hue:29,saturation:"97%",lightness:"76%"},	// Peach
@@ -135,6 +132,7 @@ function readyFunction()
 
 	$("#tableSelectionBox").change(tableSelectHandler);
 	
+
 	var urlParams = getURLParams()
  	
  	if(typeof urlParams["URL"] != "undefined")
@@ -143,6 +141,8 @@ function readyFunction()
  		 submitForm();
   	}
 
+
+
 }
 
 /**
@@ -150,30 +150,31 @@ function readyFunction()
 */
 function colorClickHandler(event)
 {
+	console.log("Got here");
 	var colorId = event.target.id;
-	var column = colorId.substr(colorId.length - 1);
-	var row = colorId.replace("color_","").replace("_"+column,"");
-	console.log("Color Clicked: ("+column+","+row+")");
-	console.log(colors[row]);
-	if(column==0)
+	var colorTableId = colorId.substr(colorId.length - 1);
+	var colorIndex = colorId.replace("color_","").replace("_x"+colorTableId,"");
+	console.log("Color Clicked. Index:" + colorIndex + " " + ((colorTableId == "1") ? "x1" : "x2"));
+
+	if(colorTableId==1)
 	{
-		col0ColorIndex = row;
+		x1ColorIndex = colorIndex;
 	}
-	else if(column == 1)
+	else if(colorTableId == 2)
 	{
-		col1ColorIndex = row;
+		x2ColorIndex = colorIndex;
 	}
 	else
 	{
-		console.error("Color column out of bounds. Column: " + column);
+		console.error("Color table identifier out of bounds. table: " + colorTableId);
 		return;
 	}
-	if(row > (colors.length - 1) || row < 0)
+	if(colorIndex > (colors.length - 1) || colorIndex < 0)
 	{
 		console.error("Color row out of bounds. Row:" + row);
 	}
 
-	var visColors = [colors[col0ColorIndex],colors[col1ColorIndex]];
+	var visColors = [colors[x1ColorIndex],colors[x2ColorIndex]];
 
 	$("#visSVG").empty();
 	var visualization = getVisualization(tables[currentTable],visType,visColors);
@@ -199,26 +200,25 @@ function colorClickHandler(event)
 function setColorBorders()
 {
 
-	for(var j = 0; j < 2; j++)
+	for(var j = 1; j < 3; j++)
 	{
 		for(var i in colors)
 		{
-			$("#color_"+i+"_"+j).removeClass("colorSquareHighLightOn");
-			$("#color_"+i+"_"+j).addClass("colorSquareHighLightOff");
-			if(i == col0ColorIndex && j == 0)
+			$("#color_"+i+"_x"+j).removeClass("colorSquareHighLightOn");
+			$("#color_"+i+"_x"+j).addClass("colorSquareHighLightOff");
+			if(i == x1ColorIndex && j == 1)
 			{
 				console.error("Got here");
-				$("#color_"+i+"_"+j).removeClass("colorSquareHighLightOff");
-				$("#color_"+i+"_0").addClass("colorSquareHighLightOn");
+				$("#color_"+i+"_x"+j).removeClass("colorSquareHighLightOff");
+				$("#color_"+i+"_x1").addClass("colorSquareHighLightOn");
 			}
-			if(i == col1ColorIndex && j == 1)
+			if(i == x2ColorIndex && j == 2)
 			{
-				$("#color_"+i+"_"+j).removeClass("colorSquareHighLightOff");
-				$("#color_"+i+"_1").addClass("colorSquareHighLightOn");
+				$("#color_"+i+"_x"+j).removeClass("colorSquareHighLightOff");
+				$("#color_"+i+"_x2").addClass("colorSquareHighLightOn");
 			}
 		}
 	}
-	$("#color_0_0").addClass("colorSquareBorder");
 }
 
 /**
@@ -344,7 +344,6 @@ function testLocally()
 	$("#loadingContent").slideUp();
 
 	populateTableSelect();
-
 	
 	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
@@ -357,7 +356,7 @@ function testLocally()
 	//Load first visualization
 	tableSelectHandler(0);
 	//Set Border Styling
-	colorClickHandler({target:{id:"color_0_0"}});
+	colorClickHandler({target:{id:"color_0_x1"}});
 }
 
 /**
@@ -520,6 +519,18 @@ function visTypeClickHandler(event)
 		currentVis = visType	
 	}
 	
+	if(oneColorVisualizations.indexOf(visType) != -1)
+	{
+		console.log("Hiding color table for vis:"+visType);
+		$("#colorTableX2").hide();
+		$("#colorPalette").width($("#colorTableX1").width() * 1.75);
+
+	}
+	else
+	{
+		$("#colorTableX2").show();	
+		$("#colorPalette").width($("#colorTableX1").width() * 2.4);
+	}
 
 	$("#visSVG").empty();
 	var visualization = getVisualization(tables[currentTable],visType);
@@ -729,27 +740,46 @@ function exportVisualization()
 */
 function populateColorTable()
 {
-	table = document.getElementById("colorTable");
-	if(!table)
+	tableX1 = document.getElementById("colorTableX1");
+	tableX2 = document.getElementById("colorTableX2");
+	
+	if(!tableX1 || !tableX2)
 	{
-		alert("Could not find table element.");
+		console.error("Could not find color table in html.");
+		return;
 	}
-	for(var i in colors)
+
+	//For both color tables, create a grid of colors with unique id's
+	var colorColumns = Math.ceil(Math.sqrt(colors.length));
+	var colorCounter = 0;
+	var colorRowCounter = 0;
+	while(colorCounter < colors.length)
 	{
-		row =  table.insertRow(i);
-		hslColor = "hsl("+colors[i].hue+","+colors[i].saturation+","+colors[i].lightness+")";
-		cellLeft = row.insertCell(0);
-		cellLeft.id = "color_"+i+"_0";
-		$("#"+cellLeft.id).click(colorClickHandler);
-		cellLeft.style.backgroundColor = hslColor;
-		cellLeft.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		cellRight = row.insertCell(1);
-		cellRight.id = "color_"+i+"_1";
-		$("#"+cellRight.id).click(colorClickHandler);
-		cellRight.style.backgroundColor = hslColor;
-		cellRight.innerHTML =  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		console.log(colors[i]);
+		rowX1 = tableX1.insertRow(colorRowCounter);
+		rowX2 = tableX2.insertRow(colorRowCounter);
+		var columnCounter = ((colors.length - colorCounter) >= colorColumns) ? colorColumns : colors.length - colorCounter;
+		for(var i = 0; i < columnCounter; i++)
+		{
+			cellX1 = rowX1.insertCell(i);
+			hslColor = "hsl("+colors[colorCounter].hue+","+colors[colorCounter].saturation+","+colors[colorCounter].lightness+")";
+			cellX1.id = "color_"+colorCounter+"_x1";
+			$('#'+cellX1.id).click(colorClickHandler);
+			cellX1.style.backgroundColor = hslColor;
+			cellX1.style.width = "10px";
+			cellX1.style.height = "10px";
+
+			cellX2 = rowX2.insertCell(i);
+			hslColor = "hsl("+colors[colorCounter].hue+","+colors[colorCounter].saturation+","+colors[colorCounter].lightness+")";
+			cellX2.id = "color_"+colorCounter+"_x2";
+			$('#'+cellX2.id).click(colorClickHandler);
+			cellX2.style.backgroundColor = hslColor;
+			cellX2.style.width = "10px";
+			cellX2.style.height = "10px";
+			colorCounter++;
+		}
+		colorRowCounter++;
 	}
+
 }
 
 /**
