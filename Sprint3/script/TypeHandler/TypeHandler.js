@@ -31,13 +31,29 @@ TypeHandler.prototype.processTable = function(table)
 	}
 	table.Data.ColumnUnique = []
 	
+		
+	//Condense spaces
+	for(var col in table.Data.Values[0])
+	{
+		for(var row in table.Data.Values)
+		{
+			table.Data.Values[row][col] = table.Data.Values[row][col].replace(/\s+/gm, " ").trim();;
+		}
+	}
+	
 	//Check for labels
-	var hasLabels = true;
-	var origHead = table.Data.Values[0].slice(0);
+	var hasLabels = true;	
+	var origHead = table.Data.Values[0].slice(0);	
 	if(table.Data.ColumnLabel[0] == "")
 	{
 		hasLabels = false;
 
+	} else
+	{
+		for(var i in table.Data.ColumnLabel)
+		{
+			table.Data.ColumnLabel[i] = table.Data.ColumnLabel[i].replace(/\s+/gm, " ");
+		}	
 	}
 	
 	this.removeEmpty(table.Data.Values);
@@ -51,9 +67,8 @@ TypeHandler.prototype.processTable = function(table)
 		var setData = new SimpleSet();
 		for(var row in table.Data.Values)
 		{	
-
 			//Retrive the raw data and get the valid types for this data
-			var rawData = table.Data.Values[row][col];
+			var rawData = table.Data.Values[row][col];			
 			columnData.push(this.acceptingTypes(rawData));
 		}		
 
