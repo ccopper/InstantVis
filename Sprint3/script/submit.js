@@ -182,11 +182,20 @@ function testLocally()
  			},{         
                  "Type": "Area",          
                  "DataColumns": [0, 1]       
+             },{         
+                 "Type": "Pie",          
+                 "DataColumns": [0, 1]       
+             },{         
+                 "Type": "Tree",          
+                 "DataColumns": [0, 1]       
+             },{         
+                 "Type": "Bubble",          
+                 "DataColumns": [0, 1, 2]       
              }],		
  		"Data":		
  			{			
- 				"ColumnLabel": ["X", "Y"],			
- 				"ColumnType": ["Integer", "Integer"],			
+ 				"ColumnLabel": ["X", "Y", "Z"],			
+ 				"ColumnType": ["Integer", "Integer", "Integer"],			
  				"Values":				
  					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
  					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
@@ -411,6 +420,7 @@ function visTypeClickHandler(event)
 	var iconId = NaN;
 	if(typeof(event) == 'string')
 	{
+		currentVis = NaN;
 		iconId = event;
 	}else{
 		console.log('type:'+typeof(event)+'\n\t'+event);
