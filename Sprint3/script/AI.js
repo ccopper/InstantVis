@@ -162,10 +162,24 @@ var selectTreemapVars = function(currentDataset)
 	var numericFound = false;
 
 	
-	bestNumeric = findNextBestAvailableColumn(currentDataset, [], true);
-	if (bestNumeric != -1)
+	// find the best numeric column
+	for (var i = 0; i < cols; i++)
 	{
-		numericFound = true;
+		if (currentDataset.Data.ColumnType[i] != "String")
+		{
+			if (numericFound == true)
+			{
+				if (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestNumeric])
+				{
+					bestNumeric = i;
+				}
+			}
+			else
+			{
+				numericFound = true;
+				bestNumeric = i;
+			}
+		}
 	}
 
 	// see if there is a string column, select the best one
