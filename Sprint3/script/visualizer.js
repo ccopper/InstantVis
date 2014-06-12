@@ -2,13 +2,14 @@
 
 var globalPadding = 25;
 
-function Treemap(dataSet, labels, title, width, height) 
+function Treemap(dataSet, labels, title, width, height, colors) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
     this.title = title;
     this.width = width;
     this.height = height;
+    this.colors = colors;
 }
 
 Treemap.prototype.draw = function(divId) 
@@ -69,6 +70,13 @@ Treemap.prototype.draw = function(divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
+    base.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("fill", "white")
+            .style("stroke", "black");
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -89,6 +97,12 @@ Treemap.prototype.draw = function(divId)
     var nextX = 0;
     var nextY = 0;
     var currentTotal = dataTotal;
+
+    var mixedColorSet = getMixedColors(data.length, this.colors);
+
+    mixedColorSet = shuffleArray(mixedColorSet);
+////////////////////////////////////////////////////////////////////////////////////
+
     for (var i = 0; i < data.length; i++) {
         fraction = (data[i][1]/currentTotal);
         if (currentWidth > currentHeight) {
@@ -107,7 +121,8 @@ Treemap.prototype.draw = function(divId)
             nextWidth = currentWidth;
         }
 
-        var fill = colorSet[i%colorSet.length];//colors[i];
+        var fill = mixedColorSet[i]; //this.colors[i%this.colors.length];
+        //colorSet[i%colorSet.length];//colors[i];
         var category = data[i][0];
 
         newRect = [fill, thisHeight, thisWidth, currentX, currentY, category, data[i][1]];
@@ -240,7 +255,7 @@ Treemap.prototype.draw = function(divId)
         .text(title);  
 }
 
-function Bubble(dataSet, labels, columnTypes, title, width, height) 
+function Bubble(dataSet, labels, columnTypes, title, width, height, colors) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
@@ -248,6 +263,7 @@ function Bubble(dataSet, labels, columnTypes, title, width, height)
     this.title = title;
     this.width = width;
     this.height = height;
+    this.colors = colors;
 }
 
 Bubble.prototype.draw = function(divId) 
@@ -359,7 +375,14 @@ Bubble.prototype.draw = function(divId)
     var base = d3.select("#" + divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
+                .attr("height", height + margin.top + margin.bottom);
+    base.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("fill", "white")
+            .style("stroke", "black");
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -368,7 +391,7 @@ Bubble.prototype.draw = function(divId)
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; });
 
-    var color = randRGB(50,200);
+    var color = this.colors[0];
     var highlightColor = "orange";
 
 
@@ -572,13 +595,14 @@ Bubble.prototype.draw = function(divId)
 }
 
 
-function Pie(dataSet, labels, title, width, height) 
+function Pie(dataSet, labels, title, width, height, colors) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
     this.title = title;
     this.width = width;
     this.height = height;
+    this.colors = colors;
 }
 
 Pie.prototype.draw = function(divId)
@@ -663,10 +687,21 @@ Pie.prototype.draw = function(divId)
     var base = d3.select("#" + divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
+                .attr("height", height + margin.top + margin.bottom);
+    base.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("fill", "white")
+            .style("stroke", "black");
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var mixedColorSet = getMixedColors(data.length, this.colors);
+
+    mixedColorSet = shuffleArray(mixedColorSet);
+    
     var arcs = svg.selectAll("g.arc")
                 .data(pie(data))
                 .enter()
@@ -694,7 +729,7 @@ Pie.prototype.draw = function(divId)
             .attr("y", iconY)
             .attr("height", legendIconHeight)
             .attr("width", legendIconWidth)
-            .attr("fill", colors[i])
+            .attr("fill", mixedColorSet[i])
             .style("stroke", "black");
         svg.append("text")
             .attr("id", ("legend-text-" + i))
@@ -709,7 +744,7 @@ Pie.prototype.draw = function(divId)
 
     arcs.append("path")
         .attr("fill", function(d, i) {
-            return colors[i];
+            return mixedColorSet[i];
         })
         .attr("d", arc)
         .on("mouseover", function(d, i) {
@@ -786,7 +821,7 @@ Pie.prototype.draw = function(divId)
         })
         .on("mouseout", function(d, i) {
             mouseout(categories[i][0], i);
-            this.setAttribute("fill", colors[i]);
+            this.setAttribute("fill", mixedColorSet[i]);
             if (!toggle[i]) {
                 d3.select(this).style("stroke", "none");
                 d3.select(("#tooltip-text-" + i)).remove();
@@ -826,7 +861,7 @@ Pie.prototype.draw = function(divId)
         }
 }
 
-function Scatter(dataSet, labels, columnTypes, title, width, height) 
+function Scatter(dataSet, labels, columnTypes, title, width, height, colors) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
@@ -834,6 +869,7 @@ function Scatter(dataSet, labels, columnTypes, title, width, height)
     this.title = title;
     this.width = width;
     this.height = height;
+    this.colors = colors;
 }
 
 Scatter.prototype.draw = function(divId) 
@@ -999,7 +1035,14 @@ Scatter.prototype.draw = function(divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
-                .attr("id","visSvg")
+                .attr("id","visSvg");
+    base.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("fill", "white")
+            .style("stroke", "black");
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -1112,7 +1155,7 @@ Scatter.prototype.draw = function(divId)
     console.log("data: " + data.toString());
 
     
-    var color = colorSet[0];
+    var color = this.colors[0];
 
     svg.selectAll(("circle.set" + 1))
         .data(data)
@@ -1132,7 +1175,7 @@ Scatter.prototype.draw = function(divId)
             if(!toggle[i]) {
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
-                var col = colorSet[0];
+                var col = this.colors[0];
                 var highlightText = d[0] + ", " + d[1];
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
@@ -1205,7 +1248,7 @@ Scatter.prototype.draw = function(divId)
 
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
-                var col = colorSet[0];
+                var col = this.colors[0];
                 var highlightText = d[0] + ", " + d[1];
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
@@ -1273,7 +1316,7 @@ Scatter.prototype.draw = function(divId)
 
         console.log("data2: " + data2.toString());
 
-        var color2 = colorSet[1];
+        var color2 = this.colors[1];
 
         svg.selectAll(("circle.set" + 2))
             .data(data2)
@@ -1293,7 +1336,7 @@ Scatter.prototype.draw = function(divId)
                 if(!toggle[numValuesPerDataSet + i]) {
                     var x2 = xScale(d[0]);
                     var y2 = yScale2(d[1]);
-                    var col2 = colorSet[1];
+                    var col2 = this.colors[1];
                     var highlightText2 = d[0] + ", " + d[1];
                     var xRect2 = x2 + 2*highlightRadius;
                     var yRect2 = y2 - highlightRectHeight/2;
@@ -1367,7 +1410,7 @@ Scatter.prototype.draw = function(divId)
 
                 var x2 = xScale(d[0]);
                 var y2 = yScale2(d[1]);
-                var col2 = colorSet[1];
+                var col2 = this.colors[1];
                 var highlightText2 = d[0] + ", " + d[1];
                 var xRect2 = x2 + 2*highlightRadius;
                 var yRect2 = y2 - highlightRectHeight/2;
@@ -1441,7 +1484,7 @@ Scatter.prototype.draw = function(divId)
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
-            .style("fill", colorSet[0]);  
+            .style("fill", this.colors[0]);  
 
         base.append("rect")
             .attr("id", "colorIcon2")
@@ -1450,7 +1493,7 @@ Scatter.prototype.draw = function(divId)
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
-            .style("fill", colorSet[1]);
+            .style("fill", this.colors[1]);
     }
 }
 
@@ -1465,13 +1508,14 @@ Scatter.prototype.draw = function(divId)
  *  @param Boolean showPoints       Whether or not points should be displayed on the lines.
  *
  */
-function Line(dataSet, labels, columnTypes, title, width, height, showPoints) {
+function Line(dataSet, labels, columnTypes, title, width, height, colors, showPoints) {
     this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
     this.title = title;
     this.width = width;
     this.height = height;
+    this.colors = colors;
     this.showPoints = showPoints; // Boolean (show points?)
 
     console.log("labels: " + labels.toString());
@@ -1637,7 +1681,14 @@ Line.prototype.draw = function (divId) {
     var base = d3.select("#" + divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
+                .attr("height", height + margin.top + margin.bottom);
+    base.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("fill", "white")
+            .style("stroke", "black");
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -1852,7 +1903,7 @@ Line.prototype.draw = function (divId) {
         svg.append("path")
             // .attr("class", "line")
             .attr("fill", "none")
-            .attr("style", "stroke: " + colors[i-1])
+            .attr("style", "stroke: " + this.colors[i-1])
             .attr("d", function() {
                 if (i == 1) {
                     return line(data);
@@ -1882,8 +1933,8 @@ Line.prototype.draw = function (divId) {
                     .attr("cx", pointX)
                     .attr("cy", pointY)
                     .attr("r", defaultRadius)
-                    .attr("fill", colors[i-1])
-                    .attr("color", colors[i-1]);
+                    .attr("fill", this.colors[i-1])
+                    .attr("color", this.colors[i-1]);
 
                 // Add hidden circle highlight elements.
                 svg.append("circle")
@@ -1893,7 +1944,7 @@ Line.prototype.draw = function (divId) {
                     .attr("r", highlightRadius)
                     .attr("fill", "none")
                     .attr("display", "none")
-                    .attr("stroke", colors[i-1]);
+                    .attr("stroke", this.colors[i-1]);
 
                 // Determine the text associated with the data point when highlighted.
                 highlightText[j] = data[j][0] + ", " + data[j][1];
@@ -1919,7 +1970,7 @@ Line.prototype.draw = function (divId) {
                     rectX = pointX + highlightRadius + highlightTextExternalPadding;
                 } 
                     
-                dataPoints[((i-1)*numValues)+j] = [ [pointX, pointY], [rectX, rectY], [textX, textY], highlightText[j].length*6+highlightTextPadding, colors[i-1], highlightText[j] ]; 
+                dataPoints[((i-1)*numValues)+j] = [ [pointX, pointY], [rectX, rectY], [textX, textY], highlightText[j].length*6+highlightTextPadding, this.colors[i-1], highlightText[j] ]; 
 
             }
         }
@@ -2026,13 +2077,14 @@ Line.prototype.draw = function (divId) {
    
 };
 
-function Bar (dataSet, labels, columnTypes, title, width, height) {
+function Bar (dataSet, labels, columnTypes, title, width, height, colors) {
     this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
     this.title = title;
     this.width = width;
     this.height = height;
+    this.colors = colors;
 }
 
 Bar.prototype.draw = function(divId) {
@@ -2049,6 +2101,8 @@ Bar.prototype.draw = function(divId) {
     if (numDataSets > 2) {
         multiset = true;
     }
+
+    console.log("START: this.colors: " + this.colors.toString());
 
     xValues = [];
     yValues = [];
@@ -2166,8 +2220,10 @@ Bar.prototype.draw = function(divId) {
 
     //console.log("(width / numBars) - barPadding: " +  "(" + width + "/" + numBars + ")" + " - " + barPadding);
 
-    var fillColor = randRGB(100, 200);
-    var fillColor2 = randRGB(100,200);
+    var fillColor = this.colors[0];
+    var fillColor2 = this.colors[1];
+    console.log("fillColor: " + fillColor);
+    console.log("fillColor2: " + fillColor2);
     // var highlightColor = randRGB(100, 200);  
     var highlightColor = "rgb(240,209,86)";
       
@@ -2222,7 +2278,14 @@ Bar.prototype.draw = function(divId) {
     var base = d3.select("#" + divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
+                .attr("height", height + margin.top + margin.bottom);
+    base.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("fill", "white")
+            .style("stroke", "black");
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -2262,6 +2325,7 @@ Bar.prototype.draw = function(divId) {
             return height - yScale(d[1]);
         })
         .attr("fill", function(d) {
+            console.log("fillColor: " + fillColor);
             return fillColor;
         })
         .attr("class", "bar-set1")
@@ -2645,6 +2709,37 @@ Bar.prototype.draw = function(divId) {
             .style("stroke", "black")
             .style("fill", fillColor2);
     }     
+
+
+    // var myColors = randHSL(10);
+
+    // for (var i = 0; i < myColors.length; i++) {
+    //     console.log("myColors[i]: " + myColors[i]);
+    //     base.append("rect")
+    //             .attr("id", "colorIcon2")
+    //             .attr("x", (margin.left + i*colorIconWidth))
+    //             .attr("y", (margin.top/2))
+    //             .attr("height", colorIconHeight)
+    //             .attr("width", colorIconWidth)
+    //             .style("stroke", "black")
+    //             .style("fill", myColors[i]);
+    // }
+
+    // for (var i = 0; i < myColors.length; i++) {
+    //     var yloc = Math.floor((i-1)/10)*colorIconHeight;
+    //     if (i % 10 == 0) {
+    //         var xloc = margin.left;
+    //     }
+    //     console.log("myColors[i]: " + myColors[i]);
+    //     base.append("rect")
+    //             .attr("id", "colorIcon2")
+    //             .attr("x", (xloc + i*colorIconWidth))
+    //             .attr("y", yloc)
+    //             .attr("height", colorIconHeight)
+    //             .attr("width", colorIconWidth)
+    //             .style("stroke", "black")
+    //             .style("fill", myColors[i]);
+    // }
 };
 
 function visualize(dataPackage, parentId) {
@@ -2663,7 +2758,7 @@ function visualize(dataPackage, parentId) {
     return;
 }
 
-function getVisualization(dataPackage,type)
+function getVisualization(dataPackage, type, colors)
 {
     var height = 300;
     var pieWidth = height*1.5;
@@ -2678,33 +2773,34 @@ function getVisualization(dataPackage,type)
         var labels = dataPackage.Data.ColumnLabel;
         var caption = dataPackage.Data.Caption;
         console.log('Checking ' + visType + ' == ' + type + ' -> ' + (visType==type));
+        colors = [{hue: 250, saturation: 50, lightness: 50}, {hue: 250, saturation: 50, lightness: 50}];
         if(type == visType)
         {
             var v = NaN;
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
             switch(type) {
                 case "Line":
-                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, true);
+                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height);
+                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors));
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height);
+                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors));
                     break;  
 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), caption, pieWidth, height);
+                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), caption, pieWidth, height, colors);
                     break;
 
                 case "Tree":
-                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), caption, width, 1.3*height);
+                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), caption, width, 1.3*height, colors);
                     break;
 
                 case "Bubble":
-                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height);
+                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors));
                     break;
 
                 default:
@@ -2805,6 +2901,46 @@ function randRGB(min, max)
     return "rgb(" + (min + Math.floor(Math.random() * range)) + "," + (min + Math.floor(Math.random() * range)) + "," + (min + Math.floor(Math.random() * range)) + ")";
 }
 
+function getColors(colors) {
+    var newColors = [];
+    for (var i = 0; i < colors.length; i++) {
+        newColors.push("hsl(" + colors[i].hue + ", " + colors[i].saturation + "%, " + colors[i].lightness + "%)");
+    }
+    console.log("newColors: " + newColors.toString());
+    return newColors;
+}
+
+function getMixedColors(numColorsOut, colors) {
+    // var numColors = colors.length;
+    var numColorsIn = colors.length;
+    var newColors = [];
+    for (var i = 0; i < numColorsIn; i++) {
+        var increment = 60/(numColorsOut/numColorsIn);
+        var hue = colors[i].hue;
+        var sat = colors[i].saturation;
+        for (var j = 0; j < (numColorsOut/numColorsIn); j++) {
+            newColors.push("hsl(" + hue + ", " + sat + "%, " + (25+(j*increment)) + "%)");
+        }
+    }
+    return newColors;
+}
+
+// function randHSL(numColors) {
+//     var colors = [];
+
+//     HSLColor = ()
+//     // for (var i = 0; i < numColors; i++) {
+//     //     colors.push("hsl(" + Math.random()*361 + ", " + (90 + Math.random()*10) + "%, " + (50 + Math.random()*10) + "%)");
+//     // }
+//     var increment = 100/numColors;
+//     var h = Math.random()*361;
+//     var s = (90 + Math.random()*10);
+//     for (var i = 0; i < numColors; i++) {
+//         colors.push("hsl(" + h + ", " + s + "%, " + i*increment + "%)");
+//     }
+//     return colors;
+// }
+
 function getRandColors() {
     var colors = [  ['rgb(127,201,127)','rgb(190,174,212)','rgb(253,192,134)','rgb(255,255,153)','rgb(56,108,176)','rgb(240,2,127)'],
                     ['rgb(27,158,119)','rgb(217,95,2)','rgb(117,112,179)','rgb(231,41,138)','rgb(102,166,30)','rgb(230,171,2)'],
@@ -2876,4 +3012,14 @@ function styleYAxis(object, textAnchor) {
         .style("text-anchor", textAnchor)
         .style("stroke", "none")
         .style("letter-spacing", "0.1em")
+}
+
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random()*(i+1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
 }
