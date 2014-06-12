@@ -18,6 +18,8 @@ var oneColorVisualizations = ["Bar","Scatter","Bubble"];
 //Global reference to active colors
 var x1ColorIndex = 0;
 var x2ColorIndex = 0;
+//Reference to number of columns in color table
+var colorColumns = NaN;
 //Color table
 var colors =[	
 				{hue:120,saturation:"41%",lightness:"64%"},	// Pale Green
@@ -247,9 +249,6 @@ function testLocally()
  				"Type": "Scatter",			
  				"DataColumns": [0, 1]		
  			},{         
-                 "Type": "Area",          
-                 "DataColumns": [0, 1]       
-             },{         
                  "Type": "Pie",          
                  "DataColumns": [0, 1]       
              },{         
@@ -526,13 +525,13 @@ function visTypeClickHandler(event)
 	{
 		console.log("Hiding color table for vis:"+visType);
 		$("#colorTableX2").hide();
-		$("#colorPalette").width($("#colorTableX1").width() * 1.75);
+		$("#colorPalette").width(colorColumns * 20 + 20);
 
 	}
 	else
 	{
 		$("#colorTableX2").show();	
-		$("#colorPalette").width($("#colorTableX1").width() * 2.4);
+		$("#colorPalette").width(2 * (colorColumns * 20) + 20);
 	}
 
 	$("#visSVG").empty();
@@ -753,7 +752,7 @@ function populateColorTable()
 	}
 
 	//For both color tables, create a grid of colors with unique id's
-	var colorColumns = Math.ceil(Math.sqrt(colors.length));
+	colorColumns = Math.ceil(Math.sqrt(colors.length));
 	var colorCounter = 0;
 	var colorRowCounter = 0;
 	while(colorCounter < colors.length)
