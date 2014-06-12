@@ -132,6 +132,16 @@
 {
     float: left;
 }
+#colorPalette table
+{
+	margin-right: auto;
+	margin-left: auto;
+}
+#colorPalette td
+{
+    border: solid 1px;
+    cursor: pointer;
+}
 #visSize
 {
     float: left;

@@ -11,6 +11,16 @@ var useColorIcons = false;
 var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
+//Global reference to active colors
+var col0ColorIndex = NaN;
+var col1ColorIndex = NaN;
+//Color table
+var colors = [	{hue:116,saturation:"100%",lightness:"50%"},//Green
+				{hue:352,saturation:"100%",lightness:"50%"},//Red
+				{hue:250,saturation:"100%",lightness:"50%"}//Blue
+			];
+
+
 
 $(document).ready(readyFunction);
 	
@@ -81,6 +91,8 @@ function readyFunction()
 	
 	$( window ).resize(resizeVisWrapper);
 
+	populateColorTable();
+
 	$("#tableSelectionBox").change(tableSelectHandler);
 	
 	var urlParams = getURLParams()
@@ -90,8 +102,55 @@ function readyFunction()
  		 $("#urlTextbox").val(urlParams["URL"]);
  		 submitForm();
   	}
+
+
 	
 }
+
+/**
+ * This function will look at the id of the table cell clicked and update the visualization color accordingly
+*/
+function colorClickHandler(event)
+{
+	console.log("Tag:"+event.target.tagName);
+	console.log("Table click:"+event.target.id);
+	var colorId = event.target.id;
+	var column = colorId.substr(colorId.length - 1);
+	console.log("column:"+column)
+	var row = colorId.replace("color_","").replace("_"+column,"");
+	console.log("row: "+row);
+	if(column==0)
+	{
+		col0ColorIndex = row;
+	}
+	else
+	{
+		col1ColorIndex = row;
+	}
+
+	if(col0ColorIndex == NaN || col1ColorIndex == NaN)
+	{
+		return;
+	}
+
+	var visColors = [colors[col0ColorIndex],colors[col1ColorIndex]];
+
+	$("#visSVG").empty();
+	var visualization = getVisualization(tables[currentTable],visType,visColors);
+	if(!visualization)
+	{
+		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
+	}else{
+		visualization.draw("visSVG");
+		$('#options').show();	
+	}
+
+	// $(this).css("border","solid 2px");
+	// var column_num = parseInt($(this).index()) + 1;
+	// var row_num = parseInt($(this).parent().index()) + 1;
+	// console.log("Cell Clicked: ("+column_num+","+row_num+")");
+}
+
 
 /**
  * This function will reload the page. Effectively 
@@ -262,6 +321,7 @@ function tableSelectHandler(event)
 	visTypeClickHandler(tables[0].Visualizations[0].Type+'_icon');
 
 }
+
 
 
 /**
@@ -575,6 +635,35 @@ function exportVisualization()
 		a.href = canvasdata;
 		a.click();
 	  };
+}
+
+/**
+ * This function will take the global color list and 
+ * create a table with cells with corresponding background colors.
+*/
+function populateColorTable()
+{
+	table = document.getElementById("colorTable");
+	if(!table)
+	{
+		alert("Could not find table element.");
+	}
+	for(var i in colors)
+	{
+		row =  table.insertRow(i);
+		hslColor = "hsl("+colors[i].hue+","+colors[i].saturation+","+colors[i].lightness+")";
+		cellLeft = row.insertCell(0);
+		cellLeft.id = "color_"+i+"_0";
+		$("#"+cellLeft.id).click(colorClickHandler);
+		cellLeft.style.backgroundColor = hslColor;
+		cellLeft.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		cellRight = row.insertCell(1);
+		cellRight.id = "color_"+i+"_1";
+		$("#"+cellRight.id).click(colorClickHandler);
+		cellRight.style.backgroundColor = hslColor;
+		cellRight.innerHTML =  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		console.log(colors[i]);
+	}
 }
 
 /**
