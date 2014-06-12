@@ -14,12 +14,15 @@ var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
 //Global reference to active colors
-var col0ColorIndex = NaN;
-var col1ColorIndex = NaN;
+var col0ColorIndex = 0;
+var col1ColorIndex = 0;
 //Color table
-var colors = [	{hue:116,saturation:"100%",lightness:"50%"},// Green
-				{hue:352,saturation:"100%",lightness:"50%"},// Red
-				{hue:250,saturation:"100%",lightness:"50%"},// Blue
+var colors =[	
+				{hue:116,saturation:"100%",lightness:"50%"},//Green
+				{hue:352,saturation:"100%",lightness:"50%"},//Red
+				{hue:250,saturation:"100%",lightness:"50%"},//Blue
+				{hue:29,saturation:"100%",lightness:"57%"}, //Orange
+				{hue:250,saturation:"0%",lightness:"50%"}//Grey
 				{hue:120,saturation:"41%",lightness:"64%"},	// Pale Green
 				{hue:265,saturation:"31%",lightness:"76%"},	// Lavendar
 				{hue:29,saturation:"97%",lightness:"76%"},	// Peach
@@ -57,7 +60,6 @@ var colors = [	{hue:116,saturation:"100%",lightness:"50%"},// Green
 				{hue:30,saturation:"100%",lightness:"50%"},
 				{hue:60,saturation:"100%",lightness:"60%"}
 			];
-
 
 
 $(document).ready(readyFunction);
@@ -141,8 +143,6 @@ function readyFunction()
  		 submitForm();
   	}
 
-
-	
 }
 
 /**
@@ -150,25 +150,27 @@ function readyFunction()
 */
 function colorClickHandler(event)
 {
-	console.log("Tag:"+event.target.tagName);
-	console.log("Table click:"+event.target.id);
 	var colorId = event.target.id;
 	var column = colorId.substr(colorId.length - 1);
-	console.log("column:"+column)
 	var row = colorId.replace("color_","").replace("_"+column,"");
-	console.log("row: "+row);
+	console.log("Color Clicked: ("+column+","+row+")");
+	console.log(colors[row]);
 	if(column==0)
 	{
 		col0ColorIndex = row;
 	}
-	else
+	else if(column == 1)
 	{
 		col1ColorIndex = row;
 	}
-
-	if(col0ColorIndex == NaN || col1ColorIndex == NaN)
+	else
 	{
+		console.error("Color column out of bounds. Column: " + column);
 		return;
+	}
+	if(row > (colors.length - 1) || row < 0)
+	{
+		console.error("Color row out of bounds. Row:" + row);
 	}
 
 	var visColors = [colors[col0ColorIndex],colors[col1ColorIndex]];
@@ -180,8 +182,9 @@ function colorClickHandler(event)
 		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
 	}else{
 		visualization.draw("visSVG");
-		$('#options').show();	
 	}
+
+	setColorBorders();
 
 	// $(this).css("border","solid 2px");
 	// var column_num = parseInt($(this).index()) + 1;
@@ -189,6 +192,34 @@ function colorClickHandler(event)
 	// console.log("Cell Clicked: ("+column_num+","+row_num+")");
 }
 
+/**
+ * This function will remove borders from inactive color
+ * squares and set the border of the active color squares.
+*/
+function setColorBorders()
+{
+
+	for(var j = 0; j < 2; j++)
+	{
+		for(var i in colors)
+		{
+			$("#color_"+i+"_"+j).removeClass("colorSquareHighLightOn");
+			$("#color_"+i+"_"+j).addClass("colorSquareHighLightOff");
+			if(i == col0ColorIndex && j == 0)
+			{
+				console.error("Got here");
+				$("#color_"+i+"_"+j).removeClass("colorSquareHighLightOff");
+				$("#color_"+i+"_0").addClass("colorSquareHighLightOn");
+			}
+			if(i == col1ColorIndex && j == 1)
+			{
+				$("#color_"+i+"_"+j).removeClass("colorSquareHighLightOff");
+				$("#color_"+i+"_1").addClass("colorSquareHighLightOn");
+			}
+		}
+	}
+	$("#color_0_0").addClass("colorSquareBorder");
+}
 
 /**
  * This function will reload the page. Effectively 
@@ -312,11 +343,9 @@ function testLocally()
 	$("#visualizationToolbox").height($(window).height());
 	$("#loadingContent").slideUp();
 
-
 	populateTableSelect();
 
-	//Load first visualization
-	tableSelectHandler(0);
+	
 	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
 
@@ -324,6 +353,11 @@ function testLocally()
 	{
 		addTable(tables[i],i);
 	}
+
+	//Load first visualization
+	tableSelectHandler(0);
+	//Set Border Styling
+	colorClickHandler({target:{id:"color_0_0"}});
 }
 
 /**
@@ -412,6 +446,9 @@ function parseComplete(data)
 	tableSelectHandler(0);
 	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
+	//Set Border Styling
+	colorClickHandler({target:{id:"color_0_0"}});
+
 }
 
 /**
