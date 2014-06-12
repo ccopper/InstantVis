@@ -219,6 +219,9 @@ var selectTreemapVars = function(currentDataset)
 		console.log("AI: unable to find good variables for treemap.");
 	}
 
+	console.log("AI: treemap var selector: string col " + (stringFound == true ? bestString : "(no string selected) ") +
+			", numeric col " + bestNumeric);
+
 	return treemapVars;
 }
 		
@@ -445,7 +448,11 @@ var generateVisTitle = function(AIdataStructure)
 			var visTitle;
 			var visualization = element.Visualizations[visIndex];
 
-			if (visualization.DataColumns.length == 2) // one independent and one dependent 
+			if (visualization.Type == "Tree")
+			{
+				visTitle = "Treemap";
+			}
+			else if (visualization.DataColumns.length == 2) // one independent and one dependent 
 			{
 				visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[1]] + " vs " + 
 					element.Data.ColumnLabel[visualization.DataColumns[0]];
