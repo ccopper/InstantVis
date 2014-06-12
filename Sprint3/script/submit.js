@@ -521,7 +521,18 @@ function visTypeClickHandler(event)
 		currentVis = visType	
 	}
 	
-	if(oneColorVisualizations.indexOf(visType) != -1)
+	$("#visSVG").empty();
+	var visualization = getVisualization(tables[currentTable],visType);
+	if(!visualization)
+	{
+		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
+	}else{
+		visualization.draw("visSVG");
+
+		$('#options').show();	
+	}
+
+	if(hideSecondColorPalette())
 	{
 		console.log("Hiding color table for vis:"+visType);
 		$("#colorTableX2").hide();
@@ -534,21 +545,57 @@ function visTypeClickHandler(event)
 		$("#colorPalette").width(2 * (colorColumns * 20) + 20);
 	}
 
-	$("#visSVG").empty();
-	var visualization = getVisualization(tables[currentTable],visType);
-	if(!visualization)
-	{
-		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
-	}else{
-		visualization.draw("visSVG");
-
-		$('#options').show();	
-	}
+	
 	
 	updateTableVis(visType);
 	//Since we have initilized a new graph resize the vis/table
 	resizeVisWrapper();
 }
+
+/**
+ * This function will determine if the current visualization
+ * should show one or two color palettes
+*/
+function hideSecondColorPalette()
+{
+	if(currentVisualization instanceof Treemap)
+	{
+		return false;
+	}
+	if(currentVisualization instanceof Bubble)
+	{
+		return true;
+	}
+	if(currentVisualization instanceof Pie)
+	{
+		return false;
+	}
+	if(currentVisualization instanceof Scatter)
+	{
+		if(currentVisualization.dataSet[0].length == 2)
+		{
+			return true;
+		}
+		return false;
+	}
+	if(currentVisualization instanceof Line)
+	{
+		if(currentVisualization.dataSet[0].length == 2)
+		{
+			return true;
+		}
+		return false;
+	}
+	if(currentVisualization instanceof Bar)
+	{
+		if(currentVisualization.dataSet[0].length <= 2)
+		{
+			return true;
+		}
+		return false;
+	}
+}
+
 
 /**
  * This function loads the appropriate visualization type icons for the current selected table.

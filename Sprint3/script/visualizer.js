@@ -1,5 +1,5 @@
 //This is our code for the visualizer. 
-
+var currentVisualization = NaN;
 var globalPadding = 25;
 
 function Treemap(dataSet, labels, title, width, height, colors, margin) 
@@ -15,6 +15,7 @@ function Treemap(dataSet, labels, title, width, height, colors, margin)
 
 Treemap.prototype.draw = function(divId) 
 {
+    currentVisualization = this;
     // var margin = {top: 50, right: 20, bottom: 20, left: 20};
     var margin = this.margin;
 
@@ -279,6 +280,7 @@ function Bubble(dataSet, labels, columnTypes, title, width, height, colors, marg
 
 Bubble.prototype.draw = function(divId) 
 {
+    currentVisualization = this;
 
     // var margin = {top: 50, right: 40, bottom: 40, left: 55};
     var margin = this.margin;
@@ -620,6 +622,7 @@ function Pie(dataSet, labels, title, width, height, colors, margin)
 
 Pie.prototype.draw = function(divId)
 {
+    currentVisualization = this;
 
     // var margin = {top: 50, right: 40, bottom: 25, left: 55};
     var margin = this.margin;
@@ -920,6 +923,7 @@ function Scatter(dataSet, labels, columnTypes, title, width, height, colors, mar
 
 Scatter.prototype.draw = function(divId) 
 {
+    currentVisualization = this;
 
     // var margin = {top: 50, right: 65, bottom: 40, left: 65};
     var margin = this.margin;
@@ -1574,6 +1578,8 @@ function Line(dataSet, labels, columnTypes, title, width, height, colors, margin
 
 Line.prototype.draw = function (divId) {
 
+    currentVisualization = this;
+
     // var margin = {top: 50, right: 65, bottom: 40, left: 65};
     var margin = this.margin;
 
@@ -2144,6 +2150,8 @@ function Bar (dataSet, labels, columnTypes, title, width, height, colors, margin
 }
 
 Bar.prototype.draw = function(divId) {
+
+    currentVisualization = this;
 
     // var margin = {top: 50, right: 55, bottom: 55, left: 55};
     var margin = this.margin;
