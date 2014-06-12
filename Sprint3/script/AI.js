@@ -156,24 +156,38 @@ var selectTreemapVars = function(currentDataset)
 {
 	var cols = currentDataset.Data.Cols;
 	var treemapVars = [];
-	var bestString = 0;
-	var bestNumeric = 0;
+	var bestString;
+	var bestNumeric;
 	var stringFound = false;
 	var numericFound = false;
 
-	for (var i = 1; i < cols; i++)
+	
+	bestNumeric = findNextBestAvailableColumn(currentDataset, [], true);
+	if (bestNumeric != -1)
 	{
-		// look for a good string
-		if ((currentDataset.Data.ColumnType[i] == "String") &&
-			 (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestString]))
+		numericFound = true;
+	}
+
+	// see if there is a string column, select the best one
+	for (var i = 0; i < cols; i++)
+	{
+		if (i != bestNumeric)
 		{
-			bestString = i;
-			stringFound = true;
-		}
-		else if (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestNumeric])
-		{
-			bestNumeric = i;
-			numericFound = true;
+			if (currentDataset.Data.ColumnType[i] == "String")
+			{
+				if (stringFound == true)
+				{
+					if (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestString])
+					{
+						bestString = i;
+					}
+				}
+				else
+				{
+					stringFound = true;
+					bestString = i;
+				}
+			}
 		}
 	}
 
@@ -182,14 +196,13 @@ var selectTreemapVars = function(currentDataset)
 		treemapVars[0] = bestString;
 		treemapVars[1] = bestNumeric;
 	}
-	else if (stringFound == false && numericFound == true)
+	else if (numericFound == true)
 	{
 		treemapVars[0] = bestNumeric;
 	}
 	else
 	{
-		treemapVars[0] = 0;
-		console.log("AI: unable to find good variables for treemap, defaulting to col 0");
+		console.log("AI: unable to find good variables for treemap.");
 	}
 
 	return treemapVars;
@@ -351,13 +364,16 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 					else
 					{
 						var treeMapVars = selectTreemapVars(currentDataset);
-						visualizations.push(
-								{
-									"Type" : "Tree",
-									"DataColumns" : treemapVars,
-									"Score" : determineVisualizationScore(currentDataset, treemapVars)
-								}
-							);
+						if (treeMapVars.length > 0)
+						{
+							visualizations.push(
+									{
+										"Type" : "Tree",
+										"DataColumns" : treemapVars,
+										"Score" : determineVisualizationScore(currentDataset, treemapVars)
+									}
+								);
+						}
 					}
 				}
 			}
