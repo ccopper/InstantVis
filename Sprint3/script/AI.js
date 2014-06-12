@@ -450,7 +450,15 @@ var generateVisTitle = function(AIdataStructure)
 
 			if (visualization.Type == "Tree")
 			{
-				visTitle = "Treemap";
+				if (visualization.DataColumns.length == 2) // string and numeric
+				{
+					visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[1]] + " by " +
+						element.Data.ColumnLabel[visualization.DataColumns[0]];
+				}
+				else
+				{
+					visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[0]];
+				}
 			}
 			else if (visualization.DataColumns.length == 2) // one independent and one dependent 
 			{
