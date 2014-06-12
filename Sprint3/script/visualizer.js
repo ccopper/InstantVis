@@ -2812,7 +2812,7 @@ function visualize(dataPackage, parentId) {
     return;
 }
 
-function getVisualization(dataPackage, type, colors, margin, xAxisLabelOrientation)
+function getVisualization(dataPackage, type, colors, width, height, numDataPoints, margin, xAxisLabelOrientation)
 {
     var height = 300;
     var pieWidth = height*1.5;
