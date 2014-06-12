@@ -251,7 +251,6 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 		var stringColumnsFound = 0;	// how many columns are only strings, if this number matches the number of columns, 
 												// remove the dataset as it is undesirable to have only string datasets
 		var nonStringFound = false;
-		var treemapVars = [];			// the tree map has unique requirements for variable selection
 
 		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) 
 		{
@@ -302,7 +301,8 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				haveOnlyTwoColumns = false;
 			}
 
-			var twoColumnOnlyVisTypes = ["Bar", "Pie", "Tree", "Scatter"];
+			var treemapStyleVarsTypes = ["Tree"];
+			var twoColumnOnlyVisTypes = ["Bar", "Pie", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
 			var twoOrThreeColumnVisTypes = ["Line"]; 
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
@@ -349,10 +349,6 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				
 				for (var i = 0; i < twoColumnOnlyVisTypes.length; i++) 
 				{
-					var colsToUse;
-
-					if (twoColumnOnlyVisTypes[i] != "Tree")
-					{
 					visualizations.push(
 							{
 								"Type" : twoColumnOnlyVisTypes[i],
@@ -360,25 +356,28 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 								"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
 							}
 						);
-					}
-					else
-					{
-						var treeMapVars = selectTreemapVars(currentDataset);
-						if (treeMapVars.length > 0)
-						{
-							visualizations.push(
-									{
-										"Type" : "Tree",
-										"DataColumns" : treemapVars,
-										"Score" : determineVisualizationScore(currentDataset, treemapVars)
-									}
-								);
-						}
-					}
 				}
 			}
 
+			if (treemapStyleVarsTypes.length > 0)
+			{
+				for (var i = 0; i < treemapStyleVarsTypes.length; i++)
+				{
+					var treeMapVars = selectTreemapVars(currentDataset);
+					if (treeMapVars.length > 0)
+					{
+						visualizations.push(
+								{
+									"Type" : treemapStyleVarsTypes[i],
+									"DataColumns" : treemapVars,
+									"Score" : determineVisualizationScore(currentDataset, treemapVars)
+								}
+							);
+					}
+				}
+			}
 		}
+
 
 		// add the selected visualizations array to the dataset, note that this could be an empty array
 		// in the case that no suitable visualizations were found
