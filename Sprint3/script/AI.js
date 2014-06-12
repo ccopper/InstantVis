@@ -73,9 +73,18 @@ var determineVisualizationScore = function(dataset, columnsToUse)
 	return scoreNumerator / columnsToUse.length;
 }
 
-// find the leftmost most unique column that excludes any column numbers in the exclude array
-// if excludeStrings == true, do not select a string column
-// return -1 if no columns were found
+/**
+ * Find the leftmost most unique column that excludes any column numbers in the exclude array.
+ * If excludeStrings == true, do not select a string column.
+ *
+ * @function
+ * @param currentDataset An element from {@link AIdataStructure}
+ * @param {Integer[]} excludeColumns Do not consider these columns when selecting the next 
+ * @param {Boolean} excludeStrings if true, do not consider string columns
+ *
+ * @returns {Integer} The column index of the next best column
+ * @returns -1 if no columns were found
+ */
 var findNextBestAvailableColumn = function(currentDataset, excludeColumns, excludeStrings) 
 {
 	var usableColumns = []; // columns that are not on the exclude list
@@ -135,6 +144,58 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 }
 
 /**
+ * Pick variable(s) for the treemap. The selection is: the independent var is a string col and the
+ * dependent var is numeric. If this cannot be satisfied, then select only one numeric column. In cases
+ * where there are more than one column with the same best unique score, select the leftmost one.
+ *
+ * @function
+ * @param currentDataset An element from {@link AIdataStructure}
+ * @returns {Integer[]} The columns to use for the tree map
+ */
+var selectTreemapVars = function(currentDataset)
+{
+	var cols = currentDataset.Data.Cols;
+	var treemapVars = [];
+	var bestString = 0;
+	var bestNumeric = 0;
+	var stringFound = false;
+	var numericFound = false;
+
+	for (var i = 1; i < cols; i++)
+	{
+		// look for a good string
+		if ((currentDataset.Data.ColumnType[i] == "String") &&
+			 (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestString]))
+		{
+			bestString = i;
+			stringFound = true;
+		}
+		else if (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestNumeric])
+		{
+			bestNumeric = i;
+			numericFound = true;
+		}
+	}
+
+	if (stringFound == true && numericFound == true)
+	{
+		treemapVars[0] = bestString;
+		treemapVars[1] = bestNumeric;
+	}
+	else if (stringFound == false && numericFound == true)
+	{
+		treemapVars[0] = bestNumeric;
+	}
+	else
+	{
+		treemapVars[0] = 0;
+		console.log("AI: unable to find good variables for treemap, defaulting to col 0");
+	}
+
+	return treemapVars;
+}
+		
+/**
  * Find the best independent variable for a given dataset, this is the least unique column.
  *
  * @function
@@ -177,6 +238,7 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 		var stringColumnsFound = 0;	// how many columns are only strings, if this number matches the number of columns, 
 												// remove the dataset as it is undesirable to have only string datasets
 		var nonStringFound = false;
+		var treemapVars = [];			// the tree map has unique requirements for variable selection
 
 		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) 
 		{
@@ -274,6 +336,10 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				
 				for (var i = 0; i < twoColumnOnlyVisTypes.length; i++) 
 				{
+					var colsToUse;
+
+					if (twoColumnOnlyVisTypes[i] != "Tree")
+					{
 					visualizations.push(
 							{
 								"Type" : twoColumnOnlyVisTypes[i],
@@ -281,6 +347,18 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 								"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
 							}
 						);
+					}
+					else
+					{
+						var treeMapVars = selectTreemapVars(currentDataset);
+						visualizations.push(
+								{
+									"Type" : "Tree",
+									"DataColumns" : treemapVars,
+									"Score" : determineVisualizationScore(currentDataset, treemapVars)
+								}
+							);
+					}
 				}
 			}
 
