@@ -17,9 +17,45 @@ var currentVis = NaN;
 var col0ColorIndex = NaN;
 var col1ColorIndex = NaN;
 //Color table
-var colors = [	{hue:116,saturation:"100%",lightness:"50%"},//Green
-				{hue:352,saturation:"100%",lightness:"50%"},//Red
-				{hue:250,saturation:"100%",lightness:"50%"}//Blue
+var colors = [	{hue:116,saturation:"100%",lightness:"50%"},// Green
+				{hue:352,saturation:"100%",lightness:"50%"},// Red
+				{hue:250,saturation:"100%",lightness:"50%"},// Blue
+				{hue:120,saturation:"41%",lightness:"64%"},	// Pale Green
+				{hue:265,saturation:"31%",lightness:"76%"},	// Lavendar
+				{hue:29,saturation:"97%",lightness:"76%"},	// Peach
+				{hue:60,saturation:"100%",lightness:"80%"},	// Chalk Yellow
+				{hue:214,saturation:"52%",lightness:"45%"},	// Light Denim Blue
+				{hue:328,saturation:"98%",lightness:"47%"},	// Bold Pink
+				{hue:162,saturation:"71%",lightness:"36%"},	// Pale Turquoise
+				{hue:26,saturation:"98%",lightness:"43%"},	// Pumpkin Orange
+				{hue:244,saturation:"31%",lightness:"57%"},	// Dark Lavendar
+				{hue:329,saturation:"80%",lightness:"53%"},	// Mid-Dark Pink
+				{hue:88,saturation:"69%",lightness:"38%"},	// Dark Green Apple Green
+				{hue:44,saturation:"98%",lightness:"45%"},	// Golden Yellow
+				{hue:201,saturation:"52%",lightness:"77%"},	// Pale Sky Blue
+				{hue:204,saturation:"71%",lightness:"41%"},	// Lighter Denim Blue
+				{hue:92,saturation:"57%",lightness:"71%"},	// Pastel Green
+				{hue:116,saturation:"57%",lightness:"40%"},	// Christmas Green
+				{hue:1,saturation:"92%",lightness:"79%"},	// Pink
+				{hue:359,saturation:"79%",lightness:"50%"},	// Valentine Red
+				{hue:5,saturation:"91%",lightness:"83%"},
+				{hue:208,saturation:"46%",lightness:"80%"},
+				{hue:109,saturation:"49%",lightness:"85%"},
+				{hue:286,saturation:"32%",lightness:"85%"},
+				{hue:35,saturation:"98%",lightness:"82%"},
+				{hue:60,saturation:"100%",lightness:"90%"},
+				{hue:153,saturation:"45%",lightness:"79%"},
+				{hue:24,saturation:"95%",lightness:"83%"},
+				{hue:219,saturation:"39%",lightness:"85%"},
+				{hue:323,saturation:"66%",lightness:"87%"},
+				{hue:80,saturation:"69%",lightness:"87%"},
+				{hue:50,saturation:"100%",lightness:"84%"},
+				{hue:359,saturation:"80%",lightness:"50%"},
+				{hue:207,saturation:"54%",lightness:"47%"},
+				{hue:118,saturation:"41%",lightness:"49%"},
+				{hue:292,saturation:"35%",lightness:"47%"},
+				{hue:30,saturation:"100%",lightness:"50%"},
+				{hue:60,saturation:"100%",lightness:"60%"}
 			];
 
 
@@ -175,7 +211,7 @@ function testLocally()
  				"DataColumns": [0, 1]		
  			},{			
  				"Type": "Line",			
- 				"DataColumns": [0, 1, 2, 3]		
+ 				"DataColumns": [0, 1, 2]		
  			},{			
  				"Type": "Scatter",			
  				"DataColumns": [0, 1]		
@@ -195,7 +231,8 @@ function testLocally()
  		"Data":		
  			{			
  				"ColumnLabel": ["X", "Y", "Z"],			
- 				"ColumnType": ["Integer", "Integer", "Integer"],			
+ 				"ColumnType": ["Integer", "Integer", "Integer"],
+ 				"Caption": "This is a title",			
  				"Values":				
  					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
  					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				

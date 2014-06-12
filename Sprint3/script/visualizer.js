@@ -18,8 +18,8 @@ Treemap.prototype.draw = function(divId)
 
     var w = this.width;
     var h = this.height;
-    var colors = [];
-    var colorSet = getRandColors();
+    // var colors = [];
+    // var colorSet = getRandColors();
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
@@ -50,7 +50,7 @@ Treemap.prototype.draw = function(divId)
         }
         if (!isDuplicate) {
             categories.push([this.dataSet[j][0], j]);
-            colors.push(randRGB(100,200));                   
+            // colors.push(randRGB(100,200));
         }
     }
 
@@ -58,9 +58,11 @@ Treemap.prototype.draw = function(divId)
     for (var i = 0; i < categories.length; i++) {
         categoryTotal = 0;
         for (var j = 1; j < categories[i].length; j++) {
-            categoryTotal += this.dataSet[categories[i][j]][1];
+            categoryTotal = categoryTotal + parseInt(this.dataSet[categories[i][j]][1]);
         }
-        data.push([categories[i][0], categoryTotal]);
+        if (categoryTotal > 0) {
+            data.push([categories[i][0], categoryTotal]);
+        }
         dataTotal += categoryTotal;
     }
 
@@ -101,7 +103,8 @@ Treemap.prototype.draw = function(divId)
     var mixedColorSet = getMixedColors(data.length, this.colors);
 
     mixedColorSet = shuffleArray(mixedColorSet);
-////////////////////////////////////////////////////////////////////////////////////
+
+    console.log("data: " + data.toString());
 
     for (var i = 0; i < data.length; i++) {
         fraction = (data[i][1]/currentTotal);
@@ -135,6 +138,8 @@ Treemap.prototype.draw = function(divId)
         currentHeight = nextHeight;
         currentTotal = currentTotal - data[i][1];
     }
+
+    // console.log("rects: " + rects.toString());
 
     svg.selectAll("rect")
         .data(rects)
@@ -233,16 +238,18 @@ Treemap.prototype.draw = function(divId)
         .each(function(d) {
             var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
             var newY = parseFloat(this.getAttribute("y")) + parseFloat(this.getAttribute("height"))/2 + highlightTextHeight/2;
-            svg.append("text")
-                .attr("id", "treemap-text-tooltip1")
-                .attr("text-anchor", "middle")
-                .attr("font-size", highlightTextHeight)
-                .attr("font-family", "arial")
-                .attr("font-weight", "bold")
-                .style("pointer-events", "none")
-                .attr("x", newX)
-                .attr("y", newY)
-                .text(d[5]);
+            if (d[6] > 0) {
+                svg.append("text")
+                    .attr("id", "treemap-text-tooltip1")
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-family", "arial")
+                    .attr("font-weight", "bold")
+                    .style("pointer-events", "none")
+                    .attr("x", newX)
+                    .attr("y", newY)
+                    .text(d[5]);
+            }
         });
 
     base.append("text")
@@ -1172,10 +1179,11 @@ Scatter.prototype.draw = function(divId)
         .attr("fill", color)
         .style("stroke", "black")
         .on("mouseover", function(d, i) {
+            console.log("---------------------");
             if(!toggle[i]) {
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
-                var col = this.colors[0];
+                var col = color;//this.colors[0];
                 var highlightText = d[0] + ", " + d[1];
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
@@ -1248,7 +1256,7 @@ Scatter.prototype.draw = function(divId)
 
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
-                var col = this.colors[0];
+                var col = color;//this.colors[0];
                 var highlightText = d[0] + ", " + d[1];
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
@@ -1336,7 +1344,7 @@ Scatter.prototype.draw = function(divId)
                 if(!toggle[numValuesPerDataSet + i]) {
                     var x2 = xScale(d[0]);
                     var y2 = yScale2(d[1]);
-                    var col2 = this.colors[1];
+                    var col2 = color2;//this.colors[1];
                     var highlightText2 = d[0] + ", " + d[1];
                     var xRect2 = x2 + 2*highlightRadius;
                     var yRect2 = y2 - highlightRectHeight/2;
@@ -1410,7 +1418,7 @@ Scatter.prototype.draw = function(divId)
 
                 var x2 = xScale(d[0]);
                 var y2 = yScale2(d[1]);
-                var col2 = this.colors[1];
+                var col2 = color2;//this.colors[1];
                 var highlightText2 = d[0] + ", " + d[1];
                 var xRect2 = x2 + 2*highlightRadius;
                 var yRect2 = y2 - highlightRectHeight/2;
@@ -1984,7 +1992,7 @@ Line.prototype.draw = function (divId) {
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
-            .style("fill", colors[0]);  
+            .style("fill", this.colors[0]);  
 
         base.append("rect")
             .attr("id", "colorIcon2")
@@ -1993,7 +2001,7 @@ Line.prototype.draw = function (divId) {
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
-            .style("fill", colors[1]);
+            .style("fill", this.colors[1]);
     }
 
     // Sort first by data point's x position, they by y position.
@@ -2328,6 +2336,7 @@ Bar.prototype.draw = function(divId) {
             console.log("fillColor: " + fillColor);
             return fillColor;
         })
+        .style("stroke", "black")
         .attr("class", "bar-set1")
         .on("mouseover", function(d, i) {
 
@@ -2470,6 +2479,7 @@ Bar.prototype.draw = function(divId) {
             .attr("fill", function(d) {
                 return fillColor2;
             })
+            .style("stroke", "black")
             .attr("class", "bar-set2")
             .on("mouseover",function(d, i) {
 
@@ -2947,12 +2957,12 @@ function getMixedColors(numColorsOut, colors) {
 // }
 
 function getRandColors() {
-    var colors = [  ['rgb(127,201,127)','rgb(190,174,212)','rgb(253,192,134)','rgb(255,255,153)','rgb(56,108,176)','rgb(240,2,127)'],
-                    ['rgb(27,158,119)','rgb(217,95,2)','rgb(117,112,179)','rgb(231,41,138)','rgb(102,166,30)','rgb(230,171,2)'],
-                    ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)'],
-                    ['rgb(251,180,174)','rgb(179,205,227)','rgb(204,235,197)','rgb(222,203,228)','rgb(254,217,166)','rgb(255,255,204)'],
-                    ['rgb(179,226,205)','rgb(253,205,172)','rgb(203,213,232)','rgb(244,202,228)','rgb(230,245,201)','rgb(255,242,174)'],
-                    ['rgb(228,26,28)','rgb(55,126,184)','rgb(77,175,74)','rgb(152,78,163)','rgb(255,127,0)','rgb(255,255,51)'],
+    var colors = [  ['rgb(127,201,127)','rgb(190,174,212)','rgb(253,192,134)','rgb(255,255,153)','rgb(56,108,176)','rgb(240,2,127)'],   //
+                    ['rgb(27,158,119)','rgb(217,95,2)','rgb(117,112,179)','rgb(231,41,138)','rgb(102,166,30)','rgb(230,171,2)'],        //   
+                    ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)'],     //
+                    ['rgb(251,180,174)','rgb(179,205,227)','rgb(204,235,197)','rgb(222,203,228)','rgb(254,217,166)','rgb(255,255,204)'],//
+                    ['rgb(179,226,205)','rgb(253,205,172)','rgb(203,213,232)','rgb(244,202,228)','rgb(230,245,201)','rgb(255,242,174)'],//
+                    ['rgb(228,26,28)','rgb(55,126,184)','rgb(77,175,74)','rgb(152,78,163)','rgb(255,127,0)','rgb(255,255,51)'],         //
                     ['rgb(102,194,165)','rgb(252,141,98)','rgb(141,160,203)','rgb(231,138,195)','rgb(166,216,84)','rgb(255,217,47)'],
                     ['rgb(141,211,199)','rgb(255,255,179)','rgb(190,186,218)','rgb(251,128,114)','rgb(128,177,211)','rgb(253,180,98)'],
                     ['rgb(213,62,79)','rgb(252,141,89)','rgb(254,224,139)','rgb(230,245,152)','rgb(153,213,148)','rgb(50,136,189)'],
