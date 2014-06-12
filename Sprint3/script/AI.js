@@ -146,9 +146,9 @@ var findIndependentVariable = function(currentDataset)
 {
 	var leastUniqueColumnFound = 0;
 
-	for (var col = 1; col < currentDataset.Cols; col++)
+	for (var col = 1; col < currentDataset.Data.Cols; col++)
 	{
-		if (currentDataset.ColumnUnique[col] < currentDataset.ColumnUnique[leastUniqueColumnFound])
+		if (currentDataset.Data.ColumnUnique[col] < currentDataset.Data.ColumnUnique[leastUniqueColumnFound])
 		{
 			leastUniqueColumnFound = col;
 		}
@@ -227,9 +227,9 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				haveOnlyTwoColumns = false;
 			}
 
-			var twoColumnOnlyVisTypes = ["Pie", "Tree", "Scatter"];
+			var twoColumnOnlyVisTypes = ["Bar", "Pie", "Tree", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
-			var twoOrThreeColumnVisTypes = ["Bar", "Line"]; 
+			var twoOrThreeColumnVisTypes = ["Line"]; 
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
 			var threeColumnVisTypes = twoOrThreeColumnVisTypes.concat(threeColumnOnlyVisTypes);
 
@@ -380,20 +380,27 @@ function AI(parserData)
 		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
 
-		var visDataElement = 
-			{
-				"Visualizations" : [],
-				"Data" : {
-					"Rows" : currentTable.Rows,
-					"Caption" : currentTable.Caption,
-					"Cols" : currentTable.Cols,
-					"ColumnLabel" : currentTable.ColumnLabel,
-					"Values" : currentTable.Values,
-					"ColumnType" : columnType
-				}
-			};
+		if (currentTable.Rows > 1 && currentTable.Cols > 1) // ignore single dimension tables
+		{
+			var visDataElement = 
+				{
+					"Visualizations" : [],
+					"Data" : {
+						"Rows" : currentTable.Rows,
+						"Caption" : currentTable.Caption,
+						"Cols" : currentTable.Cols,
+						"ColumnLabel" : currentTable.ColumnLabel,
+						"Values" : currentTable.Values,
+						"ColumnType" : columnType
+					}
+				};
 
-		AIdataStructure.push(visDataElement);
+			AIdataStructure.push(visDataElement);
+		}
+		else
+		{
+			console.log("AI: ignoring a single dimension table.");
+		}
 
 	}
 
@@ -407,7 +414,8 @@ function AI(parserData)
 	// remove empty visualizations
 	for (var i = 0; i < AIdataStructure.length; i++) 
 	{
-		if (AIdataStructure[i].Visualizations.length == 0) 
+		if (AIdataStructure[i].Visualizations.length == 0 ||
+		    AIdataStructure[i].Data.Values.length == 0)
 		{
 			AIdataStructure.splice(i, 1);
 			visualizationsRemoved = visualizationsRemoved + 1;
