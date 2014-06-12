@@ -21,10 +21,10 @@ Treemap.prototype.draw = function(divId)
 
     var w = this.width;
     var h = this.height;
-
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
 
+    // Determine axis labels and title.
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
     var title = this.title;
@@ -51,7 +51,6 @@ Treemap.prototype.draw = function(divId)
         }
         if (!isDuplicate) {
             categories.push([this.dataSet[j][0], j]);
-            // colors.push(randRGB(100,200));
         }
     }
 
@@ -164,7 +163,7 @@ Treemap.prototype.draw = function(divId)
                     .attr("x", newX)
                     .attr("y", newY - highlightTextHeight)
                     .attr("text-anchor", "middle")
-                    .attr("text-family", "arial")
+                    .attr("font-family", "arial")
                     .attr("font-size", highlightTextHeight)
                     .attr("font-weight", "bold")
                     .style("pointer-events", "none")
@@ -176,7 +175,7 @@ Treemap.prototype.draw = function(divId)
                     .attr("x", newX)
                     .attr("y", newY + highlightTextHeight)
                     .attr("text-anchor", "middle")
-                    .attr("text-family", "arial")
+                    .attr("font-family", "arial")
                     .attr("font-size", highlightTextHeight)
                     .attr("font-weight", "bold")
                     .style("pointer-events", "none")
@@ -205,7 +204,7 @@ Treemap.prototype.draw = function(divId)
                 .attr("x", newX)
                 .attr("y", newY - highlightTextHeight)
                 .attr("text-anchor", "middle")
-                .attr("text-family", "arial")
+                .attr("font-family", "arial")
                 .attr("font-size", highlightTextHeight)
                 .attr("font-weight", "bold")
                 .style("pointer-events", "none")
@@ -217,7 +216,7 @@ Treemap.prototype.draw = function(divId)
                 .attr("x", newX)
                 .attr("y", newY + highlightTextHeight)
                 .attr("text-anchor", "middle")
-                .attr("text-family", "arial")
+                .attr("font-family", "arial")
                 .attr("font-size", highlightTextHeight)
                 .attr("font-weight", "bold")
                 .style("pointer-events", "none")
@@ -967,9 +966,6 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
-    var numXAxisTicks = numValuesPerDataSet;
-    var numYAxisTicks = height/15;
-
     var xValues = [];
 
     // Set flag for whether or not there are multiple data sets.
@@ -991,6 +987,7 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
+    // If multiple data sets, retrieve second data set and calculate min/max. 
     if (multiset) {
         var maxY2 = 0;
         var minY2 = 0;
@@ -1006,6 +1003,10 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
+
+    // Calculate scales.
+
+    // If x-axis is String data, use ordinal scale, otherwise use linear.
     if (this.columnTypes[0] != "String") {
         var xScale = d3.scale.linear()
                         .domain([d3.min(this.dataSet, function(d) { return d[0]; }), d3.max(this.dataSet, function(d) { return d[0]; })])
@@ -1014,7 +1015,6 @@ Scatter.prototype.draw = function(divId)
         for (var i = 0; i < this.dataSet.length; i++) {
             xValues.push(this.dataSet[i][0]);
         }
-
         var xScale = d3.scale.ordinal()
                         .domain(xValues)
                         .rangePoints([0,width]);
@@ -1032,19 +1032,18 @@ Scatter.prototype.draw = function(divId)
                         .clamp(true);
     }
 
-    var rScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) {return d[1]; })])
-                        .range([2, 5]);
-
+    // Calculate number of axis ticks.
     if (numValuesPerDataSet > 25) {
         numXAxisTicks = 25;
     }
+    var numXAxisTicks = numValuesPerDataSet;
+    var numYAxisTicks = height/15;
 
+    // Create axes.
     var xAxis = d3.svg.axis()
                     .scale(xScale)
                     .orient("bottom")
                     .ticks(numXAxisTicks);
-
 
     var yAxis = d3.svg.axis()
                     .scale(yScale)
@@ -1058,10 +1057,11 @@ Scatter.prototype.draw = function(divId)
                         .ticks(numYAxisTicks);
     }
 
+
+    // Get scaled data set values.
     var xValuesScaled = [];
     var yValues2Scaled = [];
     var yValuesScaled = [];
-
     for (var i = 0; i < numValuesPerDataSet; i++) {
         xValuesScaled.push(xScale(this.dataSet[i][0]));
         yValuesScaled.push(yScale(this.dataSet[i][1]));
@@ -1070,11 +1070,13 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
+    // Visualization base object.
     var base = d3.select("#" + divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
                 .attr("id","visSvg");
+    // Background.
     base.append("rect")
             .attr("x", 0)
             .attr("y", 0)
@@ -1082,6 +1084,7 @@ Scatter.prototype.draw = function(divId)
             .attr("height", height + margin.top + margin.bottom)
             .attr("fill", "white")
             .style("stroke", "black");
+    // Internal canvas.
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -1090,6 +1093,7 @@ Scatter.prototype.draw = function(divId)
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; });
 
+    // If negative y values and single data set, draw a guideline at y=0.
     if (!multiset && minY < 0) {
         svg.append("path")
             .attr("id", ("scatter-zero-line"))
@@ -1134,6 +1138,7 @@ Scatter.prototype.draw = function(divId)
         styleYAxis(y2AxisObject, "start");
     }
 
+    // X axis label.
     base.append("text")
         .attr("class", "x-label")
         .attr("text-anchor", "middle")
@@ -1143,6 +1148,7 @@ Scatter.prototype.draw = function(divId)
         .attr("y", h - xAxisLabelPaddingBottom)
         .text(xAxisLabel);
 
+    // Y axis label.
     base.append("text")
         .attr("class", "y-label")
         .attr("id", "y-label-scatter-1")
@@ -1155,7 +1161,7 @@ Scatter.prototype.draw = function(divId)
         .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
         .text(yAxisLabel);
 
-
+    // Second y axis label.
     if (multiset) {
         base.append("text")
             .attr("class", "y-label2")
@@ -1170,6 +1176,7 @@ Scatter.prototype.draw = function(divId)
             .text(yAxisLabel2);
     }
 
+    // Title.
     base.append("text")
         .attr("class", "title")
         .attr("text-anchor", "middle")
@@ -1179,7 +1186,7 @@ Scatter.prototype.draw = function(divId)
         .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
         .text(title);    
 
-
+    // Populate the toggle list with false for every data point.
     var toggle = [];
     for (var i = 0; i < numValuesPerDataSet; i++) {
         toggle.push(false);
@@ -1188,10 +1195,11 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
-
+    // Get the first data set and color.
     var data = getData([0,1],this.dataSet);
     var color = this.colors[0];
 
+    // Create the first data set circles.
     svg.selectAll(("circle.set" + 1))
         .data(data)
         .enter()
@@ -1218,6 +1226,7 @@ Scatter.prototype.draw = function(divId)
                 var yText = yRect + highlightTextHeight;
                 var lineData = [[x+highlightRadius,y],[x+2*highlightRadius,y]]; 
                 
+                // Determine if tooltip will go over right edge of screen, and if so, adjust position accordingly.
                 highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
                 if (xRect + highlightRectWidth > width) {
                     lineData = [[x-2*highlightRadius, y],[x-highlightRadius, y]];
@@ -1225,39 +1234,11 @@ Scatter.prototype.draw = function(divId)
                     xText = xRect + highlightTextPadding;
                 }
 
-                svg.append("circle")
-                    .attr("id", ("circle-highlight" + 1 + "-" + i))
-                    .attr("cx", x)
-                    .attr("cy", y)
-                    .attr("fill", "none")
-                    .style("stroke", col)
-                    .attr("r", highlightRadius);
-
-                svg.append("rect")
-                    .attr("id", ("tooltip-rect" + 1 + "-" + i))
-                    .attr("x", xRect)
-                    .attr("y", yRect)
-                    .attr("fill", highlightRectFillColor)
-                    .style("stroke", col)
-                    .attr("width", highlightRectWidth)
-                    .attr("height", highlightRectHeight);
-
-                svg.append("text")
-                    .attr("id", ("tooltip-text" + 1 + "-" + i))
-                    .attr("x", xText)
-                    .attr("y", yText)
-                    .style("pointer-events", "none")
-                    .attr("text-anchor", "start")
-                    .attr("font-family", "arial")
-                    .attr("font-size", highlightTextHeight)
-                    .attr("font-weight", "bold")
-                    .attr("fill", "black")
-                    .text(highlightText);
-
-                svg.append("path")
-                    .attr("id", ("tooltip-line" + 1 + "-" + i))
-                    .style("stroke", col)
-                    .attr("d", line(lineData))
+                // Create Tooltip.
+                createTooltipCircle(1, i, x, y, col, highlightRadius);
+                createTooltipRect(1, i, xRect, yRect, col, highlightRectWidth, highlightRectHeight);
+                createTooltipText(1, i, xText, yText, highlightText);
+                createTooltipLine(1, i, col, lineData);
             }
         })
         .on("click", function(d, i) {
@@ -1271,56 +1252,28 @@ Scatter.prototype.draw = function(divId)
                 return;
             }
 
-                var x = xScale(d[0]);
-                var y = yScale(d[1]);
-                var col = color;
-                var highlightText = d[0] + ", " + d[1];
-                var xRect = x + 2*highlightRadius;
-                var yRect = y - highlightRectHeight/2;
-                var xText = xRect + highlightTextPadding;
-                var yText = yRect + highlightTextHeight;
-                var lineData = [[x+highlightRadius,y],[x+2*highlightRadius,y]]; 
-                
-                highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
-                if (xRect + highlightRectWidth > width) {
-                    lineData = [[x-2*highlightRadius, y],[x-highlightRadius, y]];
-                    xRect = x - 2*highlightRadius - highlightRectWidth;
-                    xText = xRect + highlightTextPadding;
-                }
+            var x = xScale(d[0]);
+            var y = yScale(d[1]);
+            var col = color;
+            var highlightText = d[0] + ", " + d[1];
+            var xRect = x + 2*highlightRadius;
+            var yRect = y - highlightRectHeight/2;
+            var xText = xRect + highlightTextPadding;
+            var yText = yRect + highlightTextHeight;
+            var lineData = [[x+highlightRadius,y],[x+2*highlightRadius,y]]; 
+            
+            highlightRectWidth = (2*highlightTextPadding) + (characterWidth*highlightText.length);
+            if (xRect + highlightRectWidth > width) {
+                lineData = [[x-2*highlightRadius, y],[x-highlightRadius, y]];
+                xRect = x - 2*highlightRadius - highlightRectWidth;
+                xText = xRect + highlightTextPadding;
+            }
 
-                svg.append("circle")
-                    .attr("id", ("circle-highlight" + 1 + "-" + i))
-                    .attr("cx", x)
-                    .attr("cy", y)
-                    .attr("fill", "none")
-                    .style("stroke", col)
-                    .attr("r", highlightRadius);
-
-                svg.append("rect")
-                    .attr("id", ("tooltip-rect" + 1 + "-" + i))
-                    .attr("x", xRect)
-                    .attr("y", yRect)
-                    .attr("fill", highlightRectFillColor)
-                    .style("stroke", col)
-                    .attr("width", highlightRectWidth)
-                    .attr("height", highlightRectHeight);
-
-                svg.append("text")
-                    .attr("id", ("tooltip-text" + 1 + "-" + i))
-                    .attr("x", xText)
-                    .attr("y", yText)
-                    .style("pointer-events", "none")
-                    .attr("text-anchor", "start")
-                    .attr("font-family", "arial")
-                    .attr("font-size", highlightTextHeight)
-                    .attr("font-weight", "bold")
-                    .attr("fill", "black")
-                    .text(highlightText);
-
-                svg.append("path")
-                    .attr("id", ("tooltip-line" + 1 + "-" + i))
-                    .style("stroke", col)
-                    .attr("d", line(lineData))
+            // Create Tooltip.
+            createTooltipCircle(1, i, x, y, col, highlightRadius);
+            createTooltipRect(1, i, xRect, yRect, col, highlightRectWidth, highlightRectHeight);
+            createTooltipText(1, i, xText, yText, highlightText);
+            createTooltipLine(1, i, col, lineData);
         })
         .on("mouseout", function(d, i) {
         // If the popup should not persist, remove it.
@@ -1329,6 +1282,7 @@ Scatter.prototype.draw = function(divId)
         }
     });            
 
+    // Create second data set.
     if (multiset) {
         var data2 = getData([0,2],this.dataSet);
         var color2 = this.colors[1];
@@ -1366,39 +1320,11 @@ Scatter.prototype.draw = function(divId)
                         xText2 = xRect2 + highlightTextPadding;
                     }
 
-                    svg.append("circle")
-                        .attr("id", ("circle-highlight" + 2 + "-" + i))
-                        .attr("cx", x2)
-                        .attr("cy", y2)
-                        .attr("fill", "none")
-                        .style("stroke", col2)
-                        .attr("r", highlightRadius);
-
-                    svg.append("rect")
-                        .attr("id", ("tooltip-rect" + 2 + "-" + i))
-                        .attr("x", xRect2)
-                        .attr("y", yRect2)
-                        .attr("fill", highlightRectFillColor)
-                        .style("stroke", col2)
-                        .attr("width", highlightRectWidth2)
-                        .attr("height", highlightRectHeight);
-
-                    svg.append("text")
-                        .attr("id", ("tooltip-text" + 2 + "-" + i))
-                        .attr("x", xText2)
-                        .attr("y", yText2)
-                        .style("pointer-events", "none")
-                        .attr("text-anchor", "start")
-                        .attr("font-family", "arial")
-                        .attr("font-size", highlightTextHeight)
-                        .attr("font-weight", "bold")
-                        .attr("fill", "black")
-                        .text(highlightText2);
-
-                    svg.append("path")
-                        .attr("id", ("tooltip-line" + 2 + "-" + i))
-                        .style("stroke", col2)
-                        .attr("d", line(lineData2));
+                    // Create Tooltip.
+                    createTooltipCircle(2, i, x2, y2, col2, highlightRadius);
+                    createTooltipRect(2, i, xRect2, yRect2, col2, highlightRectWidth2, highlightRectHeight);
+                    createTooltipText(2, i, xText2, yText2, highlightText2);
+                    createTooltipLine(2, i, col2, lineData2);
                 }
             })
             .on("click", function(d, i) {
@@ -1429,39 +1355,11 @@ Scatter.prototype.draw = function(divId)
                     xText2 = xRect2 + highlightTextPadding;
                 }
 
-                svg.append("circle")
-                    .attr("id", ("circle-highlight" + 2 + "-" + i))
-                    .attr("cx", x2)
-                    .attr("cy", y2)
-                    .attr("fill", "none")
-                    .style("stroke", col2)
-                    .attr("r", highlightRadius);
-
-                svg.append("rect")
-                    .attr("id", ("tooltip-rect" + 2 + "-" + i))
-                    .attr("x", xRect2)
-                    .attr("y", yRect2)
-                    .attr("fill", highlightRectFillColor)
-                    .style("stroke", col2)
-                    .attr("width", highlightRectWidth2)
-                    .attr("height", highlightRectHeight);
-
-                svg.append("text")
-                    .attr("id", ("tooltip-text" + 2 + "-" + i))
-                    .attr("x", xText2)
-                    .attr("y", yText2)
-                    .style("pointer-events", "none")
-                    .attr("text-anchor", "start")
-                    .attr("font-family", "arial")
-                    .attr("font-size", highlightTextHeight)
-                    .attr("font-weight", "bold")
-                    .attr("fill", "black")
-                    .text(highlightText2);
-
-                svg.append("path")
-                    .attr("id", ("tooltip-line" + 2 + "-" + i))
-                    .style("stroke", col2)
-                    .attr("d", line(lineData2));
+                // Create Tooltip.
+                createTooltipCircle(2, i, x2, y2, col2, highlightRadius);
+                createTooltipRect(2, i, xRect2, yRect2, col2, highlightRectWidth2, highlightRectHeight);
+                createTooltipText(2, i, xText2, yText2, highlightText2);
+                createTooltipLine(2, i, col2, lineData2);
             })
             .on("mouseout", function(d, i) {
             // If the popup should not persist, remove it.
@@ -1491,7 +1389,52 @@ Scatter.prototype.draw = function(divId)
             .style("fill", this.colors[1]);
     }
 
+    function createTooltipCircle(set, i, x, y, color, radius) {
+        console.log("creating tooltip circle - set (" + set + ") - i (" + i + ")");
+        svg.append("circle")
+            .attr("id", ("circle-highlight" + set + "-" + i))
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("fill", "none")
+            .style("stroke", color)
+            .attr("r", radius);
+    }
+
+    function createTooltipRect(set, i, x, y, color, width, height) {
+        console.log("creating tooltip rect - set (" + set + ") - i (" + i + ")");
+        svg.append("rect")
+            .attr("id", ("tooltip-rect" + set + "-" + i))
+            .attr("x", x)
+            .attr("y", y)
+            .attr("fill", highlightRectFillColor)
+            .style("stroke", color)
+            .attr("width", width)
+            .attr("height", height);
+    }
+
+    function createTooltipText(set, i, x, y, text) {
+        svg.append("text")
+            .attr("id", ("tooltip-text" + set + "-" + i))
+            .attr("x", x)
+            .attr("y", y)
+            .style("pointer-events", "none")
+            .attr("text-anchor", "start")
+            .attr("font-family", "arial")
+            .attr("font-size", highlightTextHeight)
+            .attr("font-weight", "bold")
+            .attr("fill", "black")
+            .text(text); 
+    }
+
+    function createTooltipLine(set, i, color, lineData){
+        svg.append("path")
+            .attr("id", ("tooltip-line" + set + "-" + i))
+            .style("stroke", color)
+            .attr("d", line(lineData));
+    }
+
     function removeTooltips(set, i) {
+        console.log("remove tooltips - set (" + set + ") - i (" + i + ")");
         d3.select(("#circle-highlight" + set + "-" + i)).remove();
         d3.select(("#tooltip-rect" + set + "-" + i)).remove();  
         d3.select(("#tooltip-text" + set + "-" + i)).remove();
@@ -2104,19 +2047,16 @@ Bar.prototype.draw = function(divId) {
 
     // var margin = {top: 50, right: 55, bottom: 55, left: 55};
     var margin = this.margin;
-
     var numValuesPerDataSet = this.dataSet.length;
     var numDataSets = this.dataSet[0].length;
-
     var colorIconHeight = 10;
     var colorIconWidth = 10;
 
+    // Determine if multiple data sets.
     var multiset = false;
     if (numDataSets > 2) {
         multiset = true;
     }
-
-    console.log("START: this.colors: " + this.colors.toString());
 
     xValues = [];
     yValues = [];
@@ -2230,10 +2170,6 @@ Bar.prototype.draw = function(divId) {
 
     var numYAxisTicks = height/15;
 
-    console.log("BarWidth: " + barWidth);
-
-    //console.log("(width / numBars) - barPadding: " +  "(" + width + "/" + numBars + ")" + " - " + barPadding);
-
     var fillColor = this.colors[0];
     var fillColor2 = this.colors[1];
     console.log("fillColor: " + fillColor);
@@ -2345,10 +2281,6 @@ Bar.prototype.draw = function(divId) {
         .style("stroke", "black")
         .attr("class", "bar-set1")
         .on("mouseover", function(d, i) {
-
-            // d3.select(this)
-            //         .attr("fill", highlightColor);
-        
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
@@ -2485,14 +2417,10 @@ Bar.prototype.draw = function(divId) {
             .style("stroke", "black")
             .attr("class", "bar-set2")
             .on("mouseover",function(d, i) {
-
-                // d3.select(this)
-                //         .attr("fill", highlightColor);
-                
                 var xPosition = parseFloat(d3.select(this).attr("x"));
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
-                var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+                var yTextPosition = yPosition - highlightTextPadding;
                 if (yTextPosition < highlightTextHeight) {
                     yTextPosition = yPosition + highlightTextHeight;
                 }
@@ -2540,10 +2468,6 @@ Bar.prototype.draw = function(divId) {
                 d3.select(("#tooltip" + numBars + i)).remove();
                 d3.select("#barline").remove();
 
-                // d3.select(this)
-                //     .attr("fill", highlightColor);
-                
-
                 toggle[(numBars + i)] = !toggle[(numBars + i)];
 
                 if (!toggle[(numBars + i)]) {
@@ -2555,7 +2479,7 @@ Bar.prototype.draw = function(divId) {
                 var xPosition = parseFloat(d3.select(this).attr("x"));
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
-                var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+                var yTextPosition = yPosition - highlightTextPadding;
                 if (yTextPosition < highlightTextHeight) {
                     yTextPosition = yPosition + highlightTextHeight;
                 }
@@ -2595,8 +2519,6 @@ Bar.prototype.draw = function(divId) {
 
                 this.setAttribute("fill", highlightColor);  
 
-                
-
             })
             .on("mouseout", function(d, i) {
                 if (!toggle[(numBars + i)]) {
@@ -2608,7 +2530,6 @@ Bar.prototype.draw = function(divId) {
                     .attr("fill", fillColor2);
                 svg.selectAll(".bar-set1")
                     .attr("fill", fillColor);    
-                
             });    
     }
 
@@ -2748,6 +2669,7 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
     {
         var visType = dataPackage.Visualizations[i].Type;
         var columnSet = dataPackage.Visualizations[i].DataColumns;
+        var visTitle = dataPackage.Visualizations[i].VisTitle;
         console.log("columnSet: " + columnSet.toString());
         var columnTypes = dataPackage.Data.ColumnType;
         var values = dataPackage.Data.Values;
@@ -2768,27 +2690,27 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
             switch(type) {
                 case "Line":
-                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation, true);
+                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation, true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;  
 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), caption, pieWidth, height, colors, margin);
+                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), visTitle, pieWidth, height, colors, margin);
                     break;
 
                 case "Tree":
-                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), caption, width, 1.3*height, colors, margin);
+                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), visTitle, width, 1.3*height, colors, margin);
                     break;
 
                 case "Bubble":
-                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 default:
