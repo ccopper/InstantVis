@@ -1,6 +1,8 @@
 //Global reference to table data
 var tables = [];
 var currentTable = 0;
+//Global reference to current visualization type
+var visType = NaN;
 //Global reference to table column sets. [[[1,2],[2,3]],[[4,5],[1,2]]]
 var tableColumnSets = [];
 //var for Draggable splitpane
@@ -426,7 +428,7 @@ function visTypeClickHandler(event)
 	$('#'+iconId).addClass('iconBorderHighlight');
 
 	//Draw the visualization
-	var visType = iconId.replace('_icon','');
+	visType = iconId.replace('_icon','');
 	if(currentVis == visType)
 	{
 		return;
