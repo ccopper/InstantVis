@@ -301,7 +301,10 @@ function testLocally()
  				"Type": "Scatter",			
  				"DataColumns": [0, 1]		
  			},{         
-                 "Type": "Area",          
+                 "Type": "Pie",          
+                 "DataColumns": [0, 1]       
+             },{         
+                 "Type": "Tree",          
                  "DataColumns": [0, 1]       
              }],		
  		"Data":		

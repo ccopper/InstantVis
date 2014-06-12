@@ -449,12 +449,12 @@
 	width: 400px;
 }
 
-.x-axis path
+/*.x-axis path
 {
 	fill: none;
 	stroke: none;
 	shape-rendering: crispEdges;
-}
+}*/
 
 /*.axis path,*/
 /*.axis line,*/
@@ -487,24 +487,24 @@
 	stroke: none;
 }
 
-.overlay 
+/*.overlay 
 {
   fill: none;
   pointer-events: all;
-}
+}*/
 
-.guideline
+/*.guideline
 {
 	stroke: black;
-}
-
+}*/
+/*
 .label-line
 {
 	fill: none;
 	stroke: black;
 	shape-rendering: geometricPrecision;
 }
-
+*/
 
 .unselectable 
 {
