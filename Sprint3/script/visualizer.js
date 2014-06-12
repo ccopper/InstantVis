@@ -2,7 +2,7 @@
 
 var globalPadding = 25;
 
-function Treemap(dataSet, labels, title, width, height, colors) 
+function Treemap(dataSet, labels, title, width, height, colors, margin) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
@@ -10,11 +10,13 @@ function Treemap(dataSet, labels, title, width, height, colors)
     this.width = width;
     this.height = height;
     this.colors = colors;
+    this.margin = margin;
 }
 
 Treemap.prototype.draw = function(divId) 
 {
-    var margin = {top: 50, right: 20, bottom: 20, left: 20};
+    // var margin = {top: 50, right: 20, bottom: 20, left: 20};
+    var margin = this.margin;
 
     var w = this.width;
     var h = this.height;
@@ -262,7 +264,7 @@ Treemap.prototype.draw = function(divId)
         .text(title);  
 }
 
-function Bubble(dataSet, labels, columnTypes, title, width, height, colors) 
+function Bubble(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
@@ -271,12 +273,15 @@ function Bubble(dataSet, labels, columnTypes, title, width, height, colors)
     this.width = width;
     this.height = height;
     this.colors = colors;
+    this.margin = margin;
+    this.xAxisLabelOrientation = xAxisLabelOrientation;
 }
 
 Bubble.prototype.draw = function(divId) 
 {
 
-    var margin = {top: 50, right: 40, bottom: 40, left: 55};
+    // var margin = {top: 50, right: 40, bottom: 40, left: 55};
+    var margin = this.margin;
 
     var w = this.width;
     var h = this.height;
@@ -418,7 +423,7 @@ Bubble.prototype.draw = function(divId)
         .attr("width", width)
         .call(xAxis)
 
-    styleXAxis(xAxisObject);
+    styleXAxis(xAxisObject, this.xAxisLabelOrientation);
 
     // Draw the y-axis.
     var yAxisObject = svg.append("g")
@@ -602,7 +607,7 @@ Bubble.prototype.draw = function(divId)
 }
 
 
-function Pie(dataSet, labels, title, width, height, colors) 
+function Pie(dataSet, labels, title, width, height, colors, margin) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
@@ -610,12 +615,15 @@ function Pie(dataSet, labels, title, width, height, colors)
     this.width = width;
     this.height = height;
     this.colors = colors;
+    this.margin = margin;
 }
 
 Pie.prototype.draw = function(divId)
 {
 
-    var margin = {top: 50, right: 40, bottom: 25, left: 55};
+    // var margin = {top: 50, right: 40, bottom: 25, left: 55};
+    var margin = this.margin;
+
 
     var w = this.width;
     var h = this.height;
@@ -897,7 +905,7 @@ Pie.prototype.draw = function(divId)
         }
 }
 
-function Scatter(dataSet, labels, columnTypes, title, width, height, colors) 
+function Scatter(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation) 
 {
     this.dataSet = dataSet;
     this.labels = labels;
@@ -906,12 +914,16 @@ function Scatter(dataSet, labels, columnTypes, title, width, height, colors)
     this.width = width;
     this.height = height;
     this.colors = colors;
+    this.margin = margin;
+    this.xAxisLabelOrientation = xAxisLabelOrientation;
 }
 
 Scatter.prototype.draw = function(divId) 
 {
 
-    var margin = {top: 50, right: 65, bottom: 40, left: 65};
+    // var margin = {top: 50, right: 65, bottom: 40, left: 65};
+    var margin = this.margin;
+
     var colorSet = getRandColors();
 
     var w = this.width;
@@ -1103,7 +1115,7 @@ Scatter.prototype.draw = function(divId)
         .attr("width", width)
         .call(xAxis);
 
-    styleXAxis(xAxisObject);
+    styleXAxis(xAxisObject, this.xAxisLabelOrientation);
 
     // Draw the y-axis.
     var yAxisObject = svg.append("g")
@@ -1545,7 +1557,7 @@ Scatter.prototype.draw = function(divId)
  *  @param Boolean showPoints       Whether or not points should be displayed on the lines.
  *
  */
-function Line(dataSet, labels, columnTypes, title, width, height, colors, showPoints) {
+function Line(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation, showPoints) {
     this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
@@ -1553,6 +1565,8 @@ function Line(dataSet, labels, columnTypes, title, width, height, colors, showPo
     this.width = width;
     this.height = height;
     this.colors = colors;
+    this.margin = margin;
+    this.xAxisLabelOrientation = xAxisLabelOrientation;
     this.showPoints = showPoints; // Boolean (show points?)
 
     console.log("labels: " + labels.toString());
@@ -1560,7 +1574,8 @@ function Line(dataSet, labels, columnTypes, title, width, height, colors, showPo
 
 Line.prototype.draw = function (divId) {
 
-    var margin = {top: 50, right: 65, bottom: 40, left: 65};
+    // var margin = {top: 50, right: 65, bottom: 40, left: 65};
+    var margin = this.margin;
 
     var w = this.width;
     var h = this.height;
@@ -1845,7 +1860,7 @@ Line.prototype.draw = function (divId) {
         .attr("width", width)
         .call(xAxis);
 
-    styleXAxis(xAxisObject);
+    styleXAxis(xAxisObject, this.xAxisLabelOrientation);
 
     // Display the y-axis. 
     var yAxisObject = svg.append("g")
@@ -2116,7 +2131,7 @@ Line.prototype.draw = function (divId) {
    
 };
 
-function Bar (dataSet, labels, columnTypes, title, width, height, colors) {
+function Bar (dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation) {
     this.dataSet = dataSet;
     this.labels = labels;
     this.columnTypes = columnTypes;
@@ -2124,11 +2139,14 @@ function Bar (dataSet, labels, columnTypes, title, width, height, colors) {
     this.width = width;
     this.height = height;
     this.colors = colors;
+    this.margin = margin;
+    this.xAxisLabelOrientation = xAxisLabelOrientation;
 }
 
 Bar.prototype.draw = function(divId) {
 
-    var margin = {top: 50, right: 55, bottom: 55, left: 55};
+    // var margin = {top: 50, right: 55, bottom: 55, left: 55};
+    var margin = this.margin;
 
     var numValuesPerDataSet = this.dataSet.length;
     var numDataSets = this.dataSet[0].length;
@@ -2646,7 +2664,7 @@ Bar.prototype.draw = function(divId) {
             })
             .call(xAxis);
 
-        styleXAxis(xAxisObject);
+        styleXAxis(xAxisObject, this.xAxisLabelOrientation);
 
         // Create y-axis
         var y2AxisObect = svg.append("g")
@@ -2667,7 +2685,7 @@ Bar.prototype.draw = function(divId) {
         })
         .call(xAxis);
 
-        styleXAxis(xAxisObject);
+        styleXAxis(xAxisObject, this.xAxisLabelOrientation);
     }
 
     // Create y-axis
@@ -2794,7 +2812,7 @@ function visualize(dataPackage, parentId) {
     return;
 }
 
-function getVisualization(dataPackage, type, colors)
+function getVisualization(dataPackage, type, colors, margin, xAxisLabelOrientation)
 {
     var height = 300;
     var pieWidth = height*1.5;
@@ -2808,6 +2826,8 @@ function getVisualization(dataPackage, type, colors)
         var values = dataPackage.Data.Values;
         var labels = dataPackage.Data.ColumnLabel;
         var caption = dataPackage.Data.Caption;
+        var margin = {top: 50, right: 55, bottom: 55, left: 55};
+        var xAxisLabelOrientation = "Vertical";
         console.log('Checking ' + visType + ' == ' + type + ' -> ' + (visType==type));
         if(!colors)
         {
@@ -2821,27 +2841,27 @@ function getVisualization(dataPackage, type, colors)
             // Instantiate a visualization of the appropriate type and append it to the list of visualizations.
             switch(type) {
                 case "Line":
-                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), true);
+                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation, true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors));
+                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors));
+                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;  
 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), caption, pieWidth, height, colors);
+                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), caption, pieWidth, height, colors, margin);
                     break;
 
                 case "Tree":
-                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), caption, width, 1.3*height, colors);
+                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), caption, width, 1.3*height, colors, margin);
                     break;
 
                 case "Bubble":
-                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors));
+                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), caption, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 default:
@@ -3012,7 +3032,7 @@ d3.selection.prototype.moveToFront = function() {
     });
 };
 
-function styleXAxis(object) {
+function styleXAxis(object, labelOrientation) {
     object.selectAll(".domain")
         .style("stroke", "black")
         .style("fill", "none")
@@ -3027,12 +3047,33 @@ function styleXAxis(object) {
         .attr("font-size", "11px")
 
     object.selectAll("text")
-        .style("text-anchor", "end")
         .style("stroke", "none")
         .style("letter-spacing", "0.1em")
-        .attr("dx", "-.8em")
-        .attr("dy", ".15em")
-        .attr("transform", "rotate( -45)");
+
+    switch(labelOrientation) {
+
+        case "Horizontal":
+            object.selectAll("text")
+                .style("text-anchor", "middle")
+            break;
+        case "Angled":
+            object.selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-45)");
+            break;
+        case "Vertical":
+            object.selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", "-.45em")
+                .attr("transform", "rotate(-90)");
+            break;
+        default:
+            console.error("ERROR: Unidentified x-axis label orientation provided.");
+        
+    }
 }
 
 function styleYAxis(object, textAnchor) {
