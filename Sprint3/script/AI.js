@@ -318,8 +318,8 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				haveOnlyTwoColumns = false;
 			}
 
-			var treemapStyleVarsTypes = ["Tree"];
-			var twoColumnOnlyVisTypes = ["Bar", "Pie", "Scatter"];
+			var treemapStyleVarsTypes = ["Tree", "Pie"];
+			var twoColumnOnlyVisTypes = ["Bar", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
 			var twoOrThreeColumnVisTypes = ["Line"]; 
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
@@ -448,7 +448,7 @@ var generateVisTitle = function(AIdataStructure)
 			var visTitle;
 			var visualization = element.Visualizations[visIndex];
 
-			if (visualization.Type == "Tree")
+			if (visualization.Type == "Tree" || visualization.Type == "Pie")
 			{
 				if (visualization.DataColumns.length == 2) // string and numeric
 				{
