@@ -2342,18 +2342,15 @@ Bar.prototype.draw = function(divId) {
 
             // d3.select(this)
             //         .attr("fill", highlightColor);
-            
-            
-            
-
+        
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
             var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
-            if (yTextPosition < margin.top + highlightTextHeight) {
+            if (yTextPosition < highlightTextHeight) {
                 yTextPosition = yPosition + highlightTextHeight;
             }
-        
+
             var barLineData = [ [0, yPosition], [width, yPosition] ];
 
             svg.append("path")
@@ -2409,7 +2406,7 @@ Bar.prototype.draw = function(divId) {
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
             var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
-            if (yTextPosition < margin.top + highlightTextHeight) {
+            if (yTextPosition < highlightTextHeight) {
                 yTextPosition = yPosition + highlightTextHeight;
             }
             svg.append("text")
@@ -2486,14 +2483,11 @@ Bar.prototype.draw = function(divId) {
                 // d3.select(this)
                 //         .attr("fill", highlightColor);
                 
-
-
-                
                 var xPosition = parseFloat(d3.select(this).attr("x"));
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
                 var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
-                if (yTextPosition < margin.top + highlightTextHeight) {
+                if (yTextPosition < highlightTextHeight) {
                     yTextPosition = yPosition + highlightTextHeight;
                 }
             
@@ -2556,9 +2550,10 @@ Bar.prototype.draw = function(divId) {
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
                 var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
-                if (yTextPosition < margin.top + highlightTextHeight) {
+                if (yTextPosition < highlightTextHeight) {
                     yTextPosition = yPosition + highlightTextHeight;
                 }
+
                 svg.append("text")
                     .attr("id", ("tooltip" + numBars + i))
                     .attr("x", xTextPosition)

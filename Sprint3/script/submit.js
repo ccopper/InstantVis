@@ -22,7 +22,7 @@ var colors =[
 				{hue:352,saturation:"100%",lightness:"50%"},//Red
 				{hue:250,saturation:"100%",lightness:"50%"},//Blue
 				{hue:29,saturation:"100%",lightness:"57%"}, //Orange
-				{hue:250,saturation:"0%",lightness:"50%"}//Grey
+				{hue:250,saturation:"0%",lightness:"50%"},//Grey
 				{hue:120,saturation:"41%",lightness:"64%"},	// Pale Green
 				{hue:265,saturation:"31%",lightness:"76%"},	// Lavendar
 				{hue:29,saturation:"97%",lightness:"76%"},	// Peach
