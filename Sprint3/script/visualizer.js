@@ -731,22 +731,25 @@ Pie.prototype.draw = function(divId)
     var iconX = outerRadius*2 + midWidth;
     for (var i = 0; i < data.length; i++) {
         var iconY = i*(legendIconHeight+legendIconPadding);
-        svg.append("rect")
-            .attr("x", iconX)
-            .attr("y", iconY)
-            .attr("height", legendIconHeight)
-            .attr("width", legendIconWidth)
-            .attr("fill", mixedColorSet[i])
-            .style("stroke", "black");
-        svg.append("text")
-            .attr("id", ("legend-text-" + i))
-            .attr("x", iconX + legendIconWidth + legendTextPadding)
-            .attr("y", iconY)
-            .attr("dx", 0)
-            .attr("dy", legendTextHeight - 2)
-            .attr("font-family", "arial")
-            .attr("font-size", legendTextHeight)
-            .text(categories[i][0]);
+        // Only draw the legend icons if they will be placed within the visualization window.
+        if (iconY < height - legendIconHeight - legendIconPadding) {
+            svg.append("rect")
+                .attr("x", iconX)
+                .attr("y", iconY)
+                .attr("height", legendIconHeight)
+                .attr("width", legendIconWidth)
+                .attr("fill", mixedColorSet[i])
+                .style("stroke", "black");
+            svg.append("text")
+                .attr("id", ("legend-text-" + i))
+                .attr("x", iconX + legendIconWidth + legendTextPadding)
+                .attr("y", iconY)
+                .attr("dx", 0)
+                .attr("dy", legendTextHeight - 2)
+                .attr("font-family", "arial")
+                .attr("font-size", legendTextHeight)
+                .text(categories[i][0]);
+        }
     }
 
     arcs.append("path")
@@ -762,7 +765,7 @@ Pie.prototype.draw = function(divId)
                 svg.append("text")
                     .attr("id", ("tooltip-text-" + i))
                     .attr("x", (centerX + arc.centroid(d)[0]))
-                    .attr("y", (centerY + arc.centroid(d)[1]) + highlightTextHeight/2)
+                    .attr("y", (centerY + arc.centroid(d)[1]) + highlightTextHeight)
                     .attr("text-anchor", "middle")
                     .attr("text-family", "arial")
                     .attr("font-size", highlightTextHeight)
@@ -774,7 +777,7 @@ Pie.prototype.draw = function(divId)
                 svg.append("text")
                     .attr("id", ("tooltip-text2-" + i))
                     .attr("x", (centerX + arc.centroid(d)[0]))
-                    .attr("y", (centerY + arc.centroid(d)[1]) - highlightTextHeight/2)
+                    .attr("y", (centerY + arc.centroid(d)[1]) - highlightTextHeight)
                     .attr("text-anchor", "middle")
                     .attr("text-family", "arial")
                     .attr("font-size", highlightTextHeight)
@@ -783,17 +786,31 @@ Pie.prototype.draw = function(divId)
                     .text( function(d) {
                         return Math.floor(data[i]*100)/100;
                     });
+                svg.append("text")
+                    .attr("id", ("tooltip-text3-" + i))
+                    .attr("x", (centerX + arc.centroid(d)[0]))
+                    .attr("y", (centerY + arc.centroid(d)[1]))
+                    .attr("text-anchor", "middle")
+                    .attr("text-family", "arial")
+                    .attr("font-size", highlightTextHeight)
+                    .attr("font-weight", "bold")
+                    .style("pointer-events", "none")
+                    .text( function(d) {
+                        return categories[i][0];
+                    });
             }
         })
         .on("click", function(d, i) {
             d3.select(("#tooltip-text-" + i)).remove();
             d3.select(("#tooltip-text2-" + i)).remove();
+            d3.select(("#tooltip-text3-" + i)).remove();
 
             toggle[i] = !toggle[i];
 
             if (!toggle[i]) {
                 d3.select(("#tooltip-text-" + i)).remove();
                 d3.select(("#tooltip-text2-" + i)).remove();
+                d3.select(("#tooltip-text3-" + i)).remove();
                 return;
             }
 
@@ -803,7 +820,7 @@ Pie.prototype.draw = function(divId)
             svg.append("text")
                 .attr("id", ("tooltip-text-" + i))
                 .attr("x", (centerX + arc.centroid(d)[0]))
-                .attr("y", (centerY + arc.centroid(d)[1]) + highlightTextHeight/2)
+                .attr("y", (centerY + arc.centroid(d)[1]) + highlightTextHeight)
                 .attr("text-anchor", "middle")
                 .attr("text-family", "arial")
                 .attr("font-size", highlightTextHeight)
@@ -815,7 +832,7 @@ Pie.prototype.draw = function(divId)
             svg.append("text")
                 .attr("id", ("tooltip-text2-" + i))
                 .attr("x", (centerX + arc.centroid(d)[0]))
-                .attr("y", (centerY + arc.centroid(d)[1]) - highlightTextHeight/2)
+                .attr("y", (centerY + arc.centroid(d)[1]) - highlightTextHeight)
                 .attr("text-anchor", "middle")
                 .attr("text-family", "arial")
                 .attr("font-size", highlightTextHeight)
@@ -824,7 +841,18 @@ Pie.prototype.draw = function(divId)
                 .text( function(d) {
                     return Math.floor(data[i]*100)/100;
                 });
-
+            svg.append("text")
+                .attr("id", ("tooltip-text3-" + i))
+                .attr("x", (centerX + arc.centroid(d)[0]))
+                .attr("y", (centerY + arc.centroid(d)[1]))
+                .attr("text-anchor", "middle")
+                .attr("text-family", "arial")
+                .attr("font-size", highlightTextHeight)
+                .attr("font-weight", "bold")
+                .style("pointer-events", "none")
+                .text( function(d) {
+                    return categories[i][0];
+                });
         })
         .on("mouseout", function(d, i) {
             mouseout(categories[i][0], i);
@@ -833,6 +861,7 @@ Pie.prototype.draw = function(divId)
                 d3.select(this).style("stroke", "none");
                 d3.select(("#tooltip-text-" + i)).remove();
                 d3.select(("#tooltip-text2-" + i)).remove();
+                d3.select(("#tooltip-text3-" + i)).remove();
             }
         });
 
