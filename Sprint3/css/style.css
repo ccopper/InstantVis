@@ -139,7 +139,6 @@
 }
 #colorPalette td
 {
-    border: solid 1px;
     cursor: pointer;
 }
 #visSize
@@ -380,6 +379,18 @@
 {
 	border: groove;
 	border-radius: 3px;
+}
+
+.colorSquareHighLightOn
+{
+	border: solid black 2px;
+	border-radius: 15px;
+}
+
+.colorSquareHighLightOff
+{
+	border: solid white 2px;
+	border-radius: 15px;
 }
 
 .visualization
