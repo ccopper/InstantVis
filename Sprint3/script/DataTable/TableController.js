@@ -14,6 +14,8 @@ TCIns =
 	"AIObj": {},
 	"VisID": -1,
 	"isEditing": false,
+	"needD1": true,
+	"needD2": true,
 	"titleCallBack": function()
 	{
 		populateTableSelect();
@@ -89,8 +91,14 @@ function populateTable(data)
 	clearTable();
 	
 	//$("#DataTable").tablesorter(TSConfig);
-
-	$("#TitleLabel").text(data.Data.Caption);
+	if(data.Data.Caption == "")
+	{
+		$("#TitleLabel").text("Unlabeled Table");
+	} else
+	{
+		$("#TitleLabel").text(data.Data.Caption);
+	}
+	
 	
 	//Populate the header
 	$("#DTHead").append("<tr />");
@@ -203,6 +211,8 @@ function updateTableVis(visType)
 		}
 	}
 	
+	$("#VisLabel").text(TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle);
+	
 	//To set the value it must be passed as an array
 	$("input:radio[name=Ind]").val([TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[0]]);
 	$("input:radio[name=D1]").val([TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[1]]);
@@ -217,18 +227,24 @@ function updateTableVis(visType)
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y1");
 			$("#D2Lbl").text("Y2");
+			TCIns.needD2 = false;
+			TCIns.needD1 = true;
 		break;
 		
 		case "Tree":
 		case "Pie":
 			$("#D1Lbl").css("border-radius", "0px 0px 0px 5px");
 			$("#DTSelMatD2").hide();
+			TCIns.needD2 = false;
+			TCIns.needD1 = false;
 		break;
 		
 		case "Bubble":
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y");
 			$("#D2Lbl").text("SIZE");
+			TCIns.needD2 = true;
+			TCIns.needD1 = true;
 		break;
 		
 		default:
@@ -489,12 +505,18 @@ function updateSelMat(event)
 	if($(this).attr("name") != "Ind")
 	{
 		
-		if($(this).attr("name") == "D1" && $(this).val() == TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[1] && typeof D2 != "undefined")
+		if(	$(this).attr("name") == "D1" && 
+			$(this).val() == TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[1] && 
+			(typeof D2 != "undefined" || !TCIns.needD1) &&
+			!TCIns.needD2)
 		{
 			$("input:radio[name=D1]").attr("checked", false);
 		}
 		
-		if($(this).attr("name") == "D2" && $(this).val() == TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[2] && typeof D1 != "undefined")
+		if(	$(this).attr("name") == "D2" && 
+			$(this).val() == TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[2] && 
+			typeof D1 != "undefined" && 
+			!TCIns.needD2 )
 		{
 			$("input:radio[name=D2]").attr("checked", false);
 		}
