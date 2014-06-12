@@ -1710,7 +1710,7 @@ Line.prototype.draw = function (divId) {
 
     // Setup the guideline.
     var focus = svg.append("g")
-          .attr("class", "focus")
+          // .attr("class", "focus")
           .style("display", "none");
     
     var lineData = [ [0, 0], [0, height] ];
@@ -1735,8 +1735,8 @@ Line.prototype.draw = function (divId) {
             .each(function() {
                 if ( Math.abs(this.getAttribute("cx") - mouseX) < defaultRadius ) {
                     pointsHighlighted.push([this.getAttribute("cx"),this.getAttribute("cy")]);
-                }
-            });
+                
+}            });
 
         var numPointsHighlighted = pointsHighlighted.length;
         var numDataPoints = dataPoints.length;
@@ -2068,6 +2068,8 @@ Line.prototype.draw = function (divId) {
         .attr("x", -1)
         .attr("y", -1)
         .attr("class", "overlay")
+        .style("fill", "none")
+        .attr("pointer-events", "all")
         .attr("width", width+2)
         .attr("height", height+2)
         .on("mouseover", function() { 
