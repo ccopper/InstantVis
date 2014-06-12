@@ -66,6 +66,10 @@ function TableSorterInit()
 {
 	$("#editTitle").click(editTitle);
 	$("#saveTitle").click(saveTitle);
+	
+	$("#editVisTitle").click(editVisTitle);
+	$("#saveVisTitle").click(saveVisTitle);
+	$("#resetVisTitle").click(resetVisTitle);
 
 	TCIns.isInit = true;
 } 
@@ -389,6 +393,36 @@ function createRadio(gName,colNum,isDep)
 	}));
 	return cont;
 }
+
+/**
+ *	Generates a default title for a vis if one has not be provided.
+ *
+ */
+function getDefaulVisTitle()
+{
+	var visTitle;
+	var visualization = TCIns.AIObj.Visualizations[TCIns.VisID];
+
+	if (visualization.DataColumns.length == 2) // one independent and one dependent 
+	{
+		visTitle = "" + TCIns.AIObj.Data.ColumnLabel[visualization.DataColumns[1]] + " vs " + 
+		TCIns.AIObj.Data.ColumnLabel[visualization.DataColumns[0]];
+	}
+	else if (visualization.DataColumns.length == 3) // one independent and two dependents
+	{
+		visTitle = "" +  TCIns.AIObj.Data.ColumnLabel[visualization.DataColumns[1]] + " and " + 
+					TCIns.AIObj.Data.ColumnLabel[visualization.DataColumns[2]] + " vs " + 
+					TCIns.AIObj.Data.ColumnLabel[visualization.DataColumns[0]];
+	}
+	else // some other combo of vars, just use the independent var name as the title
+	{
+		visTitle = "" + TCIns.AIObj.Data.ColumnLabel[visualization.DataColumns[0]];
+	}
+			
+	return visTitle;
+}
+
+
 /**
  *	Event handler to delete a column.
  *
@@ -486,7 +520,13 @@ function saveTitle()
 	$("#TitleLabelContainer").show();
 	$("#TitleEditor").hide();
 	
-	$("#TitleLabel").text(TCIns.AIObj.Data.Caption);
+	if(TCIns.AIObj.Data.Caption == "")
+	{
+		$("#TitleLabel").text("Unlabeled Table");
+	} else
+	{
+		$("#TitleLabel").text(TCIns.AIObj.Data.Caption);
+	}
 	
 	TCIns.titleCallBack();
 }
@@ -535,6 +575,14 @@ function updateSelMat(event)
 	
 	if(typeof D2 != "undefined")
 		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D2);
+	
+	
+	if(typeof TCIns.AIObj.Visualizations[TCIns.VisID]["isDefault"] == "undefined" || TCIns.AIObj.Visualizations[TCIns.VisID]["isDefault"] == true)
+	{
+		var visTitle = getDefaulVisTitle();
+		TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle = visTitle;
+		$("#VisLabel").text(visTitle);
+	}
 	
 	
 	TCIns.selUpdCallBack();
@@ -603,4 +651,63 @@ function saveCell(event)
 	//Stops propagation of click up to the reattached cell
 	return false;
 }
+/**
+ *	Event handler to reset the Vis title to defaults.
+ *
+ *	@param {Event} event jQuery event object
+ */
+function resetVisTitle()
+{
+	TCIns.AIObj.Visualizations[TCIns.VisID]["isDefault"] = true;
+	
+	var visTitle = getDefaulVisTitle();
+	TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle = visTitle;
+	$("#VisLabel").text(visTitle);
+}
+/**
+ *	Event handler to edit the vis title
+ *
+ *	@param {Event} event jQuery event object
+ */
+function editVisTitle()
+{
+	$("#VisTitleEditor input").val(TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle);
+	$("#VisLabelContainer").hide();
+	$("#VisTitleEditor").show();
+}
+
+/**
+ *	Event handler to save the vis title
+ *
+ *	@param {Event} event jQuery event object
+ */
+function saveVisTitle()
+{
+	var visTitle = $("#VisTitleEditor input").val().trim();
+	
+	$("#VisLabelContainer").show();
+	$("#VisTitleEditor").hide();
+	
+	if(visTitle == "")
+	{
+		visTitle = getDefaulVisTitle();
+		TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle = visTitle;
+		$("#VisLabel").text(visTitle);
+		
+		TCIns.AIObj.Visualizations[TCIns.VisID]["isDefault"] = true;
+		
+	} else
+	{
+		if(visTitle != TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle)
+		{
+			TCIns.AIObj.Visualizations[TCIns.VisID]["isDefault"] = false;
+		}
+		
+		TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle = visTitle;
+		$("#VisLabel").text(visTitle);
+	}
+	
+	TCIns.titleCallBack();
+}
+
 

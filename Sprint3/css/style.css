@@ -178,6 +178,7 @@
 /* TABLE FORMATTING */
 #DataTable
 {	
+
 	font-family: Arial;
 	font-size: 11pt;
 	border: none;
@@ -191,10 +192,13 @@
 	vertical-align: middle;
 	border-bottom: 0px;
 }
-#DataTable td:first-child
+#DataTable td:first-child, #DataTable th:first-child
 {
+	table-layout: fixed;
+	width:40px;
 	max-width: 40px;
 	min-width: 40px;
+	overflow: hidden;
 }
 #DTHead td:nth-child(2)
 {	
