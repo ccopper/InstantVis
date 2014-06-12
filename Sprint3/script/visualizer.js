@@ -21,8 +21,6 @@ Treemap.prototype.draw = function(divId)
 
     var w = this.width;
     var h = this.height;
-    // var colors = [];
-    // var colorSet = getRandColors();
 
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
@@ -928,12 +926,9 @@ Scatter.prototype.draw = function(divId)
     // var margin = {top: 50, right: 65, bottom: 40, left: 65};
     var margin = this.margin;
 
-    var colorSet = getRandColors();
-
     var w = this.width;
     var h = this.height;
     var padding = 20;
-    var colors = [];
     var highlightRadius = 8;
     var defaultRadius = 4;
     var highlightTextHeight = 12;
@@ -942,12 +937,9 @@ Scatter.prototype.draw = function(divId)
     var highlightRectHeight = highlightTextHeight + highlightTextPadding * 2;
     var highlightRectWidth, highlightRectWidth2;
     var characterWidth = 6;
-    var data = [];
-    var data2 = [];
-    var dataPoints = [];
+    
     var colorIconHeight = 10;
     var colorIconWidth = 10;
-
     var xAxisLabelPaddingBottom = 2;
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
@@ -955,21 +947,16 @@ Scatter.prototype.draw = function(divId)
     var yAxisLabelPaddingRight = 2;
     var axisLabelHeight = 15;
 
-    var yValues = [];
-
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
-
-    var rightGraphBoundary = width;//w - margin.right;    
 
     var numDataSets = this.dataSet[0].length;
     var numValuesPerDataSet = this.dataSet.length;
 
-    console.log("numDataSets: " + numDataSets);
-
     // Determine the maximum Y value for the datasets.
     var maxY = 0;
     var minY = 0;
+    var yValues = [];
     for (var i = 0; i < numValuesPerDataSet; i++) {
         yValues.push(this.dataSet[i][1]);
         if (this.dataSet[i][1] > maxY) {
@@ -980,16 +967,16 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
-
     var numXAxisTicks = numValuesPerDataSet;
     var numYAxisTicks = height/15;
 
     var xValues = [];
 
+    // Set flag for whether or not there are multiple data sets.
     var multiset = false;
     multiset = (numDataSets > 2) ? true : false;
 
-
+    // Determine the axis labels and chart title.
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
     if (multiset) {
@@ -1005,9 +992,9 @@ Scatter.prototype.draw = function(divId)
     }
 
     if (multiset) {
-        var yValues2 = [];
         var maxY2 = 0;
         var minY2 = 0;
+        var yValues2 = [];
         for (var i = 0; i < numValuesPerDataSet; i++) {
             yValues2.push(this.dataSet[i][2]);
             if (this.dataSet[i][2] > maxY2) {
@@ -1201,12 +1188,8 @@ Scatter.prototype.draw = function(divId)
         }
     }
 
-    //for (var k = 1; k < numDataSets; k++) {
-    data = getData([0,1],this.dataSet);
 
-    console.log("data: " + data.toString());
-
-    
+    var data = getData([0,1],this.dataSet);
     var color = this.colors[0];
 
     svg.selectAll(("circle.set" + 1))
@@ -1224,11 +1207,10 @@ Scatter.prototype.draw = function(divId)
         .attr("fill", color)
         .style("stroke", "black")
         .on("mouseover", function(d, i) {
-            console.log("---------------------");
             if(!toggle[i]) {
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
-                var col = color;//this.colors[0];
+                var col = color;
                 var highlightText = d[0] + ", " + d[1];
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
@@ -1243,7 +1225,6 @@ Scatter.prototype.draw = function(divId)
                     xText = xRect + highlightTextPadding;
                 }
 
-                console.log("appending circle-highlight...");
                 svg.append("circle")
                     .attr("id", ("circle-highlight" + 1 + "-" + i))
                     .attr("cx", x)
@@ -1252,7 +1233,6 @@ Scatter.prototype.draw = function(divId)
                     .style("stroke", col)
                     .attr("r", highlightRadius);
 
-                console.log("appending tooltip-rect...");
                 svg.append("rect")
                     .attr("id", ("tooltip-rect" + 1 + "-" + i))
                     .attr("x", xRect)
@@ -1262,7 +1242,6 @@ Scatter.prototype.draw = function(divId)
                     .attr("width", highlightRectWidth)
                     .attr("height", highlightRectHeight);
 
-                console.log("appending tooltip-text...");
                 svg.append("text")
                     .attr("id", ("tooltip-text" + 1 + "-" + i))
                     .attr("x", xText)
@@ -1275,7 +1254,6 @@ Scatter.prototype.draw = function(divId)
                     .attr("fill", "black")
                     .text(highlightText);
 
-                console.log("appending tooltip-line...");
                 svg.append("path")
                     .attr("id", ("tooltip-line" + 1 + "-" + i))
                     .style("stroke", col)
@@ -1283,25 +1261,19 @@ Scatter.prototype.draw = function(divId)
             }
         })
         .on("click", function(d, i) {
-            d3.select(("#circle-highlight" + 1 + "-" + i)).remove();
-            d3.select(("#tooltip-rect" + 1 + "-" + i)).remove();  
-            d3.select(("#tooltip-text" + 1 + "-" + i)).remove();
-            d3.select(("#tooltip-line" + 1 + "-" + i)).remove();  
+            removeTooltips(1, i);  
 
             toggle[i] = !toggle[i];
 
             // If the popup already existed, remove if immediately and return.
             if (!toggle[i]) {
-                d3.select(("#circle-highlight" + 1 + "-" + i)).remove();
-                d3.select(("#tooltip-rect" + 1 + "-" + i)).remove();  
-                d3.select(("#tooltip-text" + 1 + "-" + i)).remove();
-                d3.select(("#tooltip-line" + 1 + "-" + i)).remove(); 
+                removeTooltips(1, i);
                 return;
             }
 
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
-                var col = color;//this.colors[0];
+                var col = color;
                 var highlightText = d[0] + ", " + d[1];
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
@@ -1316,7 +1288,6 @@ Scatter.prototype.draw = function(divId)
                     xText = xRect + highlightTextPadding;
                 }
 
-                console.log("appending circle-highlight...");
                 svg.append("circle")
                     .attr("id", ("circle-highlight" + 1 + "-" + i))
                     .attr("cx", x)
@@ -1325,7 +1296,6 @@ Scatter.prototype.draw = function(divId)
                     .style("stroke", col)
                     .attr("r", highlightRadius);
 
-                console.log("appending tooltip-rect...");
                 svg.append("rect")
                     .attr("id", ("tooltip-rect" + 1 + "-" + i))
                     .attr("x", xRect)
@@ -1335,7 +1305,6 @@ Scatter.prototype.draw = function(divId)
                     .attr("width", highlightRectWidth)
                     .attr("height", highlightRectHeight);
 
-                console.log("appending tooltip-text...");
                 svg.append("text")
                     .attr("id", ("tooltip-text" + 1 + "-" + i))
                     .attr("x", xText)
@@ -1348,7 +1317,6 @@ Scatter.prototype.draw = function(divId)
                     .attr("fill", "black")
                     .text(highlightText);
 
-                console.log("appending tooltip-line...");
                 svg.append("path")
                     .attr("id", ("tooltip-line" + 1 + "-" + i))
                     .style("stroke", col)
@@ -1357,18 +1325,12 @@ Scatter.prototype.draw = function(divId)
         .on("mouseout", function(d, i) {
         // If the popup should not persist, remove it.
         if (!toggle[i]) {
-            d3.select(("#circle-highlight" + 1 + "-" + i)).remove();
-            d3.select(("#tooltip-rect" + 1 + "-" + i)).remove();  
-            d3.select(("#tooltip-text" + 1 + "-" + i)).remove();
-            d3.select(("#tooltip-line" + 1 + "-" + i)).remove();  
+            removeTooltips(1, i);  
         }
     });            
 
     if (multiset) {
-        data2 = getData([0,2],this.dataSet);
-
-        console.log("data2: " + data2.toString());
-
+        var data2 = getData([0,2],this.dataSet);
         var color2 = this.colors[1];
 
         svg.selectAll(("circle.set" + 2))
@@ -1389,7 +1351,7 @@ Scatter.prototype.draw = function(divId)
                 if(!toggle[numValuesPerDataSet + i]) {
                     var x2 = xScale(d[0]);
                     var y2 = yScale2(d[1]);
-                    var col2 = color2;//this.colors[1];
+                    var col2 = color2;
                     var highlightText2 = d[0] + ", " + d[1];
                     var xRect2 = x2 + 2*highlightRadius;
                     var yRect2 = y2 - highlightRectHeight/2;
@@ -1404,7 +1366,6 @@ Scatter.prototype.draw = function(divId)
                         xText2 = xRect2 + highlightTextPadding;
                     }
 
-                    console.log("appending circle-highlight...");
                     svg.append("circle")
                         .attr("id", ("circle-highlight" + 2 + "-" + i))
                         .attr("cx", x2)
@@ -1413,7 +1374,6 @@ Scatter.prototype.draw = function(divId)
                         .style("stroke", col2)
                         .attr("r", highlightRadius);
 
-                    console.log("appending tooltip-rect...");
                     svg.append("rect")
                         .attr("id", ("tooltip-rect" + 2 + "-" + i))
                         .attr("x", xRect2)
@@ -1423,7 +1383,6 @@ Scatter.prototype.draw = function(divId)
                         .attr("width", highlightRectWidth2)
                         .attr("height", highlightRectHeight);
 
-                    console.log("appending tooltip-text...");
                     svg.append("text")
                         .attr("id", ("tooltip-text" + 2 + "-" + i))
                         .attr("x", xText2)
@@ -1436,7 +1395,6 @@ Scatter.prototype.draw = function(divId)
                         .attr("fill", "black")
                         .text(highlightText2);
 
-                    console.log("appending tooltip-line...");
                     svg.append("path")
                         .attr("id", ("tooltip-line" + 2 + "-" + i))
                         .style("stroke", col2)
@@ -1444,26 +1402,19 @@ Scatter.prototype.draw = function(divId)
                 }
             })
             .on("click", function(d, i) {
-
-                d3.select(("#circle-highlight" + 2 + "-" + i)).remove();
-                d3.select(("#tooltip-rect" + 2 + "-" + i)).remove();  
-                d3.select(("#tooltip-text" + 2 + "-" + i)).remove();
-                d3.select(("#tooltip-line" + 2 + "-" + i)).remove();  
+                removeTooltips(2, i);  
 
                 toggle[numValuesPerDataSet + i] = !toggle[numValuesPerDataSet + i];
 
                 // If the popup already existed, remove if immediately and return.
                 if (!toggle[numValuesPerDataSet + i]) {
-                    d3.select(("#circle-highlight" + 2 + "-" + i)).remove();
-                    d3.select(("#tooltip-rect" + 2 + "-" + i)).remove();  
-                    d3.select(("#tooltip-text" + 2 + "-" + i)).remove();
-                    d3.select(("#tooltip-line" + 2 + "-" + i)).remove(); 
+                    removeTooltips(2, i);
                     return;
                 }
 
                 var x2 = xScale(d[0]);
                 var y2 = yScale2(d[1]);
-                var col2 = color2;//this.colors[1];
+                var col2 = color2;
                 var highlightText2 = d[0] + ", " + d[1];
                 var xRect2 = x2 + 2*highlightRadius;
                 var yRect2 = y2 - highlightRectHeight/2;
@@ -1478,7 +1429,6 @@ Scatter.prototype.draw = function(divId)
                     xText2 = xRect2 + highlightTextPadding;
                 }
 
-                console.log("appending circle-highlight...");
                 svg.append("circle")
                     .attr("id", ("circle-highlight" + 2 + "-" + i))
                     .attr("cx", x2)
@@ -1487,7 +1437,6 @@ Scatter.prototype.draw = function(divId)
                     .style("stroke", col2)
                     .attr("r", highlightRadius);
 
-                console.log("appending tooltip-rect...");
                 svg.append("rect")
                     .attr("id", ("tooltip-rect" + 2 + "-" + i))
                     .attr("x", xRect2)
@@ -1497,7 +1446,6 @@ Scatter.prototype.draw = function(divId)
                     .attr("width", highlightRectWidth2)
                     .attr("height", highlightRectHeight);
 
-                console.log("appending tooltip-text...");
                 svg.append("text")
                     .attr("id", ("tooltip-text" + 2 + "-" + i))
                     .attr("x", xText2)
@@ -1510,7 +1458,6 @@ Scatter.prototype.draw = function(divId)
                     .attr("fill", "black")
                     .text(highlightText2);
 
-                console.log("appending tooltip-line...");
                 svg.append("path")
                     .attr("id", ("tooltip-line" + 2 + "-" + i))
                     .style("stroke", col2)
@@ -1519,16 +1466,12 @@ Scatter.prototype.draw = function(divId)
             .on("mouseout", function(d, i) {
             // If the popup should not persist, remove it.
             if (!toggle[numValuesPerDataSet + i]) {
-                console.log("mouseout2");
-                d3.select(("#circle-highlight" + 2 + "-" + i)).remove();
-                d3.select(("#tooltip-rect" + 2 + "-" + i)).remove();  
-                d3.select(("#tooltip-text" + 2 + "-" + i)).remove();
-                d3.select(("#tooltip-line" + 2 + "-" + i)).remove();  
+                removeTooltips(2, i); 
             }
         });   
     }
 
-
+    // If multiple data sets, place color icons on either side of the graph.
     if (multiset) {
         base.append("rect")
             .attr("id", "colorIcon1")
@@ -1538,7 +1481,6 @@ Scatter.prototype.draw = function(divId)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
             .style("fill", this.colors[0]);  
-
         base.append("rect")
             .attr("id", "colorIcon2")
             .attr("x", (w - (margin.right/2 - colorIconWidth/2)))
@@ -1547,6 +1489,13 @@ Scatter.prototype.draw = function(divId)
             .attr("width", colorIconWidth)
             .style("stroke", "black")
             .style("fill", this.colors[1]);
+    }
+
+    function removeTooltips(set, i) {
+        d3.select(("#circle-highlight" + set + "-" + i)).remove();
+        d3.select(("#tooltip-rect" + set + "-" + i)).remove();  
+        d3.select(("#tooltip-text" + set + "-" + i)).remove();
+        d3.select(("#tooltip-line" + set + "-" + i)).remove();  
     }
 }
 
@@ -2771,37 +2720,6 @@ Bar.prototype.draw = function(divId) {
             .style("stroke", "black")
             .style("fill", fillColor2);
     }     
-
-
-    // var myColors = randHSL(10);
-
-    // for (var i = 0; i < myColors.length; i++) {
-    //     console.log("myColors[i]: " + myColors[i]);
-    //     base.append("rect")
-    //             .attr("id", "colorIcon2")
-    //             .attr("x", (margin.left + i*colorIconWidth))
-    //             .attr("y", (margin.top/2))
-    //             .attr("height", colorIconHeight)
-    //             .attr("width", colorIconWidth)
-    //             .style("stroke", "black")
-    //             .style("fill", myColors[i]);
-    // }
-
-    // for (var i = 0; i < myColors.length; i++) {
-    //     var yloc = Math.floor((i-1)/10)*colorIconHeight;
-    //     if (i % 10 == 0) {
-    //         var xloc = margin.left;
-    //     }
-    //     console.log("myColors[i]: " + myColors[i]);
-    //     base.append("rect")
-    //             .attr("id", "colorIcon2")
-    //             .attr("x", (xloc + i*colorIconWidth))
-    //             .attr("y", yloc)
-    //             .attr("height", colorIconHeight)
-    //             .attr("width", colorIconWidth)
-    //             .style("stroke", "black")
-    //             .style("fill", myColors[i]);
-    // }
 };
 
 function visualize(dataPackage, parentId) {
@@ -2819,6 +2737,7 @@ function visualize(dataPackage, parentId) {
 
     return;
 }
+
 
 function getVisualization(dataPackage, type, colors, width, height, numDataPoints, margin, xAxisLabelOrientation)
 {

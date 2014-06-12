@@ -247,7 +247,7 @@ function testLocally()
  				"DataColumns": [0, 1, 2]		
  			},{			
  				"Type": "Scatter",			
- 				"DataColumns": [0, 1]		
+ 				"DataColumns": [0, 1, 2]		
  			},{         
                  "Type": "Pie",          
                  "DataColumns": [0, 1]       
