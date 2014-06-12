@@ -377,8 +377,8 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 			{
 				for (var i = 0; i < treemapStyleVarsTypes.length; i++)
 				{
-					var treeMapVars = selectTreemapVars(currentDataset);
-					if (treeMapVars.length > 0)
+					var treemapVars = selectTreemapVars(currentDataset);
+					if (treemapVars.length > 0)
 					{
 						visualizations.push(
 								{
