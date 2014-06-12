@@ -2773,7 +2773,7 @@ function getVisualization(dataPackage, type, colors)
         var labels = dataPackage.Data.ColumnLabel;
         var caption = dataPackage.Data.Caption;
         console.log('Checking ' + visType + ' == ' + type + ' -> ' + (visType==type));
-        colors = [{hue: 250, saturation: 50, lightness: 50}, {hue: 250, saturation: 50, lightness: 50}];
+        //colors = [{hue: 250, saturation: 50, lightness: 50}, {hue: 250, saturation: 50, lightness: 50}];
         if(type == visType)
         {
             var v = NaN;
