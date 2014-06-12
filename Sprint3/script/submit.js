@@ -418,6 +418,7 @@ function visTypeClickHandler(event)
 	var iconId = NaN;
 	if(typeof(event) == 'string')
 	{
+		currentVis = NaN;
 		iconId = event;
 	}else{
 		console.log('type:'+typeof(event)+'\n\t'+event);
