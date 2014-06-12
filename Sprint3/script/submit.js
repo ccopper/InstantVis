@@ -253,7 +253,7 @@ function testLocally()
                  "DataColumns": [0, 1]       
              },{         
                  "Type": "Tree",          
-                 "DataColumns": [0, 1]       
+                 "DataColumns": [0]       
              },{         
                  "Type": "Bubble",          
                  "DataColumns": [0, 1, 2]       

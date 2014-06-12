@@ -2731,10 +2731,14 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
  *
  */
 function getData(columns, values)
-{
+{   
+    console.log("columns: " + columns.toString());
     var data = []; // The dataset extracted from values.
     var row = [];
     var numRows = values.length;
+    if (columns.length == 1) {
+        columns.push(columns[0]);
+    }
     var numColumns = columns.length;
 
     // For every row in values...
