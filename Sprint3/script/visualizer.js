@@ -2632,40 +2632,30 @@ Bar.prototype.draw = function(divId)
     }
   
     console.log("creatng y scale");
+    var condensedYMin = d3.min(condensedYValues);
+    var yScaleMin = 0;
+    console.log("condensedYMin: " + condensedYMin);
+    if (condensedYMin < 0) 
+    {
+        yScaleMin = condensedYMin;
+    } 
+    console.log("yScaleMin: " + yScaleMin);
     var yScale = d3.scale.linear()
-                    .domain([ function() 
-                    {
-                        console.log("y1 min: " + d3.min(condensedYValues));
-                        if (d3.min(condensedYValues) < 0)
-                        {
-                            console.log("y1 returning min");
-                            return d3.min(condensedYValues);
-                        }
-                        else
-                        {
-                            console.log("y1 returning 0");
-                            return 0;
-                        }
-                    }, d3.max(condensedYValues)])
+                    .domain([yScaleMin, d3.max(condensedYValues)])
                     .range([height, 0]);
 
     if (multiset) 
     {
+        var condensedY2Min = d3.min(condensedY2Values);
+        var y2ScaleMin = 0;
+        console.log("condensedY2Min: " + condensedY2Min);
+        if (condensedY2Min < 0) 
+        {
+            y2ScaleMin = condensedY2Min;
+        } 
+        console.log("y2ScaleMin: " + y2ScaleMin);
         var yScale2 = d3.scale.linear()
-                        .domain([ function() 
-                        {
-                            console.log("y2 min: " + d3.min(condensedYValues));
-                            if (d3.min(condensedY2Values) < 0)
-                            {
-                                console.log("y2 returning min");
-                                return d3.min(condensedY2Values);
-                            }
-                            else
-                            {
-                                console.log("y2 returning 0");
-                                return 0;
-                            }
-                        }, d3.max(condensedY2Values)])
+                        .domain([y2ScaleMin, d3.max(condensedY2Values)])
                         .range([height, 0]);
     }
 
