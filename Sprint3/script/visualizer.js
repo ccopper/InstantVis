@@ -1752,6 +1752,7 @@ Scatter.prototype.draw = function(divId)
 function Line(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation, showPoints) 
 {
     this.dataSet = dataSet;
+    console.log("this.dataSet: " + this.dataSet.toString());
     this.labels = labels;
     this.columnTypes = columnTypes;
     this.title = title;
@@ -3323,6 +3324,7 @@ function getData(columns, values, numDataPoints)
     {
         columns.splice(columns.length-1, 1);
     }
+    console.log("data: " + data.toString());
     return data;
 }
 
