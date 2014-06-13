@@ -34,13 +34,13 @@ Treemap.prototype.draw = function(divId)
 
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
-
     var numValuesPerDataSet = this.dataSet.length;
     var categories = [];
     var data = [];
     var dataTotal = 0;
     var highlightTextHeight = 12;
 
+    // Determine duplicate x values and condense into categories.
     for (var j = 0; j < numValuesPerDataSet; j++) {
         isDuplicate = false;
         for (var t = 0; t < categories.length; t++) {
@@ -54,6 +54,7 @@ Treemap.prototype.draw = function(divId)
         }
     }
 
+    // Sum up category totals and overal data total.
     var categoryTotal = 0;
     for (var i = 0; i < categories.length; i++) {
         categoryTotal = 0;
@@ -66,12 +67,15 @@ Treemap.prototype.draw = function(divId)
         dataTotal += categoryTotal;
     }
 
+    // Sort the categories from largest to smallest.
     data.sort(function(a,b) { return b[1] - a[1]; });
 
+    // Base visualization area.
     var base = d3.select("#" + divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
+    // Background.
     base.append("rect")
             .attr("x", 0)
             .attr("y", 0)
@@ -79,10 +83,11 @@ Treemap.prototype.draw = function(divId)
             .attr("height", height + margin.top + margin.bottom)
             .attr("fill", "white")
             .style("stroke", "black");
+    // Canvas.
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
+    // Set the toggle for each section to false.
     var toggle = [];
     for (var i = 0; i < categories.length; i++) {
         toggle.push(false);
@@ -100,12 +105,11 @@ Treemap.prototype.draw = function(divId)
     var nextY = 0;
     var currentTotal = dataTotal;
 
+    // Get a set of color gradients based on given colors and randomize the set.
     var mixedColorSet = getMixedColors(data.length, this.colors);
-
     mixedColorSet = shuffleArray(mixedColorSet);
 
-    console.log("data: " + data.toString());
-
+    // Calculate each section information by continually bisecting the canvas.
     for (var i = 0; i < data.length; i++) {
         fraction = (data[i][1]/currentTotal);
         if (currentWidth > currentHeight) {
@@ -124,8 +128,7 @@ Treemap.prototype.draw = function(divId)
             nextWidth = currentWidth;
         }
 
-        var fill = mixedColorSet[i]; //this.colors[i%this.colors.length];
-        //colorSet[i%colorSet.length];//colors[i];
+        var fill = mixedColorSet[i];
         var category = data[i][0];
 
         newRect = [fill, thisHeight, thisWidth, currentX, currentY, category, data[i][1]];
@@ -139,8 +142,7 @@ Treemap.prototype.draw = function(divId)
         currentTotal = currentTotal - data[i][1];
     }
 
-    // console.log("rects: " + rects.toString());
-
+    // Draw the sections.
     svg.selectAll("rect")
         .data(rects)
         .enter()
@@ -154,9 +156,13 @@ Treemap.prototype.draw = function(divId)
         .on("mouseover", function(d, i) {
             var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
             var newY = parseFloat(this.getAttribute("y")) + parseFloat(this.getAttribute("height"))/2 + highlightTextHeight/2;
+
+            // Highlight the section orange.
             d3.select(this)
                 .attr("fill", "orange")
                 .style("stroke", "black")
+
+            // Draw the text information.
             if (!toggle[i]) {
                 svg.append("text")
                     .attr("id", ("treemap-text-tooltip2-" + i))
@@ -190,12 +196,14 @@ Treemap.prototype.draw = function(divId)
 
             toggle[i] = !toggle[i];
 
+            // If the tooltips are already drawn, remove them.
             if (!toggle[i]) {
                 d3.selectAll(("#treemap-text-tooltip2-" + i)).remove();
                 d3.selectAll(("#treemap-text-tooltip3-" + i)).remove();                
                 return;
             }
 
+            // Draw the tooltips.
             var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
             var newY = parseFloat(this.getAttribute("y")) + parseFloat(this.getAttribute("height"))/2 + highlightTextHeight/2;
             
@@ -225,6 +233,7 @@ Treemap.prototype.draw = function(divId)
                 });
         })
         .on("mouseout", function(d, i) {
+            // Remove the tooltips according to the toggle state.
             d3.select(this).attr("fill", d[0])
             if (!toggle[i]) {
                 d3.select(this)
@@ -234,6 +243,7 @@ Treemap.prototype.draw = function(divId)
             }
         });
 
+    // Draw the non-toggleable category label for each section.
     svg.selectAll("rect")
         .each(function(d) {
             var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
@@ -252,6 +262,7 @@ Treemap.prototype.draw = function(divId)
             }
         });
 
+    // Draw the title.
     base.append("text")
         .attr("class", "title")
         .attr("text-anchor", "middle")
@@ -2051,6 +2062,10 @@ Bar.prototype.draw = function(divId) {
     var numDataSets = this.dataSet[0].length;
     var colorIconHeight = 10;
     var colorIconWidth = 10;
+    numBars = this.dataSet.length;
+    var fillColor = this.colors[0];
+    var fillColor2 = this.colors[1];
+    var highlightColor = "rgb(240,209,86)";
 
     // Determine if multiple data sets.
     var multiset = false;
@@ -2062,8 +2077,8 @@ Bar.prototype.draw = function(divId) {
     yValues = [];
     y2Values = [];
 
-    numBars = this.dataSet.length;
-
+    
+    // Retrieve individual data set values.
     for(var i = 0; i < numBars; i++) {
         xValues[i] = this.dataSet[i][0];
         yValues[i] = this.dataSet[i][1];
@@ -2072,6 +2087,7 @@ Bar.prototype.draw = function(divId) {
         }       
     }
     
+    // Condense the data set by summing up y-values for duplicate x-values.
     var condensedXValues = [];
     var condensedYValues = [];
     var condensedY2Values = [];
@@ -2103,7 +2119,6 @@ Bar.prototype.draw = function(divId) {
 
     var condensedDataSet = [];
     var condensedDataSet2 = [];
-
     for (var i = 0; i < condensedXValues.length; i++) {
         condensedDataSet.push([condensedXValues[i],condensedYValues[i]]);
         if (multiset) {
@@ -2111,8 +2126,6 @@ Bar.prototype.draw = function(divId) {
         }
     }
 
-    // numBars = d3.max(xValues);
-    // numBars = d3.max(condensedXValues);
     numBars = condensedXValues.length;
 
     //Width and height
@@ -2123,7 +2136,6 @@ Bar.prototype.draw = function(divId) {
     var padding = 20;
     var barPadding = 5;
     var barSetPadding = 15;
-    
     var xAxisLabelPaddingBottom = 2;
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
@@ -2131,6 +2143,7 @@ Bar.prototype.draw = function(divId) {
     var yAxisLabelPaddingRight = 2;
     var axisLabelHeight = 10;
 
+    // Determine the axis labels and title.
     var xAxisLabel = this.labels[0];
     var yAxisLabel = this.labels[1];
     var title = this.title;
@@ -2145,6 +2158,7 @@ Bar.prototype.draw = function(divId) {
         }
     }
 
+    // Determine the width of the visualization based on the number of bars.
     var totalWidth;
     var minBarWidth = 10;
     if (!multiset) {
@@ -2153,14 +2167,18 @@ Bar.prototype.draw = function(divId) {
         totalWidth = (numBars * ((2*minBarWidth)+(barPadding)+(barSetPadding))) + barPadding - barSetPadding;
     }
 
+    // Set canvas width and height.
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
 
+    var numYAxisTicks = height/15;
 
+    // If the calculated width is larger than the communicated width, increase the width accordingly and use minimum bar width.
     if (totalWidth > width) {
         width = totalWidth;
         barWidth = minBarWidth;
     } else {
+        //Otherwise calculate bar widths.
         if (!multiset) {
             var barWidth = ((width - barPadding) / numBars) - barPadding;
         } else {
@@ -2168,16 +2186,9 @@ Bar.prototype.draw = function(divId) {
         }
     }
 
-    var numYAxisTicks = height/15;
-
-    var fillColor = this.colors[0];
-    var fillColor2 = this.colors[1];
-    console.log("fillColor: " + fillColor);
-    console.log("fillColor2: " + fillColor2);
-    // var highlightColor = randRGB(100, 200);  
-    var highlightColor = "rgb(240,209,86)";
+    
       
-
+    // Calculate scales.
     if (multiset) {
         var xScale = d3.scale.ordinal()
                         .domain(condensedXValues)
@@ -2188,7 +2199,6 @@ Bar.prototype.draw = function(divId) {
                         .rangePoints([barPadding,width - barPadding - barWidth]);
     }
   
-
     var yScale = d3.scale.linear()
                     .domain([d3.min(condensedYValues), d3.max(condensedYValues)])
                     .range([height, 0]);
@@ -2199,6 +2209,7 @@ Bar.prototype.draw = function(divId) {
                         .range([height, 0]);
     }
 
+    // Create axes.
     var xAxis = d3.svg.axis()
                     .scale(xScale)
                     .orient("bottom")
@@ -2216,19 +2227,22 @@ Bar.prototype.draw = function(divId) {
                     .ticks(numYAxisTicks);
     }
 
+
     var unscaledLine = d3.svg.line()
         .x(function(d) { return d[0]; })
         .y(function(d) { return d[1]; });                    
 
+    // Line for x-axis to compensate for the default axis format.
     var xAxisLineCoords = [[0, height], [width, height]];
 
     var xAxisLine = d3.svg.line(xAxisLineCoords);
 
-    //Create SVG element
+    // Create base visualization area.
     var base = d3.select("#" + divId)
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
+    // Background.
     base.append("rect")
             .attr("x", 0)
             .attr("y", 0)
@@ -2236,10 +2250,11 @@ Bar.prototype.draw = function(divId) {
             .attr("height", height + margin.top + margin.bottom)
             .attr("fill", "white")
             .style("stroke", "black");
+    // Canvas.
     var svg = base.append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
+    // Set the toggle value for all bars to false.
     var toggle = [];
     for (var i = 0; i < numBars; i++) {
         toggle.push(false);
@@ -2252,6 +2267,7 @@ Bar.prototype.draw = function(divId) {
             .x(function(d) { return d[0]; })
             .y(function(d) { return d[1]; }); 
 
+    // If single data set and negative values exist, draw guideline at y=0.
     if (!multiset && (d3.min(condensedYValues)) < 0) {
         svg.append("path")
             .attr("id", ("bar-zero-line"))
@@ -2259,7 +2275,7 @@ Bar.prototype.draw = function(divId) {
             .attr("d", unscaledLine([[0, yScale(0)], [width, yScale(0)]]));
     }
 
-    //Create bars
+    // Create data set 1 bars.
     svg.selectAll("rect.set1")
         .data(condensedDataSet)
         .enter()
@@ -2284,19 +2300,23 @@ Bar.prototype.draw = function(divId) {
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+
+            // If text will go over right edge of screen, reposition it.
+            var yTextPosition = yPosition - highlightTextPadding;
             if (yTextPosition < highlightTextHeight) {
                 yTextPosition = yPosition + highlightTextHeight;
             }
 
             var barLineData = [ [0, yPosition], [width, yPosition] ];
 
+            // Top of bar guideline.
             svg.append("path")
                 .attr("class", "bar-line")
                 .attr("id", "barline")
                 .attr("style", "stroke: rgb(150,150,150)")
                 .attr("d", unscaledLine(barLineData));
 
+            // For other bars in the data set, color those with smaller values red, larger green, and even grey.
             svg.selectAll(".bar-set1")
                 .attr("fill", function() {
                     if (this.getAttribute("y") < barLineData[0][1]) {
@@ -2310,6 +2330,7 @@ Bar.prototype.draw = function(divId) {
 
             this.setAttribute("fill", highlightColor);
 
+            // If not already drawn, draw the text tooltip.
             if (!toggle[i]) {
                 svg.append("text")
                     .attr("id", ("tooltip" + i))
@@ -2328,25 +2349,24 @@ Bar.prototype.draw = function(divId) {
             d3.select(("#tooltip" + i)).remove();
             d3.select("#barline").remove();
 
-            // d3.select(this)
-            //     .attr("fill", highlightColor);
-            
-
             toggle[i] = !toggle[i];
 
+            // If tooltip has been toggled on, remove it.
             if (!toggle[i]) {
                 d3.select(("#tooltip" + i)).remove();
                 d3.select("#barline").remove();
                 return;
             }
 
+            // Draw the tooltip if it's not already toggled on.
             var xPosition = parseFloat(d3.select(this).attr("x"));
             var xTextPosition = xPosition + barWidth/2;
             var yPosition = parseFloat(d3.select(this).attr("y"));
-            var yTextPosition = yPosition - highlightTextPadding;// - highlightTextHeight;
+            var yTextPosition = yPosition - highlightTextPadding;
             if (yTextPosition < highlightTextHeight) {
                 yTextPosition = yPosition + highlightTextHeight;
             }
+
             svg.append("text")
                 .attr("id", ("tooltip" + i))
                 .attr("x", xTextPosition)
@@ -2367,7 +2387,7 @@ Bar.prototype.draw = function(divId) {
                 .attr("style", "stroke: rgb(150,150,150)")
                 .attr("d", unscaledLine(barLineData));
 
-            
+            // Color the other bars in the data set appropriately.
             svg.selectAll(".bar-set1")
                 .attr("fill", function() {
                     if (this.getAttribute("y") < barLineData[0][1]) {
@@ -2383,6 +2403,7 @@ Bar.prototype.draw = function(divId) {
 
         }) 
         .on("mouseout", function(d, i) {
+            // Remove the popups based on the toggle state.
             if (!toggle[i]) {
                 d3.select(("#tooltip" + i)).remove();
             }
@@ -2395,7 +2416,7 @@ Bar.prototype.draw = function(divId) {
                 .attr("fill", fillColor);             
         });
 
-
+    // Draw the second data set bars.
     if (multiset) {
         svg.selectAll("rect.set2")
             .data(condensedDataSet2)
@@ -2420,6 +2441,8 @@ Bar.prototype.draw = function(divId) {
                 var xPosition = parseFloat(d3.select(this).attr("x"));
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
+
+                // If tooltip will go over right edge, reposition it.
                 var yTextPosition = yPosition - highlightTextPadding;
                 if (yTextPosition < highlightTextHeight) {
                     yTextPosition = yPosition + highlightTextHeight;
@@ -2427,12 +2450,14 @@ Bar.prototype.draw = function(divId) {
             
                 var barLineData = [ [0, yPosition], [width, yPosition] ];
 
+                // Draw the top of bar guideline.
                 svg.append("path")
                     .attr("class", "bar-line")
                     .attr("id", "barline")
                     .attr("style", "stroke: rgb(150,150,150)")
                     .attr("d", unscaledLine(barLineData));
 
+                // Color the other bars appropriately.
                 svg.selectAll(".bar-set2")
                     .attr("fill", function() {
                         if (this.getAttribute("y") < barLineData[0][1]) {
@@ -2447,8 +2472,8 @@ Bar.prototype.draw = function(divId) {
                 this.setAttribute("fill", highlightColor);
 
 
+                // Draw the tooltip text.
                 if (!toggle[(numBars + i)]) {
-                
                     svg.append("text")
                         .attr("id", ("tooltip" + numBars + i))
                         .attr("x", xTextPosition)
@@ -2470,12 +2495,14 @@ Bar.prototype.draw = function(divId) {
 
                 toggle[(numBars + i)] = !toggle[(numBars + i)];
 
+                // If tooltip already toggled on, remove it.
                 if (!toggle[(numBars + i)]) {
                     d3.select(("#tooltip" + numBars + i)).remove();
                     d3.select("#barline").remove();
                     return;
                 }
 
+                // Draw the tooltip.
                 var xPosition = parseFloat(d3.select(this).attr("x"));
                 var xTextPosition = xPosition + barWidth/2;
                 var yPosition = parseFloat(d3.select(this).attr("y"));
@@ -2504,8 +2531,6 @@ Bar.prototype.draw = function(divId) {
                     .attr("style", "stroke: rgb(150,150,150)")
                     .attr("d", unscaledLine(barLineData));
 
-                
-
                 svg.selectAll(".bar-set2")
                     .attr("fill", function() {
                         if (this.getAttribute("y") < barLineData[0][1]) {
@@ -2521,6 +2546,7 @@ Bar.prototype.draw = function(divId) {
 
             })
             .on("mouseout", function(d, i) {
+                // Remove the tooltips according to the toggle state.
                 if (!toggle[(numBars + i)]) {
                     d3.select(("#tooltip" + numBars + i)).remove();
                 }            d3.select("#barline").remove();
@@ -2534,7 +2560,7 @@ Bar.prototype.draw = function(divId) {
     }
 
     if (multiset) {
-        // Create x-axis
+        // Draw x-axis for double data set.
         var xAxisObject = svg.append("g")
             .attr({
                 class: "x-axis",
@@ -2544,7 +2570,7 @@ Bar.prototype.draw = function(divId) {
 
         styleXAxis(xAxisObject, this.xAxisLabelOrientation);
 
-        // Create y-axis
+        // Draw y-axis
         var y2AxisObect = svg.append("g")
             .attr({
                 class: "y-axis",
@@ -2555,7 +2581,7 @@ Bar.prototype.draw = function(divId) {
         styleYAxis(y2AxisObect, "start");
 
     } else {
-        // Create x-axis
+        // Draw x-axis for single data set.
         var xAxisObject = svg.append("g")
         .attr({
             class: "x-axis",
@@ -2576,12 +2602,12 @@ Bar.prototype.draw = function(divId) {
 
     styleYAxis(yAxisObject, "end");
 
+    // Draw the x-axis line to compensate for generic axis format.
     svg.append("path")
-        // .attr("class", "line")
         .style("stroke", "black")
-        // .style("fill", "black")
         .attr("d", xAxisLine(xAxisLineCoords));
 
+    // Draw x-axis label.
     base.append("text")
         .attr("class", "x-label")
         .attr("text-anchor", "middle")
@@ -2591,6 +2617,7 @@ Bar.prototype.draw = function(divId) {
         .attr("y", h - xAxisLabelPaddingBottom)
         .text(xAxisLabel);
 
+    // Draw y axis label.
     base.append("text")
         .attr("class", "y-label")
         .attr("text-anchor", "middle")
@@ -2602,6 +2629,7 @@ Bar.prototype.draw = function(divId) {
         .text(yAxisLabel);
 
     if (multiset) {
+        // Draw second y axis label.
         base.append("text")
             .attr("class", "y-label")
             .attr("text-anchor", "middle")
@@ -2613,6 +2641,7 @@ Bar.prototype.draw = function(divId) {
             .text(y2AxisLabel);
     }
 
+    // Draw title.
     base.append("text")
         .attr("class", "title")
         .attr("text-anchor", "middle")
@@ -2622,6 +2651,7 @@ Bar.prototype.draw = function(divId) {
         .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
         .text(title);
 
+    // If multiple data sets, draw color icons.
     if (multiset) {
         base.append("rect")
             .attr("id", "colorIcon1")
