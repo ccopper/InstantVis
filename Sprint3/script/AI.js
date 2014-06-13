@@ -524,7 +524,6 @@ var removeDatasetsWithNoAssociatedVisualizationsOrValues = function(AIdataStruct
 		else
 		{
 			AIdataStructureClean.push(AIdataStructure[i]);
-			console.log("AI: adding in: " + JSON.stringify(AIdataStructure[i]));
 		}
 	}
 	
