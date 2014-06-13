@@ -94,9 +94,11 @@ Treemap.prototype.draw = function(divId)
         {
             categoryTotal = categoryTotal + parseInt(this.dataSet[categories[i][j]][1]);
         }
+        console.log("categoryTotal: " + categoryTotal);
         if (categoryTotal > 0) 
         {
             data.push([categories[i][0], categoryTotal]);
+            console.log("pushing to data: [" + categories[i][0] + ", " + categoryTotal + "]");
         }
         dataTotal += categoryTotal;
     }
