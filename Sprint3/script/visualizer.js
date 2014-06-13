@@ -395,7 +395,7 @@ Bubble.prototype.draw = function(divId)
     var titleLabelHeight = margin.top/3;
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
-    var axisLabelHeight = 15;
+    var axisLabelHeight = 12;
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
     var rightGraphBoundary = width;//w - margin.right;    
@@ -558,7 +558,7 @@ Bubble.prototype.draw = function(divId)
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "arial")
         .attr("x", margin.left + width/2)
-        .attr("y", h - xAxisLabelPaddingBottom)
+        .attr("y", (h - (margin.bottom/4) - axisLabelHeight/2))
         .text(xAxisLabel);
 
     // Draw y label.
@@ -567,9 +567,8 @@ Bubble.prototype.draw = function(divId)
         .attr("text-anchor", "middle")
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "arial")
-        .attr("y", h/2)
-        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
-        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .attr("x", (0 + margin.left/5 + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + margin.left/5 + axisLabelHeight) + "," + h/2 + ")")
         .text(yAxisLabel);
 
     // Draw title.
@@ -617,9 +616,9 @@ Bubble.prototype.draw = function(divId)
                 var x = Math.floor(this.getAttribute("cx")*100)/100;
                 var y = Math.floor(this.getAttribute("cy")*100)/100;
                 var r = Math.floor(this.getAttribute("r")*100)/100;
-                var ind = d[0];
-                var dep = d[1];
-                var rad = d[2];
+                var ind = (Math.floor(d[0]*100)/100);
+                var dep = (Math.floor(d[1]*100)/100);
+                var rad = (Math.floor(d[2]*100)/100);
                 var labelText =  ind + ", " + dep + ": " + rad;
                 var length = labelText.length;
                 var rectWidth = length*characterWidth;
@@ -685,9 +684,9 @@ Bubble.prototype.draw = function(divId)
             var x = Math.floor(this.getAttribute("cx")*100)/100;
             var y = Math.floor(this.getAttribute("cy")*100)/100;
             var r = Math.floor(this.getAttribute("r")*100)/100;
-            var ind = d[0];
-            var dep = d[1];
-            var rad = d[2];
+            var ind = (Math.floor(d[0]*100)/100);
+            var dep = (Math.floor(d[1]*100)/100);
+            var rad = (Math.floor(d[2]*100)/100);
             var labelText =  ind + ", " + dep + ": " + rad;
             var length = labelText.length;
             var rectWidth = length*characterWidth;
@@ -1161,7 +1160,7 @@ Scatter.prototype.draw = function(divId)
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
     var yAxisLabelPaddingRight = 2;
-    var axisLabelHeight = 15;
+    var axisLabelHeight = 12;
     var width = w - margin.left - margin.right;
     var height = h - margin.top - margin.bottom;
     var numDataSets = this.dataSet[0].length;
@@ -1395,7 +1394,7 @@ Scatter.prototype.draw = function(divId)
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "arial")
         .attr("x", margin.left + width/2)
-        .attr("y", h - xAxisLabelPaddingBottom)
+        .attr("y", (h - (margin.bottom/4) - axisLabelHeight/2))
         .text(xAxisLabel);
 
     // Y axis label.
@@ -1407,8 +1406,8 @@ Scatter.prototype.draw = function(divId)
         .attr("font-family", "arial")
         .attr("font-weight", "normal")
         .attr("y", h/2)
-        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
-        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .attr("x", (0 + margin.left/5 + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + margin.left/5 + axisLabelHeight) + "," + h/2 + ")")
         .text(yAxisLabel);
 
     // Second y axis label.
@@ -1422,8 +1421,8 @@ Scatter.prototype.draw = function(divId)
             .attr("font-family", "arial")
             .attr("font-weight", "normal")
             .attr("y", h/2)
-            .attr("x", (w - yAxisLabelPaddingRight - axisLabelHeight))
-            .attr("transform", "rotate(90, " + (w - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
+            .attr("x", (w - (margin.right/5) - axisLabelHeight))
+            .attr("transform", "rotate(90, " + (w - (margin.right/5) - axisLabelHeight) + "," + h/2 + ")")
             .text(yAxisLabel2);
     }
 
@@ -1476,7 +1475,7 @@ Scatter.prototype.draw = function(divId)
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
                 var col = color;
-                var highlightText = d[0] + ", " + d[1];
+                var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
                 var xText = xRect + highlightTextPadding;
@@ -1515,7 +1514,7 @@ Scatter.prototype.draw = function(divId)
             var x = xScale(d[0]);
             var y = yScale(d[1]);
             var col = color;
-            var highlightText = d[0] + ", " + d[1];
+            var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
             var xRect = x + 2*highlightRadius;
             var yRect = y - highlightRectHeight/2;
             var xText = xRect + highlightTextPadding;
@@ -1574,7 +1573,7 @@ Scatter.prototype.draw = function(divId)
                     var x2 = xScale(d[0]);
                     var y2 = yScale2(d[1]);
                     var col2 = color2;
-                    var highlightText2 = d[0] + ", " + d[1];
+                    var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
                     var xRect2 = x2 + 2*highlightRadius;
                     var yRect2 = y2 - highlightRectHeight/2;
                     var xText2 = xRect2 + highlightTextPadding;
@@ -1612,7 +1611,7 @@ Scatter.prototype.draw = function(divId)
                 var x2 = xScale(d[0]);
                 var y2 = yScale2(d[1]);
                 var col2 = color2;
-                var highlightText2 = d[0] + ", " + d[1];
+                var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
                 var xRect2 = x2 + 2*highlightRadius;
                 var yRect2 = y2 - highlightRectHeight/2;
                 var xText2 = xRect2 + highlightTextPadding;
@@ -1656,7 +1655,7 @@ Scatter.prototype.draw = function(divId)
             .style("fill", this.colors[0]);  
         base.append("rect")
             .attr("id", "colorIcon2")
-            .attr("x", (w - (margin.right/2 - colorIconWidth/2)))
+            .attr("x", (w - (margin.right/2 + colorIconWidth/2)))
             .attr("y", (margin.top + (height - colorIconHeight)))
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
@@ -1748,8 +1747,6 @@ function Line(dataSet, labels, columnTypes, title, width, height, colors, margin
     this.margin = margin;
     this.xAxisLabelOrientation = xAxisLabelOrientation;
     this.showPoints = showPoints;
-
-    console.log("labels: " + labels.toString());
 }
 
 /**
@@ -1767,6 +1764,7 @@ Line.prototype.draw = function (divId)
     var margin = this.margin;
 
     var w = this.width;
+    console.log("initial w: " + w);
     var h = this.height;
     var defaultRadius = 3;
     var highlightRadius = 6;
@@ -1788,7 +1786,7 @@ Line.prototype.draw = function (divId)
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
     var yAxisLabelPaddingRight = 2;
-    var axisLabelHeight = 15;
+    var axisLabelHeight = 12;
     var colorIconWidth = 10;
     var colorIconHeight = 10;
     var width = w - margin.left - margin.right;
@@ -2144,7 +2142,7 @@ Line.prototype.draw = function (divId)
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "arial")
         .attr("x", margin.left + width/2)
-        .attr("y", h - xAxisLabelPaddingBottom)
+        .attr("y", (h - (margin.bottom/4) - axisLabelHeight/2))
         .text(xAxisLabel);
 
     // Draw y label.
@@ -2155,8 +2153,8 @@ Line.prototype.draw = function (divId)
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "arial")
         .attr("y", h/2)
-        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
-        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .attr("x", (0 + margin.left/5 + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + margin.left/5 + axisLabelHeight) + "," + h/2 + ")")
         .text(yAxisLabel);
 
     // Draw second y label.
@@ -2170,8 +2168,8 @@ Line.prototype.draw = function (divId)
             .attr("font-family", "arial")
             .attr("font-weight", "normal")
             .attr("y", h/2)
-            .attr("x", (w - yAxisLabelPaddingRight - axisLabelHeight))
-            .attr("transform", "rotate(90, " + (w - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
+            .attr("x", (w - (margin.right/5) - axisLabelHeight))
+            .attr("transform", "rotate(90, " + (w - (margin.right/5) - axisLabelHeight) + "," + h/2 + ")")
             .text(yAxisLabel2);
     }        
 
@@ -2257,7 +2255,7 @@ Line.prototype.draw = function (divId)
                     .attr("stroke", this.colors[i-1]);
 
                 // Determine the text associated with the data point when highlighted.
-                highlightText[j] = data[j][0] + ", " + data[j][1];
+                highlightText[j] = (Math.floor(data[j][0]*100)/100) + ", " + (Math.floor(data[j][1]*100)/100);
 
                 var highlightRectWidth = (highlightText[j].length*characterWidth)+highlightTextPadding;
                 var highlightRectHeight = highlightTextHeight + (2 * highlightTextPadding);
@@ -2303,9 +2301,12 @@ Line.prototype.draw = function (divId)
             .style("stroke", "black")
             .style("fill", this.colors[0]);  
 
+        console.log("width: " + (margin.left/2 - colorIconWidth/2));
+        console.log("w: " + w);
+        console.log("width: " + (w - ((margin.right/2) - (colorIconWidth/2))));
         base.append("rect")
             .attr("id", "colorIcon2")
-            .attr("x", (w - (margin.right/2 - colorIconWidth/2)))
+            .attr("x", (w - ((margin.right/2) + (colorIconWidth/2))))
             .attr("y", (margin.top + (height - colorIconHeight)))
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
@@ -2454,6 +2455,8 @@ Bar.prototype.draw = function(divId)
     var fillColor = this.colors[0];
     var fillColor2 = this.colors[1];
     var highlightColor = "rgb(240,209,86)";
+    var axisLabelHeight = 12;
+
 
     // Determine if multiple data sets.
     var multiset = false;
@@ -2540,7 +2543,6 @@ Bar.prototype.draw = function(divId)
     var titleLabelPaddingTop = (margin.top - titleLabelHeight)/2;
     var yAxisLabelPaddingLeft = 2;
     var yAxisLabelPaddingRight = 2;
-    var axisLabelHeight = 10;
 
     // Determine the axis labels and title.
     var xAxisLabel = this.labels[0];
@@ -3097,7 +3099,7 @@ Bar.prototype.draw = function(divId)
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "arial")
         .attr("x", margin.left + width/2)
-        .attr("y", h - xAxisLabelPaddingBottom)
+        .attr("y", (h - (margin.bottom/4) - axisLabelHeight/2))
         .text(xAxisLabel);
 
     // Draw y axis label.
@@ -3107,8 +3109,8 @@ Bar.prototype.draw = function(divId)
         .attr("font-size", axisLabelHeight)
         .attr("font-family", "arial")
         .attr("y", h/2)
-        .attr("x", (0 + yAxisLabelPaddingLeft + axisLabelHeight))
-        .attr("transform", "rotate(-90, " + (0 + yAxisLabelPaddingLeft + axisLabelHeight) + "," + h/2 + ")")
+        .attr("x", (0 + margin.left/5 + axisLabelHeight))
+        .attr("transform", "rotate(-90, " + (0 + margin.left/5 + axisLabelHeight) + "," + h/2 + ")")
         .text(yAxisLabel);
 
     if (multiset) 
@@ -3120,8 +3122,8 @@ Bar.prototype.draw = function(divId)
             .attr("font-size", axisLabelHeight)
             .attr("font-family", "arial")
             .attr("y", h/2)
-            .attr("x", ((width + margin.left + margin.right) - yAxisLabelPaddingRight - axisLabelHeight))
-            .attr("transform", "rotate(90, " + ((width + margin.left + margin.right) - yAxisLabelPaddingRight - axisLabelHeight) + "," + h/2 + ")")
+            .attr("x", ((width + margin.left + margin.right) - (margin.right/5) - axisLabelHeight))
+            .attr("transform", "rotate(90, " + ((width + margin.left + margin.right) - (margin.right/5) - axisLabelHeight) + "," + h/2 + ")")
             .text(y2AxisLabel);
     }
 
@@ -3149,7 +3151,7 @@ Bar.prototype.draw = function(divId)
 
         base.append("rect")
             .attr("id", "colorIcon2")
-            .attr("x", ((width + margin.left + margin.right) - (margin.right/2 - colorIconWidth/2)))
+            .attr("x", ((width + margin.left + margin.right) - (margin.right/2 + colorIconWidth/2)))
             .attr("y", (margin.top + (height - colorIconHeight)))
             .attr("height", colorIconHeight)
             .attr("width", colorIconWidth)
@@ -3174,6 +3176,7 @@ Bar.prototype.draw = function(divId)
  */
 function getVisualization(dataPackage, type, colors, width, height, numDataPoints, margin, xAxisLabelOrientation)
 {
+    console.log("numDataPoints: " + numDataPoints);
     //var height = 300;
     var pieWidth = height*1.5;
     //var width = 650;
