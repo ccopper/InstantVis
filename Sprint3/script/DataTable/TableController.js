@@ -115,10 +115,10 @@ function populateTable(data)
 	$("#DTSelMatInd tr").append("<th id=\"IndLbl\">X</th>");
 	
 	$("#DTSelMatD1").append("<tr /><");
-	$("#DTSelMatD1 tr").append("<th id=\"D1Lbl\">Y</th>");
+	$("#DTSelMatD1 tr").append("<th id=\"D1Cell\"><span id=\"D1Lbl\" class=\"depColorPreview\">Y</span></th>");
 	
 	$("#DTSelMatD2").append("<tr /><");
-	$("#DTSelMatD2 tr").append("<th id=\"D2Lbl\">Y</th>");
+	$("#DTSelMatD2 tr").append("<th id=\"D2Cell\"><span id=\"D2Lbl\" class=\"depColorPreview\">Y</span></th>");
 	
 	for(var hItem in data.Data.ColumnLabel)
 	{
@@ -165,6 +165,27 @@ function populateTable(data)
 }
 
  /**
+ *	Called when the colors change  
+ *  
+ */
+function tableColorUpdate()
+{
+	var c1 = visColors[0];
+	var c2 = visColors[1];
+	
+	$("#D1Lbl").css("background-color", "hsla(" + c1.hue + "," + c1.saturation + "," + c1.lightness + ",1.0)");
+	
+	if(!TCIns.needD2)
+	{
+		$("#D2Lbl").css("background-color", "hsla(" + c2.hue + "," + c2.saturation + "," + c2.lightness + ",1.0)");
+	} else
+	{
+		$("#D2Lbl").css("background-color", "hsla(0,0,0,0)");
+	}
+
+}
+
+ /**
  *	Called when TableSorter sorts the table.  
  *  This resorts the underlying structure to match the table and then orders a redraw.
  *
@@ -200,11 +221,12 @@ function reSortData(e, table)
  */
 function updateTableVis(visType)
 {
+
 	$("#DTSelMatInd").show();
 	$("#DTSelMatD1").show();
 	$("#DTSelMatD2").show();
 	
-	$("#D1Lbl").css("border-radius", "0px 0px 0px 0px");
+	$("#D1Cell").css("border-radius", "0px 0px 0px 0px");
 	
 	for(var id in TCIns.AIObj.Visualizations)
 	{
@@ -216,6 +238,8 @@ function updateTableVis(visType)
 	}
 	
 	$("#VisLabel").text(TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle);
+	
+
 	
 	//To set the value it must be passed as an array
 	$("input:radio[name=Ind]").val([TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns[0]]);
@@ -231,13 +255,14 @@ function updateTableVis(visType)
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y1");
 			$("#D2Lbl").text("Y2");
+			$("#D2Lbl").addClass("depColorPreview");
 			TCIns.needD2 = false;
 			TCIns.needD1 = true;
 		break;
 		
 		case "Tree":
 		case "Pie":
-			$("#D1Lbl").css("border-radius", "0px 0px 0px 5px");
+			$("#D1Cell").css("border-radius", "0px 0px 0px 5px");
 			$("#DTSelMatD2").hide();
 			TCIns.needD2 = false;
 			TCIns.needD1 = false;
@@ -247,15 +272,15 @@ function updateTableVis(visType)
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y");
 			$("#D2Lbl").text("SIZE");
+			$("#D2Lbl").removeClass("depColorPreview");
 			TCIns.needD2 = true;
 			TCIns.needD1 = true;
 		break;
 		
 		default:
-		
-		
 	}
 	
+	tableColorUpdate()
 }
  /**
  *	Removes all existing data from the table
@@ -563,17 +588,17 @@ function updateSelMat(event)
 	
 	}
 	
-	var Ind = $("input:radio[name=Ind]:checked").val();
-	var D1 = $("input:radio[name=D1]:checked").val();
-	var D2 = $("input:radio[name=D2]:checked").val();
+	var Ind = parseInt($("input:radio[name=Ind]:checked").val());
+	var D1 = parseInt($("input:radio[name=D1]:checked").val());
+	var D2 = parseInt($("input:radio[name=D2]:checked").val());
 
 	TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns = [];
 	TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(Ind);
 	
-	if(typeof D1 != "undefined")
+	if(!isNaN(D1))
 		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D1);
 	
-	if(typeof D2 != "undefined")
+	if(!isNaN(D1))
 		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D2);
 	
 	
@@ -583,6 +608,7 @@ function updateSelMat(event)
 		TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle = visTitle;
 		$("#VisLabel").text(visTitle);
 	}
+	
 	
 	
 	TCIns.selUpdCallBack();
