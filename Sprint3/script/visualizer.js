@@ -2632,13 +2632,33 @@ Bar.prototype.draw = function(divId)
     }
   
     var yScale = d3.scale.linear()
-                    .domain([d3.min(condensedYValues), d3.max(condensedYValues)])
+                    .domain([ function() 
+                    {
+                        if (d3.min(condensedYValues) < 0)
+                        {
+                            return d3.min(condensedYValues);
+                        }
+                        else
+                        {
+                            return 0
+                        }
+                    }, d3.max(condensedYValues)])
                     .range([height, 0]);
 
     if (multiset) 
     {
         var yScale2 = d3.scale.linear()
-                        .domain([d3.min(condensedY2Values), d3.max(condensedY2Values)])
+                        .domain([function() 
+                        {
+                            if (d3.min(condensedY2Values) < 0)
+                            {
+                                return d3.min(condensedY2Values);
+                            }
+                            else
+                            {
+                                return 0
+                            }
+                        }, d3.max(condensedY2Values)])
                         .range([height, 0]);
     }
 
