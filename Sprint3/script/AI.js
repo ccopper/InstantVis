@@ -527,7 +527,15 @@ var removeDatasetsWithNoAssociatedVisualizationsOrValues = function(AIdataStruct
 		}
 	}
 	
-	AIdataStructure = AIdataStructureClean;
+	for (var i = 0; i < AIdataStructure.length; i++)
+	{
+		AIdataStructure.pop();
+	}
+
+	for (var i = 0; i < AIdataStructureClean.length; i++)
+	{
+		AIdataStructure.push(AIdataStructureClean[i]);
+	}
 
 	console.log("AI: removed " + visualizationsRemoved + " visualization" + 
 			(visualizationsRemoved > 1 ? "s" : ""));
