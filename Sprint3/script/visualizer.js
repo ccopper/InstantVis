@@ -311,8 +311,6 @@ Treemap.prototype.draw = function(divId)
             d3.select(this).attr("fill", d[0])
             if (!toggle[i]) 
             {
-                d3.select(this)
-                    .style("stroke", "none")
                 d3.selectAll(("#treemap-text-tooltip2-" + i)).remove();
                 d3.selectAll(("#treemap-text-tooltip3-" + i)).remove();
             }
@@ -1070,7 +1068,6 @@ Pie.prototype.draw = function(divId)
             this.setAttribute("fill", mixedColorSet[i]);
             if (!toggle[i]) 
             {
-                d3.select(this).style("stroke", "none");
                 d3.select(("#tooltip-text-" + i)).remove();
                 d3.select(("#tooltip-text2-" + i)).remove();
                 d3.select(("#tooltip-text3-" + i)).remove();
