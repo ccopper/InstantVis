@@ -15,9 +15,14 @@ var visMaxHeight = 2000;
 var visMaxWidth  = 2000;
 var visMaxDataPoints = 1000;
 var visMinDataPoints = 1;
+var visMaxMargin = 2000;
 var defaultVisWidth = 600;
 var defaultVisHeight = 300;
 var defaultNumPoints = 22;
+//Margin object to hold default values
+var defaultMargins = {top: 50, right: 55, bottom: 55, left: 55};
+//Margin object to save previous values
+var oldMargins = defaultMargins;
 //Global reference to table column sets. [[[1,2],[2,3]],[[4,5],[1,2]]]
 var tableColumnSets = [];
 //var for Draggable splitpane
@@ -179,11 +184,67 @@ function readyFunction()
   	$("#dataPoints").attr({"max":visMaxDataPoints,"min":visMinDataPoints});
   	$("#dataPoints").on('change',visDataOptionChange);
 
-  	$("#visMargin_top").on('change',visSizeChangeHandler);
-  	$("#visMargin_bottom").on('change',visSizeChangeHandler);
-  	$("#visMargin_left").on('change',visSizeChangeHandler);
-  	$("#visMargin_right").on('change',visSizeChangeHandler);
+  	$("#visMargin_top").on('change',marginChangeHandler);
+  	$("#visMargin_bottom").on('change',marginChangeHandler);
+  	$("#visMargin_left").on('change',marginChangeHandler);
+  	$("#visMargin_right").on('change',marginChangeHandler);
 }
+
+/**
+ * This function handles changes to the visualization margin values. 
+ * It will make sure only positive numeric values within specified
+ * range will be accepted.
+*/
+function marginChangeHandler(event)
+{
+	var inputId = event.target.id;
+	var numPattern = new RegExp("^-?\\d+$");
+	var margin = $("#"+inputId).val();
+	var margin_int = parseInt(margin);
+	if(numPattern.test(margin))
+	{
+		if(margin_int < 0)
+		{
+			$("#"+inputId).val(0);
+			refreshVisualization();
+			oldMargins = getMargins();
+		}
+		else if (margin_int > visMaxMargin)
+		{
+			$("#"+inputId).val(visMaxMargin);
+			refreshVisualization();
+			oldMargins = getMargins();
+		}
+		else
+		{
+			refreshVisualization();
+			oldMargins = getMargins();
+		}
+	}
+	else
+	{
+		if(oldMargins)
+		{
+			if(inputId == 'visMargin_top')
+			{
+				$("#"+inputId).val(oldMargins.top);		
+			}
+			if(inputId == 'visMargin_bottom')
+			{
+				$("#"+inputId).val(oldMargins.bottom);		
+			}
+			if(inputId == 'visMargin_left')
+			{
+				$("#"+inputId).val(oldMargins.left);		
+			}
+			if(inputId == 'visMargin_right')
+			{
+				$("#"+inputId).val(oldMargins.right);		
+			}
+		}
+	}
+}
+
 
 /**
  * This function will update the visualization size based on the size controls.
@@ -192,10 +253,24 @@ function visSizeChangeHandler(event)
 {
 	var inputId = event.target.id;
 	var numPattern = new RegExp("^\\d+$");
-	if(numPattern.test($("#"+inputId).val()))
+	var dimension = $("#"+inputId).val();
+	if(numPattern.test(dimension))
 	{
-		console.log("Detected number size.");
-		refreshVisualization();
+		if(parseInt(dimension) > visMaxWidth || parseInt(dimension) < visMinWidth)
+		{
+			if(inputId == "visHeight")
+			{
+				$("#"+inputId).val($("#visSVG").height());
+			}
+			else
+			{
+				$("#"+inputId).val($("#visSVG").width());
+			}
+		}
+		else
+		{
+			refreshVisualization();
+		}
 	}
 	else
 	{
@@ -217,7 +292,29 @@ function visSizeChangeHandler(event)
 */
 function visDataOptionChange(event)
 {
-	console.log("Points change by: "+event.target.id);
+	var inputId = event.target.id;
+	var fieldValue = $("#"+inputId).val();
+	var fieldValue_int = parseInt(fieldValue);
+	var numPattern = new RegExp("^\\d+$");
+	if(numPattern.test(fieldValue))
+	{
+		if(fieldValue_int > currentVisualization.dataSet.length)
+		{
+			 $("#"+inputId).val(currentVisualization.dataSet.length);
+		}
+		else if(fieldValue_int < 1)
+		{
+			$("#"+inputId).val(1);
+		}
+		else
+		{
+			refreshVisualization();
+		}
+	}
+	else
+	{
+		 $("#"+inputId).val(currentVisualization.dataSet.length);
+	}
 }
 
 
@@ -227,7 +324,6 @@ function visDataOptionChange(event)
 */
 function getMargins()
 {
-	//{top: 50, right: 55, bottom: 55, left: 55};
 	var mTop = parseInt($("#visMargin_top").val());
 	var mBottom = parseInt($("#visMargin_bottom").val());
 	var mLeft = parseInt($("#visMargin_left").val());
@@ -615,6 +711,16 @@ function addTable(table,tableNumber)
 	$('#tableSelectionBox').append('<option value="'+tableNumber+'">'+tableName+'</option>');
 }
 
+/**
+ * This function will reset the values of the margin controls to the default
+*/
+function resetMargins()
+{
+	$("#visMargin_top").val(defaultMargins.top);
+	$("#visMargin_bottom").val(defaultMargins.bottom);
+	$("#visMargin_left").val(defaultMargins.left);
+	$("#visMargin_right").val(defaultMargins.right);
+}
 
 /**
  * This function is called whenever a visualization type icon is clicked. It finds and loads the appropriate visualization.
@@ -633,8 +739,8 @@ function visTypeClickHandler(event)
 		iconId = event.target.id;
 		$("#visWidth").val(defaultVisWidth);
 		$("#visHeight").val(defaultVisHeight);
-		$("#dataPoints").val(defaultNumPoints);
-
+		$("#dataPoints").val(-1);
+		resetMargins();
 	}
 	console.log(iconId + 'Clicked');
 
