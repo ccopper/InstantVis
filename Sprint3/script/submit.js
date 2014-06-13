@@ -1,3 +1,8 @@
+/** 
+ * Web page event and controller logic
+ *	@module Submit
+ */
+
 //Global reference to table data
 var tables = [];
 var currentTable = 0;
@@ -23,11 +28,13 @@ var useColorIcons = false;
 var runLocal = true;
 //Global reference to the current visualization type
 var currentVis = NaN;
+
 //Flag to indicate not to trigger resizing during saving process
 var saving = false;
-//Global reference to active colors
-var x1ColorIndex = 0;
-var x2ColorIndex = 0;
+
+//Array of visualizations which do not require two color tables 
+var oneColorVisualizations = ["Bar","Scatter","Bubble"];
+
 //Reference to number of columns in color table
 var colorColumns = NaN;
 //The current orientation of the visualization text
@@ -71,7 +78,9 @@ var colors =[
 				{hue:30,saturation:"100%",lightness:"50%"},
 				{hue:60,saturation:"100%",lightness:"60%"}
 			];
-
+//Global reference to active colors
+var visColorId = [5,10];
+var visColors = [colors[visColorId[0]], colors[visColorId[1]]];
 
 $(document).ready(readyFunction);
 	
@@ -145,7 +154,10 @@ function readyFunction()
 
 	$("#tableSelectionBox").change(tableSelectHandler);
 	
-
+	//set the default color borders
+	$("#colorTableX1 td:eq(" + (visColorId[0]) +")").addClass("colorSquareHighLightOn");
+	$("#colorTableX2 td:eq(" + (visColorId[1]) +")").addClass("colorSquareHighLightOn");
+	
 	var urlParams = getURLParams()
  	
  	if(typeof urlParams["URL"] != "undefined")
@@ -230,7 +242,7 @@ function refreshVisualization()
 {
 	$("#visSVG").empty();
 
-	var visColors = [colors[x1ColorIndex],colors[x2ColorIndex]];
+	//var visColors = [colors[x1ColorIndex],colors[x2ColorIndex]];
 	var visWidth = parseInt($("#visWidth").val()) ? parseInt($("#visWidth").val()) : defaultVisWidth;
 	var visHeight = parseInt($("#visHeight").val()) ? parseInt($("#visHeight").val()) : defaultVisHeight;
 	var numDataPoints = parseInt($("#dataPoints").val()) ? parseInt($("#dataPoints").val()) : defaultNumPoints;
@@ -244,6 +256,8 @@ function refreshVisualization()
 	}else{
 		visualization.draw("visSVG");
 	}
+
+	resizeVisWrapper();
 }
 
 /**
@@ -251,67 +265,34 @@ function refreshVisualization()
 */
 function colorClickHandler(event,refresh)
 {
-	var colorId = event.target.id;
-	var colorTableId = colorId.substr(colorId.length - 1);
-	var colorIndex = colorId.replace("color_","").replace("_x"+colorTableId,"");
+
+	//Get the color and table
+	var colorIndex = $(this).data("cId");
+	var colorTableId = $(this).data("tId");
+	
 	console.log("Color Clicked. Index:" + colorIndex + " " + ((colorTableId == "1") ? "x1" : "x2"));
-	if(!refresh)
-	{
-		refresh = true;
-	}
-	if(colorTableId==1)
-	{
-		x1ColorIndex = colorIndex;
-	}
-	else if(colorTableId == 2)
-	{
-		x2ColorIndex = colorIndex;
-	}
-	else
-	{
-		console.error("Color table identifier out of bounds. table: " + colorTableId);
-		return;
-	}
-	if(colorIndex > (colors.length - 1) || colorIndex < 0)
-	{
-		console.error("Color row out of bounds. Row:" + row);
-	}
 
-	if(refresh){
-		refreshVisualization();
-	}
+	visColorId[colorTableId-1] = colorIndex;
+	
+	$("#colorTableX"+ colorTableId + " td").removeClass("colorSquareHighLightOn")
 
-	setColorBorders();
+	$(this).addClass("colorSquareHighLightOn");
+	
+	visColors = [colors[visColorId[0]], colors[visColorId[1]]];
+
+
+	refreshVisualization();
+	
+	
+	tableColorUpdate();
+	// $(this).css("border","solid 2px");
+	// var column_num = parseInt($(this).index()) + 1;
+	// var row_num = parseInt($(this).parent().index()) + 1;
+	// console.log("Cell Clicked: ("+column_num+","+row_num+")");
 }
 
 /**
- * This function will remove borders from inactive color
- * squares and set the border of the active color squares.
-*/
-function setColorBorders()
-{
 
-	for(var j = 1; j < 3; j++)
-	{
-		for(var i in colors)
-		{
-			$("#color_"+i+"_x"+j).removeClass("colorSquareHighLightOn");
-			$("#color_"+i+"_x"+j).addClass("colorSquareHighLightOff");
-			if(i == x1ColorIndex && j == 1)
-			{
-				$("#color_"+i+"_x"+j).removeClass("colorSquareHighLightOff");
-				$("#color_"+i+"_x1").addClass("colorSquareHighLightOn");
-			}
-			if(i == x2ColorIndex && j == 2)
-			{
-				$("#color_"+i+"_x"+j).removeClass("colorSquareHighLightOff");
-				$("#color_"+i+"_x2").addClass("colorSquareHighLightOn");
-			}
-		}
-	}
-}
-
-/**
  * This function will reload the page. Effectively 
  * taking the user back to the main input screen.
 */
@@ -358,28 +339,28 @@ function testLocally()
  				"ColumnType": ["Integer", "Integer", "Integer"],
  				"Caption": "This is a title",			
  				"Values":				
- 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
- 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[9,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
-                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [11, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [12, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [13, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [14, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [15, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [17, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [18, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [19, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [20, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [21, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+ 					[[0, 0, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],					
+ 					[1,	1, 1, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[2,	4, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[3,	9, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[4,	16, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[5,	25, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[6,	15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[7,	21, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[8,	23, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[9,	15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],             
+                     [10, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [11, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [12, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [13, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [14, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [15, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [16, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [17, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [18, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [19, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [20, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [21, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)]]		
  			}		
  		};
  	var table2 = {		
@@ -411,28 +392,28 @@ function testLocally()
  				"ColumnLabel": ["X", "Y"],			
  				"ColumnType": ["Integer", "Integer"],			
  				"Values":				
- 					[[0, 0, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],					
- 					[1,	1, 1, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[2,	4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[3,	9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[4,	16, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[5,	25, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[6,	15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[7,	21, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[8,	23, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],				
- 					[9,	19, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],             
-                     [10, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [11, 10, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [12, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [13, 7, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [14, 9, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [15, 12, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [16, 15, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [17, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [18, 3, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [19, 4, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [20, 5, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)],              
-                     [21, 8, randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50), randNum(0,50)]]		
+ 					[[0, 0, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],					
+ 					[1,	1, 1, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[2,	4, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[3,	9, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[4,	16, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[5,	25, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[6,	15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[7,	21, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[8,	23, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],				
+ 					[9,	19, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],             
+                     [10, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [11, 10, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [12, 8, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [13, 7, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [14, 9, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [15, 12, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [16, 15, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [17, 8, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [18, 3, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [19, 4, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [20, 5, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)],              
+                     [21, 8, (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50), (Math.random()*50)]]		
  			}		
  		};
  	tables = [table1,table2];
@@ -452,7 +433,7 @@ function testLocally()
 	//Load first visualization
 	tableSelectHandler(0);
 	//Set Border Styling
-	colorClickHandler({target:{id:"color_0_x1"}},false);
+
 }
 
 /**
@@ -468,6 +449,9 @@ function changeTextOrientation(event)
 	}
 	textOrientation = newOrientation;
 	refreshVisualization();
+
+	//colorClickHandler({target:{id:"color_0_x1"}});
+
 }
 
 /**
@@ -477,7 +461,7 @@ function resizeVisWrapper()
 {
 	if(saving)
 	{
-		return;
+		//return;
 	}
 	//Let the graph auto size
 	var actWidth = $("#visSVG").outerWidth();
@@ -485,9 +469,9 @@ function resizeVisWrapper()
 	{
 		actWidth = document.body.clientWidth * 0.6;
 	}
-	$("#visualizationContainer").width(actWidth + 15);
+	$("#visualizationContainer").width(actWidth + 35);
 	//Fix table width
-	$("#tableContainer").width($("#visWrapper").width() - $("#sPaneDiv").outerWidth() - $("#visualizationContainer").outerWidth() - 25);
+	$("#tableContainer").width($("#visWrapper").width() - $("#sPaneDiv").outerWidth() - $("#visualizationContainer").outerWidth() - 30);
 }
 
 /**
@@ -596,8 +580,7 @@ function parseComplete(data)
 	tableSelectHandler(0);
 	
 	//Set Border Styling
-	colorClickHandler({target:{id:"color_0_x1"}},false);
-
+	
 
 }
 
@@ -669,7 +652,7 @@ function visTypeClickHandler(event)
 	}else{
 		currentVis = visType	
 	}
-	
+
 	refreshVisualization();
 
 	if(hideSecondColorPalette())
@@ -686,7 +669,7 @@ function visTypeClickHandler(event)
 	}
 
 	updateVisSizeControls();
-	
+
 	updateTableVis(visType);
 	//Since we have initilized a new graph resize the vis/table
 	if($("#tableContainer").is(':visible'))
@@ -835,9 +818,9 @@ function toggleDataTable()
 function toggleEditControls()
 {
 	$("#editVisualization").toggle();
-	var widthBefore = $("#visualizationContainer").width();
-	$("#editVisualization").resize();
-	$("#visualizationContainer").width(widthBefore);
+	//var widthBefore = $("#visualizationContainer").innerWidth();
+	//$("#editVisualization").resize();
+	//$("#visualizationContainer").width(widthBefore);
 
 }
 
@@ -946,8 +929,8 @@ function exportVisualization()
 */
 function populateColorTable()
 {
-	tableX1 = document.getElementById("colorTableX1");
-	tableX2 = document.getElementById("colorTableX2");
+	var tableX1 = $("#colorTableX1");
+	var tableX2 = $("#colorTableX2");
 	
 	if(!tableX1 || !tableX2)
 	{
@@ -961,26 +944,28 @@ function populateColorTable()
 	var colorRowCounter = 0;
 	while(colorCounter < colors.length)
 	{
-		rowX1 = tableX1.insertRow(colorRowCounter);
-		rowX2 = tableX2.insertRow(colorRowCounter);
+		tableX1.append("<tr />");
+		tableX2.append("<tr />");
 		var columnCounter = ((colors.length - colorCounter) >= colorColumns) ? colorColumns : colors.length - colorCounter;
 		for(var i = 0; i < columnCounter; i++)
 		{
-			cellX1 = rowX1.insertCell(i);
-			hslColor = "hsl("+colors[colorCounter].hue+","+colors[colorCounter].saturation+","+colors[colorCounter].lightness+")";
-			cellX1.id = "color_"+colorCounter+"_x1";
-			$('#'+cellX1.id).click(colorClickHandler);
-			cellX1.style.backgroundColor = hslColor;
-			cellX1.style.width = "10px";
-			cellX1.style.height = "10px";
+			var cell = $("<td>",
+			{
+				"class": "colorCell",
+				"style": "background-color: hsl("+colors[colorCounter].hue+","+colors[colorCounter].saturation+","+colors[colorCounter].lightness+")",
+				"click": colorClickHandler,
+				"data": 
+				{ 
+					"cId": colorCounter,
+					"tId": 1
+				}
+			});
+			
+			tableX1.find("tr:last").append(cell);
+			//Clone the cell(true preserves data and events)
+			tableX2.find("tr:last").append(cell.clone(true).data("tId", 2));
 
-			cellX2 = rowX2.insertCell(i);
-			hslColor = "hsl("+colors[colorCounter].hue+","+colors[colorCounter].saturation+","+colors[colorCounter].lightness+")";
-			cellX2.id = "color_"+colorCounter+"_x2";
-			$('#'+cellX2.id).click(colorClickHandler);
-			cellX2.style.backgroundColor = hslColor;
-			cellX2.style.width = "10px";
-			cellX2.style.height = "10px";
+			
 			colorCounter++;
 		}
 		colorRowCounter++;

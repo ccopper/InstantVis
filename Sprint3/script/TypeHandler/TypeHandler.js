@@ -41,6 +41,8 @@ TypeHandler.prototype.processTable = function(table)
 		}
 	}
 	
+	this.removeEmpty(table.Data.Values);
+	
 	//Check for labels
 	var hasLabels = true;	
 	var origHead = table.Data.Values[0].slice(0);	
@@ -55,8 +57,6 @@ TypeHandler.prototype.processTable = function(table)
 			table.Data.ColumnLabel[i] = table.Data.ColumnLabel[i].replace(/\s+/gm, " ");
 		}	
 	}
-	
-	this.removeEmpty(table.Data.Values);
 	
 	//Loop through all items
 

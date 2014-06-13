@@ -1,3 +1,10 @@
+fieldset
+{
+	margin: 2px;
+	padding:2px;
+}
+
+
 #logo
 {
 	text-align: center;
@@ -130,9 +137,12 @@
 }
 #editVisualization
 {
+
 	display: inline-block;
 	float: left;
 }
+
+
 #colorPalette
 {
     float: left;
@@ -183,9 +193,9 @@
 /* TABLE FORMATTING */
 #DataTable
 {	
-
+	
 	font-family: Arial;
-	font-size: 11pt;
+	font-size: 10pt;
 	border: none;
 	background:rgba(0,0,0,0);
 	background-color:rgba(0,0,0,0);
@@ -407,6 +417,13 @@ html
 	border-radius: 3px;
 }
 
+.colorCell 
+{
+	border: solid white 2px;
+	height: 10px;
+	width: 10px;
+}
+
 .colorSquareHighLightOn
 {
 	border: solid black 2px;
@@ -543,3 +560,9 @@ html
 	background: grey;
 	cursor: pointer;
 }
+.depColorPreview
+{
+	border:1px solid black;
+	padding: 0px 2px 0px 2px;
+}
+
