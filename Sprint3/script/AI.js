@@ -73,9 +73,18 @@ var determineVisualizationScore = function(dataset, columnsToUse)
 	return scoreNumerator / columnsToUse.length;
 }
 
-// find the leftmost most unique column that excludes any column numbers in the exclude array
-// if excludeStrings == true, do not select a string column
-// return -1 if no columns were found
+/**
+ * Find the leftmost most unique column that excludes any column numbers in the exclude array.
+ * If excludeStrings == true, do not select a string column.
+ *
+ * @function
+ * @param currentDataset An element from {@link AIdataStructure}
+ * @param {Integer[]} excludeColumns Do not consider these columns when selecting the next 
+ * @param {Boolean} excludeStrings if true, do not consider string columns
+ *
+ * @returns {Integer} The column index of the next best column
+ * @returns -1 if no columns were found
+ */
 var findNextBestAvailableColumn = function(currentDataset, excludeColumns, excludeStrings) 
 {
 	var usableColumns = []; // columns that are not on the exclude list
@@ -134,6 +143,88 @@ var findNextBestAvailableColumn = function(currentDataset, excludeColumns, exclu
 	}
 }
 
+/**
+ * Pick variable(s) for the treemap. The selection is: the independent var is a string col and the
+ * dependent var is numeric. If this cannot be satisfied, then select only one numeric column. In cases
+ * where there are more than one column with the same best unique score, select the leftmost one.
+ *
+ * @function
+ * @param currentDataset An element from {@link AIdataStructure}
+ * @returns {Integer[]} The columns to use for the tree map
+ */
+var selectTreemapVars = function(currentDataset)
+{
+	var cols = currentDataset.Data.Cols;
+	var treemapVars = [];
+	var bestString;
+	var bestNumeric;
+	var stringFound = false;
+	var numericFound = false;
+
+	
+	// find the best numeric column
+	for (var i = 0; i < cols; i++)
+	{
+		if (currentDataset.Data.ColumnType[i] != "String")
+		{
+			if (numericFound == true)
+			{
+				if (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestNumeric])
+				{
+					bestNumeric = i;
+				}
+			}
+			else
+			{
+				numericFound = true;
+				bestNumeric = i;
+			}
+		}
+	}
+
+	// see if there is a string column, select the best one
+	for (var i = 0; i < cols; i++)
+	{
+		if (i != bestNumeric)
+		{
+			if (currentDataset.Data.ColumnType[i] == "String")
+			{
+				if (stringFound == true)
+				{
+					if (currentDataset.Data.ColumnUnique[i] > currentDataset.Data.ColumnUnique[bestString])
+					{
+						bestString = i;
+					}
+				}
+				else
+				{
+					stringFound = true;
+					bestString = i;
+				}
+			}
+		}
+	}
+
+	if (stringFound == true && numericFound == true)
+	{
+		treemapVars[0] = bestString;
+		treemapVars[1] = bestNumeric;
+	}
+	else if (numericFound == true)
+	{
+		treemapVars[0] = bestNumeric;
+	}
+	else
+	{
+		console.log("AI: unable to find good variables for treemap.");
+	}
+
+	console.log("AI: treemap var selector: string col " + (stringFound == true ? bestString : "(no string selected) ") +
+			", numeric col " + bestNumeric);
+
+	return treemapVars;
+}
+		
 /**
  * Find the best independent variable for a given dataset, this is the least unique column.
  *
@@ -227,7 +318,8 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				haveOnlyTwoColumns = false;
 			}
 
-			var twoColumnOnlyVisTypes = ["Bar", "Pie", "Tree", "Scatter"];
+			var treemapStyleVarsTypes = ["Tree", "Pie"];
+			var twoColumnOnlyVisTypes = ["Bar", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
 			var twoOrThreeColumnVisTypes = ["Line"]; 
 			var twoColumnVisTypes = twoOrThreeColumnVisTypes.concat(twoColumnOnlyVisTypes);
@@ -284,7 +376,25 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				}
 			}
 
+			if (treemapStyleVarsTypes.length > 0)
+			{
+				for (var i = 0; i < treemapStyleVarsTypes.length; i++)
+				{
+					var treemapVars = selectTreemapVars(currentDataset);
+					if (treemapVars.length > 0)
+					{
+						visualizations.push(
+								{
+									"Type" : treemapStyleVarsTypes[i],
+									"DataColumns" : treemapVars,
+									"Score" : determineVisualizationScore(currentDataset, treemapVars)
+								}
+							);
+					}
+				}
+			}
 		}
+
 
 		// add the selected visualizations array to the dataset, note that this could be an empty array
 		// in the case that no suitable visualizations were found
@@ -338,7 +448,19 @@ var generateVisTitle = function(AIdataStructure)
 			var visTitle;
 			var visualization = element.Visualizations[visIndex];
 
-			if (visualization.DataColumns.length == 2) // one independent and one dependent 
+			if (visualization.Type == "Tree" || visualization.Type == "Pie")
+			{
+				if (visualization.DataColumns.length == 2) // string and numeric
+				{
+					visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[1]] + " by " +
+						element.Data.ColumnLabel[visualization.DataColumns[0]];
+				}
+				else
+				{
+					visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[0]];
+				}
+			}
+			else if (visualization.DataColumns.length == 2) // one independent and one dependent 
 			{
 				visTitle = "" + element.Data.ColumnLabel[visualization.DataColumns[1]] + " vs " + 
 					element.Data.ColumnLabel[visualization.DataColumns[0]];

@@ -334,16 +334,16 @@ function testLocally()
  				"Score": 2		
  			},{			
  				"Type": "Scatter",			
- 				"DataColumns": [0, 1],	
- 				"Score": 10	
+ 				"DataColumns": [0, 1, 2],	
+ 				"Score": 10		
  			},{         
                  "Type": "Pie",          
                  "DataColumns": [0, 1],
                  "Score": 3       
              },{         
                  "Type": "Tree",          
-                 "DataColumns": [0, 1],
-                 "Score": 4       
+                 "DataColumns": [0],
+                 "Score": 4           
              },{         
                  "Type": "Bubble",          
                  "DataColumns": [0, 1, 2],
