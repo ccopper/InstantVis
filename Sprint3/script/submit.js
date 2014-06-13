@@ -211,6 +211,7 @@ function visDataOptionChange(event)
 
 /**
  * This function will read the margin values from the inputs and return a margin object.
+ * @returns {Object} - An object containing the margins for each side of the visualization
 */
 function getMargins()
 {
@@ -269,7 +270,7 @@ function colorClickHandler(event,refresh)
 	else
 	{
 		console.error("Color table identifier out of bounds. table: " + colorTableId);
-		return;
+		`;
 	}
 	if(colorIndex > (colors.length - 1) || colorIndex < 0)
 	{
@@ -562,7 +563,7 @@ function parseComplete(data)
 	if(data.Status == 0)
 	{
 		nonRecoverableError("No tables found. Please try again.");
-		return
+		return;
 	}
 	
 	//Remove Keypress handler
@@ -712,6 +713,7 @@ function updateVisSizeControls()
 /**
  * This function will determine if the current visualization
  * should show one or two color palettes
+ * @returns {Boolean} - True to hide color palette, false to keep it showing
 */
 function hideSecondColorPalette()
 {
@@ -842,6 +844,7 @@ function toggleEditControls()
 /**
  * This function will return the appropriate visualization types for a specified table.
  * @param {number} tableNumber - A number representing a table to be pulled from the analyzer data.
+ * @returns {Array} - An array of strings representing graph types for a particular table
 */
 function getGraphTypes(tableNumber)
 {
@@ -866,6 +869,7 @@ function getGraphTypes(tableNumber)
  * This function will return if a given element exists in a given array.
  * @param {Array} array - The array to check for the given element
  * @param {Object} element - The element to check for in the array
+ * @returns {Boolean} - True if the array contains the element, false otherwise.
 */
 function arrayContains(array,element)
 {
@@ -887,6 +891,7 @@ function arrayContains(array,element)
 /**
  * This function checks the url for a supplied ?URL= parameter
  * and tries to parse the url automatically.
+ * @returns {Object} - An object that represents the url parameters.
 */
 function getURLParams()
 {
