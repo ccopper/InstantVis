@@ -114,6 +114,24 @@ function TableData()
 		this._cols = maxRowLengthFound;
 	}
 
+
+	// see if the number of column headings does not match the number of columns
+	// if this happens, delete all current column headings and replace them with
+	// empty strings. The type handler later on in the AI phase will detect an
+	// empty heading and generate new headings. 
+	this.lookForHeadingMismatch = function()
+	{
+		if (this._columnLabel.length != this._cols)
+		{
+			var newLabels = [];
+			for (var i = 0; i < this._cols; i++)
+			{
+				newLabels.push("");
+			}
+			this.setColumnLabel(newLabels);
+		}
+	}
+
 	// look for tables that have missing elements and report the number found
 	this.numberOfMissingElements = function()
 	{
@@ -302,7 +320,11 @@ function getTableData()
 				break;
 			}
 		}
+
 		tableData.calcDimensions();
+
+		tableData.lookForHeadingMismatch();
+
 		if (tableData.numberOfMissingElements() == 0 &&
 			 tableData.tableIsRectangular() == true)
 		{
