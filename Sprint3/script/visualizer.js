@@ -2631,6 +2631,7 @@ Bar.prototype.draw = function(divId)
                         .rangePoints([barPadding,width - barPadding - barWidth]);
     }
   
+    console.log("creatng y scale");
     var yScale = d3.scale.linear()
                     .domain([ function() 
                     {
@@ -2761,6 +2762,7 @@ Bar.prototype.draw = function(divId)
         })
         .attr("y", function(d) 
         {
+            console.log("y1 rect y: " + yScale(d[1]));
             return (yScale(d[1]));
         })
         .attr("width", barWidth)
