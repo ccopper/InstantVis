@@ -81,7 +81,7 @@ var colors =[
 				{hue:30,saturation:"100%",lightness:"50%"},
 				{hue:60,saturation:"100%",lightness:"60%"},
 				{hue:152,saturation:"199%",lightness:"44%"},
-				{hue:31,saturation:"240%",lightness:"88%"}
+				{hue:229,saturation:"82%",lightness:"19%"}
 			];
 //Global reference to active colors
 var visColorId = [5,10];
