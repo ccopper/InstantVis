@@ -499,8 +499,7 @@ function tableSelectHandler(event)
 	//Load visualization with highest confidence score
 
 	currentVis = "initial"
-	var bestVisIndex = getBestVisualization(0);
-	visTypeClickHandler(tables[0].Visualizations[bestVisIndex].Type+'_icon');
+	visTypeClickHandler('Bar_icon');
 
 }
 
@@ -632,6 +631,10 @@ function visTypeClickHandler(event)
 	}else{
 		console.log('type:'+typeof(event)+'\n\t'+event);
 		iconId = event.target.id;
+		$("#visWidth").val(defaultVisWidth);
+		$("#visHeight").val(defaultVisHeight);
+		$("#dataPoints").val(defaultNumPoints);
+
 	}
 	console.log(iconId + 'Clicked');
 
@@ -652,6 +655,7 @@ function visTypeClickHandler(event)
 	}else{
 		currentVis = visType	
 	}
+
 
 	refreshVisualization();
 
