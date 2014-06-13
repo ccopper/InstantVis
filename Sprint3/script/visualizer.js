@@ -3404,12 +3404,12 @@ function getMixedColors(numColorsOut, colors)
     var newColors = [];
     for (var i = 0; i < numColorsIn; i++) 
     {
-        var increment = 60/(numColorsOut/numColorsIn);
+        var increment = 50/(numColorsOut/numColorsIn);
         var hue = colors[i].hue;
         var sat = colors[i].saturation;
         for (var j = 0; j < (numColorsOut/numColorsIn); j++) 
         {
-            newColors.push("hsl(" + hue + ", " + sat + ", " + (25+(j*increment)) + "%)");
+            newColors.push("hsl(" + hue + ", " + sat + ", " + (35+(j*increment)) + "%)");
         }
     }
     console.log("newColors: " + newColors.toString());
