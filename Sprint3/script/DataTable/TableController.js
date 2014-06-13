@@ -116,10 +116,10 @@ function populateTable(data)
 	$("#DTSelMatInd tr").append("<th id=\"IndLbl\">X</th>");
 	
 	$("#DTSelMatD1").append("<tr /><");
-	$("#DTSelMatD1 tr").append("<th id=\"D1Cell\"><span id=\"D1Lbl\" class=\"depColorPreview\">Y</span></th>");
+	$("#DTSelMatD1 tr").append("<th id=\"D1Cell\"><span id=\"D1Lbl\" >Y</span></th>");
 	
 	$("#DTSelMatD2").append("<tr /><");
-	$("#DTSelMatD2 tr").append("<th id=\"D2Cell\"><span id=\"D2Lbl\" class=\"depColorPreview\">Y</span></th>");
+	$("#DTSelMatD2 tr").append("<th id=\"D2Cell\"><span id=\"D2Lbl\" >Y</span></th>");
 	
 	for(var hItem in data.Data.ColumnLabel)
 	{
@@ -127,8 +127,8 @@ function populateTable(data)
 		$("#DTHeadEdit tr").append(createHeaderEditor(hItem));
 		
 		$("#DTSelMatInd tr").append(createRadio("Ind", hItem, false));
-		$("#DTSelMatD1 tr").append(createRadio("D1", hItem, false));
-		$("#DTSelMatD2 tr").append(createRadio("D2", hItem, false));
+		$("#DTSelMatD1 tr").append(createRadio("D1", hItem, true));
+		$("#DTSelMatD2 tr").append(createRadio("D2", hItem, true));
 	}
   
 	//Populate the body
@@ -173,15 +173,23 @@ function tableColorUpdate()
 {
 	var c1 = visColors[0];
 	var c2 = visColors[1];
+
 	
-	$("#D1Lbl").css("background-color", "hsla(" + c1.hue + "," + c1.saturation + "," + c1.lightness + ",1.0)");
+	if(TCIns.AIObj.Visualizations[TCIns.VisID].Type == "Pie" || TCIns.AIObj.Visualizations[TCIns.VisID].Type == "Tree")
+	{
+		$("#DTSelMatInd th").css("background-color", "hsla(0,0,0,0)");
+		$("#DTSelMatD1 th").css("background-color", "hsla(0,0,0,0)");
+		return;
+	}
+	
+	$("#DTSelMatD1 th").css("background-color", "hsla(" + c1.hue + "," + c1.saturation + "," + c1.lightness + ",1.0)");
 	
 	if(!TCIns.needD2)
 	{
-		$("#D2Lbl").css("background-color", "hsla(" + c2.hue + "," + c2.saturation + "," + c2.lightness + ",1.0)");
+		$("#DTSelMatD2 th").css("background-color", "hsla(" + c2.hue + "," + c2.saturation + "," + c2.lightness + ",1.0)");
 	} else
 	{
-		$("#D2Lbl").css("background-color", "hsla(0,0,0,0)");
+		$("#DTSelMatD2 th").css("background-color", "hsla(0,0,0,0)");
 	}
 
 }
@@ -239,7 +247,6 @@ function updateTableVis(visType)
 	}
 	
 	$("#VisLabel").text(TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle);
-	
 
 	
 	//To set the value it must be passed as an array
@@ -256,7 +263,10 @@ function updateTableVis(visType)
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y1");
 			$("#D2Lbl").text("Y2");
-			$("#D2Lbl").addClass("depColorPreview");
+			
+			$("#LblX1").text("Y1");
+			$("#LblX2").text("Y2");
+			
 			TCIns.needD2 = false;
 			TCIns.needD1 = true;
 		break;
@@ -265,6 +275,14 @@ function updateTableVis(visType)
 		case "Pie":
 			$("#D1Cell").css("border-radius", "0px 0px 0px 5px");
 			$("#DTSelMatD2").hide();
+			
+			$("#IndLbl").text("Cat.");
+			$("#D1Lbl").text("Val.");
+			$("#D2Lbl").text("Y2");
+			
+			$("#LblX1").text("Primary");
+			$("#LblX2").text("Secondary");			
+			
 			TCIns.needD2 = false;
 			TCIns.needD1 = false;
 		break;
@@ -273,7 +291,9 @@ function updateTableVis(visType)
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y");
 			$("#D2Lbl").text("SIZE");
-			$("#D2Lbl").removeClass("depColorPreview");
+			
+			$("#LblX1").text("Y");			
+			
 			TCIns.needD2 = true;
 			TCIns.needD1 = true;
 		break;
@@ -682,7 +702,19 @@ function saveCell(event)
 	
 	var val = $("#cellEditor").val();
 	
-	TCIns.AIObj.Data.Values[cellRow][cellCol] = val;
+	if(TCIns.AIObj.Data.ColumnType[cellCol] != "String" && isNaN(parseFloat(val)))
+	{
+		
+		$("#dWarn").css("top", event.pageY).css("left", event.pageX).show().fadeOut(2000);
+			
+			
+		return;
+	} else if(TCIns.AIObj.Data.ColumnType[cellCol] != "String" && !isNaN(parseFloat(val)))
+	{
+		val = parseFloat(val);
+	}
+
+	TCIns.AIObj.Data.Values[cellRow][cellCol] = val;	
 	
 	$(cellPtr).empty();
 	$(cellPtr).text(val);
@@ -691,8 +723,7 @@ function saveCell(event)
 
 	$(cellPtr).bind("click", editCell);
 	
-	$("#DTRow" + cellRow).children("td:first-child").children().hide();
-	
+	$("#DTRow" + cellRow).children("td:first-child").children().hide();	
 	
 	TCIns.dataCallBack();
 	

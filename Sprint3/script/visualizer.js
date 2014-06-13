@@ -3384,7 +3384,7 @@ function getData(columns, values, numDataPoints, types)
     var oneColumnString = false;
     if (columns.length == 1) 
     {
-        if (types[0] == "String")
+        if (types[columns[0]] == "String")
         {
             oneColumnString = true;
         }

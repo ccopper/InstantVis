@@ -500,6 +500,40 @@ var generateVisTitle = function(AIdataStructure)
 }
 
 /**
+ * Remove datasets from the {@link AIdataStructure} if they have no associated visualization
+ * or values.
+ *
+ * @function
+ * @parame {AIdataStructure} 
+ * @returns {AIdataStructure} With elements removed
+ */
+var removeDatasetsWithNoAssociatedVisualizationsOrValues = function(AIdataStructure)
+{
+	var visualizationsRemoved = 0;
+	// remove empty visualizations
+
+	var AIdataStructureClean = [];
+
+	for (var i = 0; i < AIdataStructure.length; i++) 
+	{
+		if (AIdataStructure[i].Visualizations.length == 0 ||
+		    AIdataStructure[i].Data.Values.length == 0)
+		{
+			visualizationsRemoved = visualizationsRemoved + 1;
+		}
+		else
+		{
+			AIdataStructureClean.push(AIdataStructure[i]);
+		}
+	}
+	
+	console.log("AI: removed " + visualizationsRemoved + " visualization" + 
+			(visualizationsRemoved > 1 ? "s" : ""));
+
+	return AIdataStructureClean;
+}
+
+/**
  * Take raw parser data and return an {@link AIdataStructure} object to be used by the visualizer.
  *
  * @global
@@ -516,6 +550,7 @@ function AI(parserData)
 		var dataColumns = [];
 		var currentTable = parserData.Data[tableNum];
 		var columnType = [""];
+		var emptyVis = [];
 		
 		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
@@ -524,7 +559,7 @@ function AI(parserData)
 		{
 			var visDataElement = 
 				{
-					"Visualizations" : [],
+					"Visualizations" : emptyVis,
 					"Data" : {
 						"Rows" : currentTable.Rows,
 						"Caption" : currentTable.Caption,
@@ -550,29 +585,11 @@ function AI(parserData)
 
 	rankDatasets(AIdataStructure);
 
-	var visualizationsRemoved = 0;
-	// remove empty visualizations
-	for (var i = 0; i < AIdataStructure.length; i++) 
-	{
-		if (AIdataStructure[i].Visualizations.length == 0 ||
-		    AIdataStructure[i].Data.Values.length == 0)
-		{
-			AIdataStructure.splice(i, 1);
-			visualizationsRemoved = visualizationsRemoved + 1;
-		}
-	}
-
 	generateVisTitle(AIdataStructure);
-	
-	var consoleRemovedMessage = "";
 
-	if (visualizationsRemoved > 0) 
-	{ 
-		consoleRemovedMessage = " removed " + visualizationsRemoved + 
-			" visualizations (perhaps all string data was encountered in a table) and ";
-	}
+	AIdataStructure = removeDatasetsWithNoAssociatedVisualizationsOrValues(AIdataStructure);
 	
-	console.log("AI " + consoleRemovedMessage + " produced this data " 
+	console.log("AI produced this data: " 
 			+ JSON.stringify(AIdataStructure));
 
 	return AIdataStructure;
