@@ -3359,7 +3359,7 @@ function getMixedColors(numColorsOut, colors)
         var sat = colors[i].saturation;
         for (var j = 0; j < (numColorsOut/numColorsIn); j++) 
         {
-            newColors.push("hsl(" + hue + ", " + sat + ", " + (25+(j*increment)) + ")");
+            newColors.push("hsl(" + hue + ", " + sat + ", " + (25+(j*increment)) + "%)");
         }
     }
     console.log("newColors: " + newColors.toString());
