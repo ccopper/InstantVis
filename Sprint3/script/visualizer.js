@@ -1462,7 +1462,7 @@ Scatter.prototype.draw = function(divId)
     }
 
     // Get the first data set and color.
-    var data = getData([0,1],this.dataSet);
+    var data = getData([0,1],this.dataSet, numValuesPerDataSet);
     var color = this.colors[0];
 
     // Create the first data set circles.
@@ -1561,7 +1561,7 @@ Scatter.prototype.draw = function(divId)
     // Create second data set.
     if (multiset) 
     {
-        var data2 = getData([0,2],this.dataSet);
+        var data2 = getData([0,2],this.dataSet, numValuesPerDataSet);
         var color2 = this.colors[1];
 
         svg.selectAll(("circle.set" + 2))
@@ -1752,6 +1752,7 @@ Scatter.prototype.draw = function(divId)
 function Line(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation, showPoints) 
 {
     this.dataSet = dataSet;
+    console.log("this.dataSet: " + this.dataSet.toString());
     this.labels = labels;
     this.columnTypes = columnTypes;
     this.title = title;
@@ -2200,7 +2201,9 @@ Line.prototype.draw = function (divId)
     // For each data set.
     for (var i = 1; i < numDataSets; i++) 
     {
-        data = getData([0,i],this.dataSet);
+        console.log("calling getData for y1... this.dataSet: " + this.dataSet.toString());
+        data = getData([0,i], this.dataSet, numValues);
+        console.log("...back from calling getData for y1");
         dataScaled = [];
 
         // Scale the data sets.
@@ -3290,6 +3293,8 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
 function getData(columns, values, numDataPoints)
 {   
     console.log("columns: " + columns.toString());
+    console.log("values: " + values.toString());
+    console.log("numDataPoints: " + numDataPoints);
     var data = []; // The dataset extracted from values.
     var row = [];
     var numRows = values.length;
@@ -3317,12 +3322,14 @@ function getData(columns, values, numDataPoints)
             row[k] = values[j][columns[k]];
         }
         // Add the row to the extracted dataset.
+        console.log("pushing row to data: " + row.toString());
         data.push(row);
     }
     if (oneColumn) 
     {
         columns.splice(columns.length-1, 1);
     }
+    console.log("returning - data: " + data.toString());
     return data;
 }
 
@@ -3397,12 +3404,12 @@ function getMixedColors(numColorsOut, colors)
     var newColors = [];
     for (var i = 0; i < numColorsIn; i++) 
     {
-        var increment = 60/(numColorsOut/numColorsIn);
+        var increment = 50/(numColorsOut/numColorsIn);
         var hue = colors[i].hue;
         var sat = colors[i].saturation;
         for (var j = 0; j < (numColorsOut/numColorsIn); j++) 
         {
-            newColors.push("hsl(" + hue + ", " + sat + ", " + (25+(j*increment)) + "%)");
+            newColors.push("hsl(" + hue + ", " + sat + ", " + (35+(j*increment)) + "%)");
         }
     }
     console.log("newColors: " + newColors.toString());
