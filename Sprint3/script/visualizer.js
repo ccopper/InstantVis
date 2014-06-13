@@ -3362,6 +3362,7 @@ function getMixedColors(numColorsOut, colors)
             newColors.push("hsl(" + hue + ", " + sat + ", " + (25+(j*increment)) + ")");
         }
     }
+    console.log("newColors: " + newColors.toString());
     return newColors;
 }
 
