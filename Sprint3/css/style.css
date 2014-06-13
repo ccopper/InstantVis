@@ -103,6 +103,11 @@
 	padding:0px;
 }
 
+#visSize
+{
+	vertical-align: middle;
+}
+
 #visualizationContainer
 {
 	float:left;
@@ -367,12 +372,12 @@
 #colorTableX1
 {
 	float: left;
-	border: solid black 1px;
+	/*border: solid black 1px;*/
 }
 #colorTableX2
 {
 	float: right;
-	border: solid black 1px;
+	/*border: solid black 1px;*/
 }
 
 .imageButton

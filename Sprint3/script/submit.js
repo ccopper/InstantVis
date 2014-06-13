@@ -3,6 +3,16 @@ var tables = [];
 var currentTable = 0;
 //Global reference to current visualization type
 var visType = NaN;
+//Constraints for visualization
+var visMinHeight = 100;
+var visMinWidth = 100;
+var visMaxHeight = 2000;
+var visMaxWidth  = 2000;
+var visMaxDataPoints = 1000;
+var visMinDataPoints = 1;
+var defaultVisWidth = 600;
+var defaultVisHeight = 300;
+var defaultNumPoints = 22;
 //Global reference to table column sets. [[[1,2],[2,3]],[[4,5],[1,2]]]
 var tableColumnSets = [];
 //var for Draggable splitpane
@@ -13,13 +23,13 @@ var useColorIcons = false;
 var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
-//Array of visualizations which do not require two color tables 
-var oneColorVisualizations = ["Bar","Scatter","Bubble"];
 //Global reference to active colors
 var x1ColorIndex = 0;
 var x2ColorIndex = 0;
 //Reference to number of columns in color table
 var colorColumns = NaN;
+//The current orientation of the visualization text
+var textOrientation = "Horizontal";
 //Color table
 var colors =[	
 				{hue:120,saturation:"41%",lightness:"64%"},	// Pale Green
@@ -79,7 +89,6 @@ function readyFunction()
 	});
 	$("#submitButton").click(function()
 	{
-
 		submitForm();
 	});
 	
@@ -143,21 +152,110 @@ function readyFunction()
  		 submitForm();
   	}
 
+  	//Set radio button click events
+  	$("#radio_Vertical").click(changeTextOrientation);
+  	$("#radio_Horizontal").click(changeTextOrientation);
+  	$("#radio_Angled").click(changeTextOrientation);
+
+  	//Initialize inputs
+  	$("#visHeight").attr({"max":visMaxHeight,"min":visMinHeight});
+  	$("#visHeight").on('change',visSizeChangeHandler);
+  	$("#visWidth").attr({"max":visMaxWidth,"min":visMinWidth});
+  	$("#visWidth").on('change',visSizeChangeHandler);
+  	$("#dataPoints").attr({"max":visMaxDataPoints,"min":visMinDataPoints});
+  	$("#dataPoints").on('change',visDataOptionChange);
+
+  	$("#visMargin_top").on('change',visSizeChangeHandler);
+  	$("#visMargin_bottom").on('change',visSizeChangeHandler);
+  	$("#visMargin_left").on('change',visSizeChangeHandler);
+  	$("#visMargin_right").on('change',visSizeChangeHandler);
+}
+
+/**
+ * This function will update the visualization size based on the size controls.
+*/
+function visSizeChangeHandler(event)
+{
+	var inputId = event.target.id;
+	var numPattern = new RegExp("^\\d+$");
+	if(numPattern.test($("#"+inputId).val()))
+	{
+		console.log("Detected number size.");
+		refreshVisualization();
+	}
+	else
+	{
+		console.log("Detected Alpha character.");
+		if(inputId == "visHeight")
+		{
+			$("#"+inputId).val($("#visSVG").height());
+		}
+		else
+		{
+			$("#"+inputId).val($("#visSVG").width());
+		}
+		
+	}
+}
+
+/**
+ * This function will detect any changes to the number of inputs and refresh the visualization
+*/
+function visDataOptionChange(event)
+{
+	console.log("Points change by: "+event.target.id);
+}
 
 
+/**
+ * This function will read the margin values from the inputs and return a margin object.
+*/
+function getMargins()
+{
+	//{top: 50, right: 55, bottom: 55, left: 55};
+	var mTop = parseInt($("#visMargin_top").val());
+	var mBottom = parseInt($("#visMargin_bottom").val());
+	var mLeft = parseInt($("#visMargin_left").val());
+	var mRight = parseInt($("#visMargin_right").val());
+	return {top: mTop, bottom: mBottom, left: mLeft, right: mRight}
+}
+
+/**
+ * This function will take any updated visualization settings and draw a new visualization
+*/
+function refreshVisualization()
+{
+	$("#visSVG").empty();
+
+	var visColors = [colors[x1ColorIndex],colors[x2ColorIndex]];
+	var visWidth = parseInt($("#visWidth").val()) ? parseInt($("#visWidth").val()) : defaultVisWidth;
+	var visHeight = parseInt($("#visHeight").val()) ? parseInt($("#visHeight").val()) : defaultVisHeight;
+	var numDataPoints = parseInt($("#dataPoints").val()) ? parseInt($("#dataPoints").val()) : defaultNumPoints;
+	var visMargins = getMargins();
+
+	var visualization = getVisualization(tables[currentTable],visType,visColors,visWidth,visHeight,numDataPoints,visMargins,textOrientation);
+
+	if(!visualization)
+	{
+		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
+	}else{
+		visualization.draw("visSVG");
+	}
 }
 
 /**
  * This function will look at the id of the table cell clicked and update the visualization color accordingly
 */
-function colorClickHandler(event)
+function colorClickHandler(event,refresh)
 {
-	console.log("Got here");
 	var colorId = event.target.id;
 	var colorTableId = colorId.substr(colorId.length - 1);
 	var colorIndex = colorId.replace("color_","").replace("_x"+colorTableId,"");
 	console.log("Color Clicked. Index:" + colorIndex + " " + ((colorTableId == "1") ? "x1" : "x2"));
-
+	if(!refresh)
+	{
+		refresh = true;
+	}
 	if(colorTableId==1)
 	{
 		x1ColorIndex = colorIndex;
@@ -176,23 +274,11 @@ function colorClickHandler(event)
 		console.error("Color row out of bounds. Row:" + row);
 	}
 
-	var visColors = [colors[x1ColorIndex],colors[x2ColorIndex]];
-
-	$("#visSVG").empty();
-	var visualization = getVisualization(tables[currentTable],visType,visColors);
-	if(!visualization)
-	{
-		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
-	}else{
-		visualization.draw("visSVG");
+	if(refresh){
+		refreshVisualization();
 	}
 
 	setColorBorders();
-
-	// $(this).css("border","solid 2px");
-	// var column_num = parseInt($(this).index()) + 1;
-	// var row_num = parseInt($(this).parent().index()) + 1;
-	// console.log("Cell Clicked: ("+column_num+","+row_num+")");
 }
 
 /**
@@ -210,7 +296,6 @@ function setColorBorders()
 			$("#color_"+i+"_x"+j).addClass("colorSquareHighLightOff");
 			if(i == x1ColorIndex && j == 1)
 			{
-				console.error("Got here");
 				$("#color_"+i+"_x"+j).removeClass("colorSquareHighLightOff");
 				$("#color_"+i+"_x1").addClass("colorSquareHighLightOn");
 			}
@@ -241,22 +326,28 @@ function testLocally()
  		"Visualizations":		
  			[{			
  				"Type": "Bar",			
- 				"DataColumns": [0, 1]		
+ 				"DataColumns": [0, 1],
+ 				"Score": 1	
  			},{			
  				"Type": "Line",			
- 				"DataColumns": [0, 1, 2]		
+ 				"DataColumns": [0, 1, 2],
+ 				"Score": 2		
  			},{			
  				"Type": "Scatter",			
- 				"DataColumns": [0, 1]		
+ 				"DataColumns": [0, 1],	
+ 				"Score": 10	
  			},{         
                  "Type": "Pie",          
-                 "DataColumns": [0, 1]       
+                 "DataColumns": [0, 1],
+                 "Score": 3       
              },{         
                  "Type": "Tree",          
-                 "DataColumns": [0, 1]       
+                 "DataColumns": [0, 1],
+                 "Score": 4       
              },{         
                  "Type": "Bubble",          
-                 "DataColumns": [0, 1, 2]       
+                 "DataColumns": [0, 1, 2],
+                 "Score": 5     
              }],		
  		"Data":		
  			{			
@@ -292,19 +383,24 @@ function testLocally()
  		"Visualizations":		
  			[{			
  				"Type": "Bar",			
- 				"DataColumns": [0, 1]		
+ 				"DataColumns": [0, 1],
+ 				"Score": 3	
  			},{			
  				"Type": "Line",			
- 				"DataColumns": [0, 1, 2, 3]		
+ 				"DataColumns": [0, 1, 2, 3],
+ 				"Score": 4
  			},{			
  				"Type": "Scatter",			
- 				"DataColumns": [0, 1]		
+ 				"DataColumns": [0, 1],
+ 				"Score": 5	
  			},{         
                  "Type": "Pie",          
-                 "DataColumns": [0, 1]       
+                 "DataColumns": [0, 1],
+                 "Score": 9
              },{         
                  "Type": "Tree",          
-                 "DataColumns": [0, 1]       
+                 "DataColumns": [0, 1],
+                 "Score": 2
              }],		
  		"Data":		
  			{		
@@ -350,15 +446,25 @@ function testLocally()
 	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
 
- 	for(var i=0; i<tables.length; i++)
-	{
-		addTable(tables[i],i);
-	}
-
 	//Load first visualization
 	tableSelectHandler(0);
 	//Set Border Styling
-	colorClickHandler({target:{id:"color_0_x1"}});
+	colorClickHandler({target:{id:"color_0_x1"}},false);
+}
+
+/**
+ * This function will detect radio button clicks and update the visualization accordingly
+*/
+function changeTextOrientation(event)
+{
+	console.log("Radio button click: "+event.target.id);
+	newOrientation = event.target.id.replace("radio_","");
+	if(textOrientation == newOrientation)
+	{
+		return;
+	}
+	textOrientation = newOrientation;
+	refreshVisualization();
 }
 
 /**
@@ -399,12 +505,45 @@ function tableSelectHandler(event)
 	
 	populateTable(tables[tableNumber]);
 	
-	//Load first visualization
+	//Load visualization with highest confidence score
+
 	currentVis = "initial"
-	visTypeClickHandler(tables[0].Visualizations[0].Type+'_icon');
+	var bestVisIndex = getBestVisualization(0);
+	visTypeClickHandler(tables[0].Visualizations[bestVisIndex].Type+'_icon');
 
 }
 
+/**
+ * Iterate over all visualizations in a table and return the
+ * index of the visualization with the highest confidence score
+ * @param {number} tableIndex - The index of the table in the tables array
+ * @returns {number} visIndex - The index of the visualization in the table
+*/
+function getBestVisualization(tableIndex)
+{
+	if(tableIndex > (tables.length - 1) || tableIndex < 0)
+	{
+		console.error("Unexpected table index: " + tableIndex);
+	}
+	var visIndex = NaN;
+	var bestScore = -1;
+	for(var i in tables[tableIndex].Visualizations)
+	{
+		if(!visIndex)
+		{
+			visIndex = i;
+		}
+		else
+		{
+			if(tables[tableIndex].Visualizations[i].Score > bestScore)
+			{
+				bestScore = tables[tableIndex].Visualizations[i].Score;
+				visIndex = i;
+			}
+		}
+	}
+	return visIndex;
+}
 
 
 /**
@@ -443,12 +582,15 @@ function parseComplete(data)
 
 	populateTableSelect();
 
-	//Load first visualization
-	tableSelectHandler(0);
 	//Select first table in selection box
 	$('#tableSelectionBox').val("0");
+
+	//Load first visualization
+	tableSelectHandler(0);
+	
 	//Set Border Styling
-	colorClickHandler({target:{id:"color_0_0"}});
+	colorClickHandler({target:{id:"color_0_x1"}},false);
+
 
 }
 
@@ -521,16 +663,7 @@ function visTypeClickHandler(event)
 		currentVis = visType	
 	}
 	
-	$("#visSVG").empty();
-	var visualization = getVisualization(tables[currentTable],visType);
-	if(!visualization)
-	{
-		console.log('Could not find visualization type ' + visType + ' for div: '+visDivId)
-	}else{
-		visualization.draw("visSVG");
-
-		$('#options').show();	
-	}
+	refreshVisualization();
 
 	if(hideSecondColorPalette())
 	{
@@ -545,11 +678,26 @@ function visTypeClickHandler(event)
 		$("#colorPalette").width(2 * (colorColumns * 20) + 20);
 	}
 
-	
+	updateVisSizeControls();
 	
 	updateTableVis(visType);
 	//Since we have initilized a new graph resize the vis/table
 	resizeVisWrapper();
+}
+
+/**
+ * This function will update the values of the size controls to reflect
+ * the height and width of the current visualization.
+*/
+function updateVisSizeControls()
+{
+	var svgWidth = $("#visSVG").width();
+	var svgHeight = $("#visSVG").height();
+	var numVisDataPoints = currentVisualization.dataSet.length;
+	$("#visWidth").val(svgWidth);
+	$("#visHeight").val(svgHeight);
+	$("#dataPoints").val(numVisDataPoints);
+
 }
 
 /**

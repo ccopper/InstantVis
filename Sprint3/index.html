@@ -104,22 +104,32 @@
 	    					<div id="visSize">
 	                        	<fieldset>
 	                            	<legend>Size</legend>
-		                            Height:<input type="number" name="visHeight" id="visHeight" min="100" max="1800" step="1" value="18">
-		                            <br>
-		                            Width:<input type="number" name="visWidth" id="visWidth" min="100" max="1800" step="1" value="18">
-		                            <br>
-		                            Data Points: <input type="number" name="dataPoints" id="dataPoints" min="1" max="100" step="1" value="18">
+	                            	<table>
+			                            <tr><td>Height:</td><td><input type="number" id="visHeight"></td></tr>
+			                            <tr><td>Width:</td><td><input type="number" id="visWidth"></td></tr>
+			                            <tr><td>Data Points:</td><td><input type="number" id="dataPoints"></td></tr>
+		                            </table>
+		                            <fieldset>
+		                            	<legend>Margins</legend>
+		                            	<table>
+			                            	<tr><td>Top:</td><td><input type="number" id="visMargin_top" min="0" max="1000" value="50"></td></tr>
+			                            	<tr><td>Bottom:</td><td><input type="number" id="visMargin_bottom" min="0" max="1000" value="55"></td></tr>
+			                            	<tr><td>Left:</td><td><input type="number" id="visMargin_left" min="0" max="1000" value="55"></td></tr>
+			                            	<tr><td>Right:</td><td><input type="number" id="visMargin_right" min="0" max="1000" value="55"></td></tr>
+		                            	</table>
+		                            </fieldset>
 		                        </fieldset>
+
 	    					</div>
 	    					<div id="visTextOptions">
 	    						<fieldset>
 	    							<legend>Label Orientation</legend>
 	    							<form action="">
-										<input type="radio" name="orientation" value="vertical">Vertical
+										<input type="radio" id="radio_Vertical" name="orientation" value="vertical">Vertical
 										<br>
-										<input type="radio" name="orientation" value="horizontal">Horizontal
+										<input type="radio" id="radio_Horizontal" name="orientation" value="horizontal"checked>Horizontal
 										<br>
-										<input type="radio" name="orientation" value="angle">Angle
+										<input type="radio" id="radio_Angled" name="orientation" value="angle">Angle
 									</form>
 	    						</fieldset>
 	    					</div>
