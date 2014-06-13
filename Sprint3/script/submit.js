@@ -742,6 +742,10 @@ function visTypeClickHandler(event)
 		currentVis = NaN;
 		iconId = event;
 	}else{
+		if($("#"+event.target.id).hasClass('iconBorderHighlight'))
+		{
+			return;
+		}
 		console.log('type:'+typeof(event)+'\n\t'+event);
 		iconId = event.target.id;
 		$("#visWidth").val(defaultVisWidth);
@@ -770,6 +774,15 @@ function visTypeClickHandler(event)
 	}
 	//Disable width option for pie charts
 	$("#visWidth").prop('disabled', (visType == "Pie"));
+
+	if(visType == "Tree" || visType == "Pie")
+	{
+		$("#visTextOptions").hide();
+	}
+	else
+	{
+		$("#visTextOptions").show();	
+	}
 
 	refreshVisualization();
 
