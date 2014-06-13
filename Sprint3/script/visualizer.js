@@ -3318,6 +3318,7 @@ function getData(columns, values, numDataPoints)
             row[k] = values[j][columns[k]];
         }
         // Add the row to the extracted dataset.
+        console.log("pushing row to data: " + row.toString());
         data.push(row);
     }
     if (oneColumn) 
