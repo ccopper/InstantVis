@@ -14,6 +14,7 @@ TCIns =
 	"AIObj": {},
 	"VisID": -1,
 	"isEditing": false,
+	"cellEditing": NaN,
 	"needD1": true,
 	"needD2": true,
 	"titleCallBack": function()
@@ -604,7 +605,7 @@ function updateSelMat(event)
 	if(!isNaN(D1))
 		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D1);
 	
-	if(!isNaN(D1))
+	if(!isNaN(D2))
 		TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns.push(D2);
 	
 	
@@ -615,7 +616,7 @@ function updateSelMat(event)
 		$("#VisLabel").text(visTitle);
 	}
 	
-	
+	console.log(TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns);
 	
 	TCIns.selUpdCallBack();
 }
@@ -627,9 +628,21 @@ function updateSelMat(event)
  */
 function editCell(event)
 {
+
 	if(TCIns.isEditing)
-	{ return; }
+	{ 
+		var cellRow = $(TCIns.cellEditing).data("cellRow");
+		var cellCol = $(TCIns.cellEditing).data("cellCol");
+		
 	
+		$(TCIns.cellEditing).empty();
+		$(TCIns.cellEditing).text(TCIns.AIObj.Data.Values[cellRow][cellCol]);
+		
+		$(TCIns.cellEditing).bind("click", editCell);
+		
+	}
+	
+	TCIns.cellEditing = $(this);
 	TCIns.isEditing = true;
 	
 	var cellRow = $(this).data("cellRow");
@@ -677,6 +690,9 @@ function saveCell(event)
 	$("table").trigger("updateCell", [cellPtr, false]);
 
 	$(cellPtr).bind("click", editCell);
+	
+	$("#DTRow" + cellRow).children("td:first-child").children().hide();
+	
 	
 	TCIns.dataCallBack();
 	
