@@ -341,6 +341,7 @@ function refreshVisualization()
 	//var visColors = [colors[x1ColorIndex],colors[x2ColorIndex]];
 	var visWidth = parseInt($("#visWidth").val()) ? parseInt($("#visWidth").val()) : defaultVisWidth;
 	var visHeight = parseInt($("#visHeight").val()) ? parseInt($("#visHeight").val()) : defaultVisHeight;
+	console.log("Refresh: Height: " + visHeight);
 	var numDataPoints = parseInt($("#dataPoints").val()) ? parseInt($("#dataPoints").val()) : defaultNumPoints;
 	var visMargins = getMargins();
 
@@ -361,6 +362,12 @@ function refreshVisualization()
 */
 function colorClickHandler(event,refresh)
 {
+	//If the square clicked already is selected, don't do anything
+	if($(this).hasClass("colorSquareHighLightOn"))
+	{
+		console.log("No color change.");
+		return;
+	}
 
 	//Get the color and table
 	var colorIndex = $(this).data("cId");
@@ -795,8 +802,9 @@ function visTypeClickHandler(event)
 function updateVisSizeControls()
 {
 	var svgWidth = $("#visSVG").width();
-	var svgHeight = $("#visSVG").height();
+	var svgHeight = $("#visSVG").height() - 4;
 	var numVisDataPoints = currentVisualization.dataSet.length;
+	console.log("numVisDataPoints: " + numVisDataPoints);
 	$("#visWidth").val(svgWidth);
 	$("#visHeight").val(svgHeight);
 	$("#dataPoints").val(numVisDataPoints);
