@@ -207,14 +207,28 @@ var selectTreemapVars = function(currentDataset)
 
 	if (stringFound == true && numericFound == true)
 	{
-		treemapVars[0] = bestString;
-		treemapVars[1] = bestNumeric;
+		if (bestString >= 0)
+		{
+			treemapVars[0] = bestString;
+		}
+
+		if (bestNumeric >= 0 && bestString >= 0)
+		{
+			treemapVars[1] = bestNumeric;
+		}
+		else
+		{
+			treemapVars[0] = bestNumeric;
+		}
 	}
 	else if (numericFound == true)
 	{
-		treemapVars[0] = bestNumeric;
+		if (bestNumeric >= 0)
+		{
+			treemapVars[0] = bestNumeric;
+		}
 	}
-	else
+	else if (bestString < 0 && bestNumeric < 0)
 	{
 		console.log("AI: unable to find good variables for treemap.");
 	}
@@ -266,7 +280,7 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 		var visualizations = [];		// this is the "Visualizations" part of the AI data structure as defined in the wiki
 
 		var stringColumnsFound = 0;	// how many columns are only strings, if this number matches the number of columns, 
-												// remove the dataset as it is undesirable to have only string datasets
+		// remove the dataset as it is undesirable to have only string datasets
 		var nonStringFound = false;
 
 		for (var currentColumn = 0; currentColumn < currentDataset.Data.Cols; currentColumn++) 
@@ -295,11 +309,11 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 			var selectedColumns = []; 	// columns in this array from being selected as variables to visualize
 			var haveOnlyTwoColumns; 	// is true if only two columns of data can be visualized for this dataset
 			// find default columns to be used with each applicable visualization type
-			
+
 			// select independent variable
 			var independentVariableColumn = findIndependentVariable(currentDataset);
 			selectedColumns.push(independentVariableColumn);
-		
+
 			// select first dependent variable, exclude strings
 			var firstDependentVariable = findNextBestAvailableColumn(currentDataset, selectedColumns, true); 
 			selectedColumns.push(firstDependentVariable);
@@ -318,6 +332,7 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 				haveOnlyTwoColumns = false;
 			}
 
+
 			var treemapStyleVarsTypes = ["Tree", "Pie"];
 			var twoColumnOnlyVisTypes = ["Bar", "Scatter"];
 			var threeColumnOnlyVisTypes = ["Bubble"];
@@ -328,52 +343,56 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 			var columnsToVisualize = [];
 			var visTypes = [];
 
-			if (haveOnlyTwoColumns) 
-			{ // request visualizations that only require two variables
-				columnsToVisualize.push(selectedColumns[0]);
-				columnsToVisualize.push(selectedColumns[1]);
-				for (var i = 0; i < twoColumnVisTypes.length; i++) 
-				{
-					visTypes.push(twoColumnVisTypes[i]);
-				}
-			} 
-			else 
+			if (firstDependentVariable >= 0)
 			{
-				for (var i = 0; i < selectedColumns.length; i++) 
+				if (haveOnlyTwoColumns) 
+				{ // request visualizations that only require two variables
+					columnsToVisualize.push(selectedColumns[0]);
+					columnsToVisualize.push(selectedColumns[1]);
+					for (var i = 0; i < twoColumnVisTypes.length; i++) 
+					{
+						visTypes.push(twoColumnVisTypes[i]);
+					}
+				} 
+				else 
 				{
-					columnsToVisualize.push(selectedColumns[i]);
+					for (var i = 0; i < selectedColumns.length; i++) 
+					{
+						columnsToVisualize.push(selectedColumns[i]);
+					}
+					for (var i = 0; i < threeColumnVisTypes.length; i++) 
+					{
+						visTypes.push(threeColumnVisTypes[i]);
+					}
 				}
-				for (var i = 0; i < threeColumnVisTypes.length; i++) 
+
+				for (var i = 0; i < visTypes.length; i++) 
 				{
-					visTypes.push(threeColumnVisTypes[i]);
-				}
-			}
 
-			for (var i = 0; i < visTypes.length; i++) 
-			{
-
-				visualizations.push(
-						{
-							"Type" : visTypes[i],
-							"DataColumns" : columnsToVisualize,
-							"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
-						}
-					);
-			}
-
-			if (currentDataset.Data.Cols > 2) 
-			{ // add the twoColumnOnly vis types
-				
-				for (var i = 0; i < twoColumnOnlyVisTypes.length; i++) 
-				{
 					visualizations.push(
 							{
-								"Type" : twoColumnOnlyVisTypes[i],
-								"DataColumns" : [selectedColumns[0], selectedColumns[1]],
+								"Type" : visTypes[i],
+								"DataColumns" : columnsToVisualize,
 								"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
 							}
-						);
+							);
 				}
+
+				if (currentDataset.Data.Cols > 2) 
+				{ // add the twoColumnOnly vis types
+
+					for (var i = 0; i < twoColumnOnlyVisTypes.length; i++) 
+					{
+						visualizations.push(
+								{
+									"Type" : twoColumnOnlyVisTypes[i],
+									"DataColumns" : [selectedColumns[0], selectedColumns[1]],
+									"Score" : determineVisualizationScore(currentDataset, columnsToVisualize)
+								}
+								);
+					}
+				}
+
 			}
 
 			if (treemapStyleVarsTypes.length > 0)
@@ -389,12 +408,11 @@ var determineVisualizationsToRequest = function(AIdataStructure)
 									"DataColumns" : treemapVars,
 									"Score" : determineVisualizationScore(currentDataset, treemapVars)
 								}
-							);
+								);
 					}
 				}
 			}
 		}
-
 
 		// add the selected visualizations array to the dataset, note that this could be an empty array
 		// in the case that no suitable visualizations were found

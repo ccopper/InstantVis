@@ -2346,8 +2346,14 @@ Line.prototype.draw = function (divId)
                     .attr("stroke", this.colors[i-1]);
 
                 // Determine the text associated with the data point when highlighted.
-                highlightText[j] = (Math.floor(data[j][0]*100)/100) + ", " + (Math.floor(data[j][1]*100)/100);
-
+                if (this.columnTypes[0] != "String") 
+                {
+                    highlightText[j] = (Math.floor(data[j][0]*100)/100) + ", " + (Math.floor(data[j][1]*100)/100);
+                }
+                else 
+                {
+                    highlightText[j] = data[j][0] + ", " + (Math.floor(data[j][1]*100)/100);
+                }
                 var highlightRectWidth = (highlightText[j].length*characterWidth)+highlightTextPadding;
                 var highlightRectHeight = highlightTextHeight + (2 * highlightTextPadding);
 
@@ -3324,27 +3330,27 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
             switch(type) 
             {
                 case "Line":
-                    v = new Line(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation, true);
+                    v = new Line(getData(columnSet, values, numDataPoints, columnTypes), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation, true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Bar(getData(columnSet, values, numDataPoints, columnTypes), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Scatter(getData(columnSet, values, numDataPoints, columnTypes), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;  
 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), visTitle, pieWidth, height, colors, margin);
+                    v = new Pie(getData(columnSet, values, numDataPoints, columnTypes), getLabels(columnSet, labels), visTitle, pieWidth, height, colors, margin);
                     break;
 
                 case "Tree":
-                    v = new Treemap(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), visTitle, width, 1.3*height, colors, margin);
+                    v = new Treemap(getData(columnSet, values, numDataPoints, columnTypes), getLabels(columnSet, labels), visTitle, width, 1.3*height, colors, margin);
                     break;
 
                 case "Bubble":
-                    v = new Bubble(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Bubble(getData(columnSet, values, numDataPoints, columnTypes), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 default:
@@ -3366,7 +3372,7 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
  * @param numDataPoints     The number of data points in each column of values, starting with the first, to return.
  * @returns                 2D array of data values.
  */
-function getData(columns, values, numDataPoints)
+function getData(columns, values, numDataPoints, types)
 {   
     console.log("columns: " + columns.toString());
     console.log("values: " + values.toString());
@@ -3379,27 +3385,43 @@ function getData(columns, values, numDataPoints)
         numValuesToGet = numRows;
     }
     var oneColumn = false;
+    var oneColumnString = false;
     if (columns.length == 1) 
     {
+        console.log("types[0]: " + types[0]);
+        if (types[0] == "String")
+        {
+            oneColumnString = true;
+        }
         oneColumn = true;
         columns.push(columns[0]);
     }
     var numColumns = columns.length;
 
-    // For every row in values...
-    for (var j = 0; j < numValuesToGet; j++) 
-    {
-        // Create a new row to add to the extracted dataset.
-        row = [];
-        // For every column that needs to be extracted...
-        for (var k = 0; k < numColumns; k++) 
+    if (!oneColumnString) {
+        // For every row in values...
+        for (var j = 0; j < numValuesToGet; j++) 
         {
-            // Add the appropriate value from the column to the new row.
-            row[k] = values[j][columns[k]];
+            // Create a new row to add to the extracted dataset.
+            row = [];
+            // For every column that needs to be extracted...
+            for (var k = 0; k < numColumns; k++) 
+            {
+                // Add the appropriate value from the column to the new row.
+                row[k] = values[j][columns[k]];
+            }
+            // Add the row to the extracted dataset.
+            console.log("pushing row to data: " + row.toString());
+            data.push(row);
         }
-        // Add the row to the extracted dataset.
-        console.log("pushing row to data: " + row.toString());
-        data.push(row);
+    }
+    else
+    {
+        console.log("One column strings");
+        for (var j = 0; j < numValuesToGet; j++)
+        {
+            data.push([values[j][0], 1]);
+        }
     }
     if (oneColumn) 
     {
