@@ -217,6 +217,7 @@ Treemap.prototype.draw = function(divId)
             { 
                 return d[4]; 
             })
+        .style("stroke", "black")
         .on("mouseover", function(d, i) 
         {
             var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
@@ -945,6 +946,7 @@ Pie.prototype.draw = function(divId)
             return mixedColorSet[i];
         })
         .attr("d", arc)
+        .style("stroke", "black")
         .on("mouseover", function(d, i) 
         {
             if (!toggle[i]) 
