@@ -92,7 +92,8 @@ Treemap.prototype.draw = function(divId)
         categoryTotal = 0;
         for (var j = 1; j < categories[i].length; j++) 
         {
-            categoryTotal = categoryTotal + parseInt(this.dataSet[categories[i][j]][1]);
+            console.log("parseInt(this.dataSet[categories[i][j]][1]): " + parseFloat(this.dataSet[categories[i][j]][1]));
+            categoryTotal = categoryTotal + parseFloat(this.dataSet[categories[i][j]][1]);
         }
         console.log("categoryTotal: " + categoryTotal);
         if (categoryTotal > 0) 
@@ -473,7 +474,10 @@ Bubble.prototype.draw = function(divId)
                         .clamp(true);
 
     var rScale = d3.scale.linear()
-                        .domain([0, d3.max(this.dataSet, function(d) 
+                        .domain([d3.min(this.dataSet, function(d) 
+                            {
+                                return d[2];
+                            }), d3.max(this.dataSet, function(d) 
                             {
                                 return d[2]; 
                             })])
@@ -2627,14 +2631,31 @@ Bar.prototype.draw = function(divId)
                         .rangePoints([barPadding,width - barPadding - barWidth]);
     }
   
+    console.log("creatng y scale");
+    var condensedYMin = d3.min(condensedYValues);
+    var yScaleMin = 0;
+    console.log("condensedYMin: " + condensedYMin);
+    if (condensedYMin < 0) 
+    {
+        yScaleMin = condensedYMin;
+    } 
+    console.log("yScaleMin: " + yScaleMin);
     var yScale = d3.scale.linear()
-                    .domain([d3.min(condensedYValues), d3.max(condensedYValues)])
+                    .domain([yScaleMin, d3.max(condensedYValues)])
                     .range([height, 0]);
 
     if (multiset) 
     {
+        var condensedY2Min = d3.min(condensedY2Values);
+        var y2ScaleMin = 0;
+        console.log("condensedY2Min: " + condensedY2Min);
+        if (condensedY2Min < 0) 
+        {
+            y2ScaleMin = condensedY2Min;
+        } 
+        console.log("y2ScaleMin: " + y2ScaleMin);
         var yScale2 = d3.scale.linear()
-                        .domain([d3.min(condensedY2Values), d3.max(condensedY2Values)])
+                        .domain([y2ScaleMin, d3.max(condensedY2Values)])
                         .range([height, 0]);
     }
 
@@ -2731,6 +2752,7 @@ Bar.prototype.draw = function(divId)
         })
         .attr("y", function(d) 
         {
+            console.log("y1 rect y: " + yScale(d[1]));
             return (yScale(d[1]));
         })
         .attr("width", barWidth)
@@ -3223,27 +3245,27 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
             switch(type) 
             {
                 case "Line":
-                    v = new Line(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation, true);
+                    v = new Line(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation, true);
                     break;
 
                 case "Bar":
-                    v = new Bar(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Bar(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 case "Scatter":
-                    v = new Scatter(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Scatter(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;  
 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values), getLabels(columnSet, labels), visTitle, pieWidth, height, colors, margin);
+                    v = new Pie(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), visTitle, pieWidth, height, colors, margin);
                     break;
 
                 case "Tree":
-                    v = new Treemap(getData(columnSet, values), getLabels(columnSet, labels), visTitle, width, 1.3*height, colors, margin);
+                    v = new Treemap(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), visTitle, width, 1.3*height, colors, margin);
                     break;
 
                 case "Bubble":
-                    v = new Bubble(getData(columnSet, values), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
+                    v = new Bubble(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), getColumnTypes(columnSet, columnTypes), visTitle, width, height, getColors(colors), margin, xAxisLabelOrientation);
                     break;
 
                 default:
@@ -3260,16 +3282,21 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
  * If only one column is requested, return that column, as well as another copy of that column.
  *
  * @function
- * @param columns   The list of columns to extract from the given values.
- * @param values    The 2D array of values comprising the data set.
- * @returns         2D array of data values.
+ * @param columns           The list of columns to extract from the given values.
+ * @param values            The 2D array of values comprising the data set.
+ * @param numDataPoints     The number of data points in each column of values, starting with the first, to return.
+ * @returns                 2D array of data values.
  */
-function getData(columns, values)
+function getData(columns, values, numDataPoints)
 {   
     console.log("columns: " + columns.toString());
     var data = []; // The dataset extracted from values.
     var row = [];
     var numRows = values.length;
+    var numValuesToGet = numDataPoints;
+    if (numDataPoints == -1 || numDataPoints > numRows) {
+        numValuesToGet = numRows;
+    }
     var oneColumn = false;
     if (columns.length == 1) 
     {
@@ -3279,7 +3306,7 @@ function getData(columns, values)
     var numColumns = columns.length;
 
     // For every row in values...
-    for (var j = 0; j < numRows; j++) 
+    for (var j = 0; j < numValuesToGet; j++) 
     {
         // Create a new row to add to the extracted dataset.
         row = [];
