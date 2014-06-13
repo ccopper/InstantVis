@@ -2634,13 +2634,16 @@ Bar.prototype.draw = function(divId)
     var yScale = d3.scale.linear()
                     .domain([ function() 
                     {
+                        console.log("y1 min: " + d3.min(condensedYValues));
                         if (d3.min(condensedYValues) < 0)
                         {
+                            console.log("y1 returning min");
                             return d3.min(condensedYValues);
                         }
                         else
                         {
-                            return 0
+                            console.log("y1 returning 0");
+                            return 0;
                         }
                     }, d3.max(condensedYValues)])
                     .range([height, 0]);
@@ -2648,15 +2651,18 @@ Bar.prototype.draw = function(divId)
     if (multiset) 
     {
         var yScale2 = d3.scale.linear()
-                        .domain([function() 
+                        .domain([ function() 
                         {
+                            console.log("y2 min: " + d3.min(condensedYValues));
                             if (d3.min(condensedY2Values) < 0)
                             {
+                                console.log("y2 returning min");
                                 return d3.min(condensedY2Values);
                             }
                             else
                             {
-                                return 0
+                                console.log("y2 returning 0");
+                                return 0;
                             }
                         }, d3.max(condensedY2Values)])
                         .range([height, 0]);
