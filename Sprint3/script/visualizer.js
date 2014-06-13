@@ -3331,7 +3331,7 @@ function getColors(colors)
     var newColors = [];
     for (var i = 0; i < colors.length; i++) 
     {
-        newColors.push("hsl(" + colors[i].hue + ", " + colors[i].saturation + "%, " + colors[i].lightness + "%)");
+        newColors.push("hsl(" + colors[i].hue + ", " + colors[i].saturation + ", " + colors[i].lightness + ")");
     }
     console.log("newColors: " + newColors.toString());
     return newColors;
@@ -3359,7 +3359,7 @@ function getMixedColors(numColorsOut, colors)
         var sat = colors[i].saturation;
         for (var j = 0; j < (numColorsOut/numColorsIn); j++) 
         {
-            newColors.push("hsl(" + hue + ", " + sat + "%, " + (25+(j*increment)) + "%)");
+            newColors.push("hsl(" + hue + ", " + sat + ", " + (25+(j*increment)) + ")");
         }
     }
     return newColors;
