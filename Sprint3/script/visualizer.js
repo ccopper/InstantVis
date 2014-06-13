@@ -1989,6 +1989,7 @@ Line.prototype.draw = function (divId)
         .attr("style", "stroke: gray")
         .attr("d", unscaledLine(lineData));
 
+
     // Actions that occur when the mouse moves within the graph.
     function mousemove() 
     {        
@@ -2009,6 +2010,7 @@ Line.prototype.draw = function (divId)
                 {
                     pointsHighlighted.push([this.getAttribute("cx"),this.getAttribute("cy")]);
                 }
+
             });
 
         var numPointsHighlighted = pointsHighlighted.length;
@@ -3172,9 +3174,9 @@ Bar.prototype.draw = function(divId)
  */
 function getVisualization(dataPackage, type, colors, width, height, numDataPoints, margin, xAxisLabelOrientation)
 {
-    var height = 300;
+    //var height = 300;
     var pieWidth = height*1.5;
-    var width = 650;
+    //var width = 650;
     for(var i = 0; i < dataPackage.Visualizations.length; i++)
     {
         var visType = dataPackage.Visualizations[i].Type;
@@ -3185,9 +3187,16 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
         var values = dataPackage.Data.Values;
         var labels = dataPackage.Data.ColumnLabel;
         var caption = dataPackage.Data.Caption;
-        var margin = {top: 50, right: 55, bottom: 55, left: 55};
-        var xAxisLabelOrientation = "Vertical";
-        console.log('Checking ' + visType + ' == ' + type + ' -> ' + (visType==type));
+        if(!margin)
+        {
+            console.log("Using default margins.")
+            margin = {top: 50, right: 55, bottom: 55, left: 55};
+        }
+        if(!xAxisLabelOrientation)
+        {
+            console.log("Using default text orientation.")
+            xAxisLabelOrientation = "Vertical";    
+        }
         if(!colors)
         {
             console.log("Using default colors.");
