@@ -546,6 +546,7 @@ function AI(parserData)
 		var dataColumns = [];
 		var currentTable = parserData.Data[tableNum];
 		var columnType = [""];
+		var emptyVis = [];
 		
 		// assemble the AI data object for the type checker, it is an array of the following, one
 		// for each data table
@@ -554,7 +555,7 @@ function AI(parserData)
 		{
 			var visDataElement = 
 				{
-					"Visualizations" : [],
+					"Visualizations" : emptyVis,
 					"Data" : {
 						"Rows" : currentTable.Rows,
 						"Caption" : currentTable.Caption,
@@ -580,9 +581,9 @@ function AI(parserData)
 
 	rankDatasets(AIdataStructure);
 
-	removeDatasetsWithNoAssociatedVisualizationsOrValues(AIdataStructure);
-
 	generateVisTitle(AIdataStructure);
+
+	removeDatasetsWithNoAssociatedVisualizationsOrValues(AIdataStructure);
 	
 	console.log("AI produced this data: " 
 			+ JSON.stringify(AIdataStructure));
