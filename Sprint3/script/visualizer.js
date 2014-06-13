@@ -407,6 +407,7 @@ Bubble.prototype.draw = function(divId)
     var numValuesPerDataSet = this.dataSet.length;
     var numXAxisTicks = numValuesPerDataSet;
     var numYAxisTicks = height/15;
+    var columnTypes = this.columnTypes;
 
     // Determine the min and max Y value for the datasets.
     var maxY = 0;
@@ -625,7 +626,7 @@ Bubble.prototype.draw = function(divId)
                 var r = Math.floor(this.getAttribute("r")*100)/100;
                 var ind;
                 // Determine the text associated with the data point when highlighted.
-                if (this.columnTypes[0] != "String") 
+                if (columnTypes[0] != "String") 
                 {
                     console.log("not string");
                     ind = (Math.floor(d[0]*100)/100);
@@ -705,7 +706,7 @@ Bubble.prototype.draw = function(divId)
             var r = Math.floor(this.getAttribute("r")*100)/100;
             var ind;
             // Determine the text associated with the data point when highlighted.
-            if (this.columnTypes[0] != "String") 
+            if (columnTypes[0] != "String") 
             {
                 ind = (Math.floor(d[0]*100)/100);
             }
@@ -1188,6 +1189,7 @@ Scatter.prototype.draw = function(divId)
 
     var w = this.width;
     var h = this.height;
+    var columnTypes = this.columnTypes;
     var highlightRadius = 8;
     var defaultRadius = 4;
     var highlightTextHeight = 12;
@@ -1633,7 +1635,7 @@ Scatter.prototype.draw = function(divId)
                     var y2 = yScale2(d[1]);
                     var col2 = color2;
                     // Determine the text associated with the data point when highlighted.
-                    if (this.columnTypes[0] != "String") 
+                    if (columnTypes[0] != "String") 
                     {
                         var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
                     }
@@ -1679,7 +1681,7 @@ Scatter.prototype.draw = function(divId)
                 var y2 = yScale2(d[1]);
                 var col2 = color2;
                 // Determine the text associated with the data point when highlighted.
-                if (this.columnTypes[0] != "String") 
+                if (columnTypes[0] != "String") 
                 {
                     var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
                 }
