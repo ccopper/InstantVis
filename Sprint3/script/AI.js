@@ -557,7 +557,7 @@ function AI(parserData)
 		if (AIdataStructure[i].Visualizations.length == 0 ||
 		    AIdataStructure[i].Data.Values.length == 0)
 		{
-			AIdataStructure.splice(i, 1);
+			AIdataStructure = AIdataStructure.splice(i, 1);
 			visualizationsRemoved = visualizationsRemoved + 1;
 		}
 	}
