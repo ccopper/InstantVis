@@ -32,7 +32,7 @@ var isDrag = false;
 //Toggle color icon mode
 var useColorIcons = false;
 //Turn this on to test on local machine
-var runLocal = false;
+var runLocal = true;
 //Global reference to the current visualization type
 var currentVis = NaN;
 //Array of visualizations which do not require two color tables 
@@ -469,10 +469,6 @@ function testLocally()
  	var table2 = {		
  		"Visualizations":		
  			[{			
- 				"Type": "Bar",			
- 				"DataColumns": [0, 1],
- 				"Score": 3	
- 			},{			
  				"Type": "Line",			
  				"DataColumns": [0, 1, 2, 3],
  				"Score": 4
@@ -604,8 +600,37 @@ function tableSelectHandler(event)
 	//Load visualization with highest confidence score
 
 	currentVis = "initial"
-	visTypeClickHandler('Bar_icon');
 
+
+	if(tableHasVisType(tableNumber,"Bar"))
+	{
+		visTypeClickHandler('Bar_icon');
+	}
+	else
+	{
+		var bestVisIndex = getBestVisualization(tableNumber);
+		visTypeClickHandler(tables[tableNumber].Visualizations[bestVisIndex].Type+'_icon');
+	}
+	
+
+}
+
+/**
+ * This function will determine if a given visualization type exists in a table.
+ * @param {number} tableIndex - The index of the table to search through
+ * @param {string} type - The visualization type to search for
+ * @returns {Boolean} - True if table has vis type, otherwise false.
+*/
+function tableHasVisType(tableIndex, type)
+{
+	for(var i in tables[tableIndex].Visualizations)
+	{
+		if(tables[tableIndex].Visualizations[i].Type == type)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
