@@ -23,6 +23,8 @@ var defaultNumPoints = -1;
 var defaultMargins = {top: 50, right: 55, bottom: 55, left: 55};
 //Margin object to save previous values
 var oldMargins = defaultMargins;
+//Store the maximum number of data points for the current visualization
+var maxPoints = NaN;
 //Global reference to table column sets. [[[1,2],[2,3]],[[4,5],[1,2]]]
 var tableColumnSets = [];
 //var for Draggable splitpane
@@ -294,9 +296,9 @@ function visDataOptionChange(event)
 	var numPattern = new RegExp("^\\d+$");
 	if(numPattern.test(fieldValue))
 	{
-		if(fieldValue_int > currentVisualization.dataSet.length)
+		if(fieldValue_int > maxPoints)
 		{
-			 $("#"+inputId).val(currentVisualization.dataSet.length);
+			 $("#"+inputId).val(maxPoints);
 		}
 		else if(fieldValue_int < 1)
 		{
@@ -766,9 +768,12 @@ function visTypeClickHandler(event)
 	}else{
 		currentVis = visType	
 	}
-
+	//Disable width option for pie charts
+	$("#visWidth").prop('disabled', (visType == "Pie"));
 
 	refreshVisualization();
+
+	maxPoints = currentVisualization.dataSet.length;
 
 	if(hideSecondColorPalette())
 	{
@@ -801,11 +806,9 @@ function updateVisSizeControls()
 {
 	var svgWidth = $("#visSVG").width();
 	var svgHeight = $("#visSVG").height() - 4;
-	var numVisDataPoints = currentVisualization.dataSet.length;
-	console.log("numVisDataPoints: " + numVisDataPoints);
 	$("#visWidth").val(svgWidth);
 	$("#visHeight").val(svgHeight);
-	$("#dataPoints").val(numVisDataPoints);
+	$("#dataPoints").val(maxPoints);
 
 }
 
