@@ -623,22 +623,15 @@ Bubble.prototype.draw = function(divId)
                 var x = Math.floor(this.getAttribute("cx")*100)/100;
                 var y = Math.floor(this.getAttribute("cy")*100)/100;
                 var r = Math.floor(this.getAttribute("r")*100)/100;
+                var ind;
                 // Determine the text associated with the data point when highlighted.
-            // if (this.columnTypes[0] != "String") 
-            // {
-            //     var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
-            // }
-            // else 
-            // {
-            //     var highlightText = d[0] + ", " + (Math.floor(d[1]*100)/100);
-            // }
                 if (this.columnTypes[0] != "String") 
                 {
-                    var ind = (Math.floor(d[0]*100)/100);
+                    ind = (Math.floor(d[0]*100)/100);
                 }
                 else 
                 {
-                    var ind = d[0];
+                    ind = d[0];
                 }
                 var dep = (Math.floor(d[1]*100)/100);
                 var rad = (Math.floor(d[2]*100)/100);
@@ -707,8 +700,16 @@ Bubble.prototype.draw = function(divId)
             var x = Math.floor(this.getAttribute("cx")*100)/100;
             var y = Math.floor(this.getAttribute("cy")*100)/100;
             var r = Math.floor(this.getAttribute("r")*100)/100;
-            var ind = (Math.floor(d[0]*100)/100);
-            var dep = (Math.floor(d[1]*100)/100);
+            var ind;
+            // Determine the text associated with the data point when highlighted.
+            if (this.columnTypes[0] != "String") 
+            {
+                ind = (Math.floor(d[0]*100)/100);
+            }
+            else 
+            {
+                ind = d[0];
+            }            var dep = (Math.floor(d[1]*100)/100);
             var rad = (Math.floor(d[2]*100)/100);
             var labelText =  ind + ", " + dep + ": " + rad;
             var length = labelText.length;
@@ -1628,7 +1629,15 @@ Scatter.prototype.draw = function(divId)
                     var x2 = xScale(d[0]);
                     var y2 = yScale2(d[1]);
                     var col2 = color2;
-                    var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                    // Determine the text associated with the data point when highlighted.
+                    if (this.columnTypes[0] != "String") 
+                    {
+                        var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                    }
+                    else 
+                    {
+                        var highlightText2 = d[0] + ", " + (Math.floor(d[1]*100)/100);
+                    }
                     var xRect2 = x2 + 2*highlightRadius;
                     var yRect2 = y2 - highlightRectHeight/2;
                     var xText2 = xRect2 + highlightTextPadding;
@@ -1666,8 +1675,15 @@ Scatter.prototype.draw = function(divId)
                 var x2 = xScale(d[0]);
                 var y2 = yScale2(d[1]);
                 var col2 = color2;
-                var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
-                var xRect2 = x2 + 2*highlightRadius;
+                // Determine the text associated with the data point when highlighted.
+                if (this.columnTypes[0] != "String") 
+                {
+                    var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                }
+                else 
+                {
+                    var highlightText2 = d[0] + ", " + (Math.floor(d[1]*100)/100);
+                }                var xRect2 = x2 + 2*highlightRadius;
                 var yRect2 = y2 - highlightRectHeight/2;
                 var xText2 = xRect2 + highlightTextPadding;
                 var yText2 = yRect2 + highlightTextHeight;
