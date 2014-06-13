@@ -427,12 +427,12 @@ html
 .colorSquareHighLightOn
 {
 	border: solid black 2px;
-	/*border-radius: 15px;*/
 }
 
 .colorSquareHighLightOff
 {
-	border: solid white 2px;
+	border: solid black 1px;
+	padding: 2px;
 	/*border-radius: 15px;*/
 }
 

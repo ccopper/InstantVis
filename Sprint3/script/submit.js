@@ -18,7 +18,7 @@ var visMinDataPoints = 1;
 var visMaxMargin = 2000;
 var defaultVisWidth = 600;
 var defaultVisHeight = 300;
-var defaultNumPoints = 22;
+var defaultNumPoints = -1;
 //Margin object to hold default values
 var defaultMargins = {top: 50, right: 55, bottom: 55, left: 55};
 //Margin object to save previous values
@@ -378,7 +378,9 @@ function colorClickHandler(event,refresh)
 	visColorId[colorTableId-1] = colorIndex;
 	
 	$("#colorTableX"+ colorTableId + " td").removeClass("colorSquareHighLightOn")
+	$("#colorTableX"+ colorTableId + " td").addClass("colorSquareHighLightOff")
 
+	$(this).removeClass("colorSquareHighLightOff");
 	$(this).addClass("colorSquareHighLightOn");
 	
 	visColors = [colors[visColorId[0]], colors[visColorId[1]]];
@@ -776,13 +778,13 @@ function visTypeClickHandler(event)
 	{
 		console.log("Hiding color table for vis:"+visType);
 		$("#colorTableX2").hide();
-		$("#colorPalette").width(colorColumns * 20 + 20);
+		$("#colorPalette").width(colorColumns * 20 + 5);
 
 	}
 	else
 	{
 		$("#colorTableX2").show();	
-		$("#colorPalette").width(2 * (colorColumns * 20) + 20);
+		$("#colorPalette").width(2 * (colorColumns * 20));
 	}
 
 	updateVisSizeControls();
@@ -1078,6 +1080,7 @@ function populateColorTable()
 					"tId": 1
 				}
 			});
+			cell.addClass("colorSquareHighLightOff");
 			
 			tableX1.find("tr:last").append(cell);
 			//Clone the cell(true preserves data and events)
