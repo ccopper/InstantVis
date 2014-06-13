@@ -575,6 +575,8 @@ function resizeVisWrapper()
 	$("#visualizationContainer").width(actWidth + 35);
 	//Fix table width
 	$("#tableContainer").width($("#visWrapper").width() - $("#sPaneDiv").outerWidth() - $("#visualizationContainer").outerWidth() - 30);
+	
+	$("#visualizationToolbox").height($(window).height() - 40);
 }
 
 /**
