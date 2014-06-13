@@ -1,3 +1,8 @@
+/** 
+ * Web page event and controller logic
+ *	@module Submit
+ */
+
 //Global reference to table data
 var tables = [];
 var currentTable = 0;
