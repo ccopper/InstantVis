@@ -817,10 +817,8 @@ function visTypeClickHandler(event)
 */
 function updateVisSizeControls()
 {
-	var svgWidth = $("#visSVG").width();
-	var svgHeight = $("#visSVG").height() - 4;
-	$("#visWidth").val(svgWidth);
-	$("#visHeight").val(svgHeight);
+	$("#visWidth").val(defaultVisWidth);
+	$("#visHeight").val(defaultVisHeight);
 	$("#dataPoints").val(maxPoints);
 
 }

@@ -23,6 +23,8 @@ function Treemap(dataSet, labels, title, width, height, colors, margin)
     this.dataSet = dataSet;
     this.labels = labels;
     this.title = title;
+    this.totalWidth = width;
+    this.totalHeight = height;
     this.width = width;
     this.height = height;
     this.colors = colors;
@@ -369,6 +371,8 @@ function Bubble(dataSet, labels, columnTypes, title, width, height, colors, marg
     this.title = title;
     this.width = width;
     this.height = height;
+    this.totalWidth = width;
+    this.totalHeight = height;
     this.colors = colors;
     this.margin = margin;
     this.xAxisLabelOrientation = xAxisLabelOrientation;
@@ -772,6 +776,8 @@ function Pie(dataSet, labels, title, width, height, colors, margin)
     this.labels = labels;
     this.title = title;
     this.width = width;
+    this.totalWidth = width;
+    this.totalHeight = height;
     this.height = height;
     this.colors = colors;
     this.margin = margin;
@@ -1150,6 +1156,8 @@ function Scatter(dataSet, labels, columnTypes, title, width, height, colors, mar
     this.title = title;
     this.width = width;
     this.height = height;
+    this.totalWidth = width;
+    this.totalHeight = height;
     this.colors = colors;
     this.margin = margin;
     this.xAxisLabelOrientation = xAxisLabelOrientation;
@@ -1818,6 +1826,8 @@ function Line(dataSet, labels, columnTypes, title, width, height, colors, margin
     this.title = title;
     this.width = width;
     this.height = height;
+    this.totalWidth = width;
+    this.totalHeight = height;
     this.colors = colors;
     this.margin = margin;
     this.xAxisLabelOrientation = xAxisLabelOrientation;
@@ -2510,6 +2520,8 @@ function Bar (dataSet, labels, columnTypes, title, width, height, colors, margin
     this.title = title;
     this.width = width;
     this.height = height;
+    this.totalWidth = width;
+    this.totalHeight = height;
     this.colors = colors;
     this.margin = margin;
     this.xAxisLabelOrientation = xAxisLabelOrientation;
