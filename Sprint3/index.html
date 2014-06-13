@@ -89,27 +89,48 @@
 					<div id="editVisualization">
 						<fieldset>
 							<legend>Visualization Options</legend>
-							<div id="colorPalette">
-								<fieldset>
-	                            	<legend>Color Palette</legend>
-	                            	<table id="colorTableX1">
-	                            		<caption>Y1</caption>
-	                            	</table>
-	                            	<div style="width:20px;"></div>
-	                            	<table id="colorTableX2">
-	                            		<caption>Y2</caption>
-	                            	</table>
-	                        	</fieldset>
-	    					</div>
-	    					<div id="visSize">
-	                        	<fieldset>
-	                            	<legend>Size</legend>
-	                            	<table>
-			                            <tr><td>Height:</td><td><input type="number" id="visHeight"></td></tr>
-			                            <tr><td>Width:</td><td><input type="number" id="visWidth"></td></tr>
-			                            <tr><td>Data Points:</td><td><input type="number" id="dataPoints"></td></tr>
-		                            </table>
-		                            <fieldset>
+							<div id="colorAndOrientation">
+								<div id="colorPalette">
+									<fieldset>
+		                            	<legend>Color Palette</legend>
+		                            	<table id="colorTableX1">
+		                            		<caption>Y1</caption>
+		                            	</table>
+		                            	<div style="width:20px;"></div>
+		                            	<table id="colorTableX2">
+		                            		<caption>Y2</caption>
+		                            	</table>
+		                        	</fieldset>
+		    					</div>
+		    					
+		    					<div id="visTextOptions">
+		    						<fieldset>
+		    							<legend>Label Orientation</legend>
+		    							<form action="">
+											<input type="radio" id="radio_Vertical" name="orientation" value="vertical">Vertical
+											<br>
+											<input type="radio" id="radio_Horizontal" name="orientation" value="horizontal"checked>Horizontal
+											<br>
+											<input type="radio" id="radio_Angled" name="orientation" value="angle">Angle
+										</form>
+		    						</fieldset>
+		    					</div>
+		    				</div>
+	    					
+	    					<div id = "sizeAndMargins">
+	    						<div id="visSize">
+		                        	<fieldset>
+		                            	<legend>Size</legend>
+		                            	<table>
+				                            <tr><td>Height:</td><td><input type="number" id="visHeight"></td></tr>
+				                            <tr><td>Width:</td><td><input type="number" id="visWidth"></td></tr>
+				                            <tr><td>Data Points:</td><td><input type="number" id="dataPoints"></td></tr>
+			                            </table>
+			                        </fieldset>
+		    					</div>
+		    					<br>
+		    					<div id="visMargins">
+		    						<fieldset>
 		                            	<legend>Margins</legend>
 		                            	<table>
 			                            	<tr><td>Top:</td><td><input type="number" id="visMargin_top" min="0" max="1000" value="50"></td></tr>
@@ -118,21 +139,8 @@
 			                            	<tr><td>Right:</td><td><input type="number" id="visMargin_right" min="0" max="1000" value="55"></td></tr>
 		                            	</table>
 		                            </fieldset>
-		                        </fieldset>
-
-	    					</div>
-	    					<div id="visTextOptions">
-	    						<fieldset>
-	    							<legend>Label Orientation</legend>
-	    							<form action="">
-										<input type="radio" id="radio_Vertical" name="orientation" value="vertical">Vertical
-										<br>
-										<input type="radio" id="radio_Horizontal" name="orientation" value="horizontal"checked>Horizontal
-										<br>
-										<input type="radio" id="radio_Angled" name="orientation" value="angle">Angle
-									</form>
-	    						</fieldset>
-	    					</div>
+		    					</div>
+		    				</div>
     					</fieldset>
 					</div>
 				</div>

@@ -110,6 +110,15 @@ fieldset
 	padding:0px;
 }
 
+#visMargins
+{
+	width: 100%;
+	float:right;
+	text-align: left;
+}
+
+
+
 #visSize
 {
 	vertical-align: middle;
@@ -138,14 +147,28 @@ fieldset
 #editVisualization
 {
 
-	display: inline-block;
+	display: none;
 	float: left;
 }
 
+#sizeAndMargins
+{
+	float: right;
+}
+
+#sizeAndMargins legend
+{
+	text-align: center;
+}
+
+#colorAndOrientation
+{
+	float: left;
+}
 
 #colorPalette
 {
-    float: left;
+    /*float: left;*/
 }
 #colorPalette table
 {
@@ -159,12 +182,13 @@ fieldset
 }
 #visSize
 {
-    float: left;
+    float: right;
     text-align: left;
 }
 #visTextOptions
 {
-	float: left;
+	float: bottom;
+	/*display: block;*/
 	text-align: left;
 }
 

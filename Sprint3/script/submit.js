@@ -33,10 +33,6 @@ var useColorIcons = false;
 var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
-
-//Flag to indicate not to trigger resizing during saving process
-var saving = false;
-
 //Array of visualizations which do not require two color tables 
 var oneColorVisualizations = ["Bar","Scatter","Bubble"];
 
@@ -564,9 +560,9 @@ function changeTextOrientation(event)
 */
 function resizeVisWrapper()
 {
-	if(saving)
+	if(!$("#tableContainer").is(':visible'))
 	{
-		//return;
+		return;
 	}
 	//Let the graph auto size
 	var actWidth = $("#visSVG").outerWidth();
@@ -1016,7 +1012,6 @@ function getURLParams()
 */
 function exportVisualization()
 {
-	saving = true;
 	var html = d3.select("svg")
 		.attr("version", 1.1)
         .attr("xmlns", "http://www.w3.org/2000/svg")
@@ -1040,7 +1035,6 @@ function exportVisualization()
 		a.href = canvasdata;
 		a.click();
 	  };
-	 saving = false;
 }
 
 /**
