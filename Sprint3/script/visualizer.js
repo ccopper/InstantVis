@@ -2837,7 +2837,8 @@ Bar.prototype.draw = function(divId)
         })
         .attr("y", function(d) 
         {
-            console.log("y1 rect y: " + yScale(d[1]));
+            console.log("y1 rect y:" + d[1]);
+            console.log("y1 rect scale(y): " + yScale(d[1]));
             return (yScale(d[1]));
         })
         .attr("width", barWidth)
