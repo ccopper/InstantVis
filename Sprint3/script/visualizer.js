@@ -3276,7 +3276,7 @@ function getData(columns, values, numDataPoints)
     var row = [];
     var numRows = values.length;
     var numValuesToGet = numDataPoints;
-    if (numDataPoints == -1) {
+    if (numDataPoints == -1 || numDataPoints > numRows) {
         numValuesToGet = numRows;
     }
     var oneColumn = false;
