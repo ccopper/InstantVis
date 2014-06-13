@@ -552,12 +552,13 @@ function AI(parserData)
 
 	var visualizationsRemoved = 0;
 	// remove empty visualizations
+	var AIdataStructureClean = [];
 	for (var i = 0; i < AIdataStructure.length; i++) 
 	{
 		if (AIdataStructure[i].Visualizations.length == 0 ||
 		    AIdataStructure[i].Data.Values.length == 0)
 		{
-			AIdataStructure = AIdataStructure.splice(i, 1);
+			AIdataStructureClean = AIdataStructure.splice(i, 1);
 			visualizationsRemoved = visualizationsRemoved + 1;
 		}
 	}
@@ -575,7 +576,7 @@ function AI(parserData)
 	console.log("AI " + consoleRemovedMessage + " produced this data " 
 			+ JSON.stringify(AIdataStructure));
 
-	return AIdataStructure;
+	return AIdataStructureClean.length > 0 ? AIdataStructureClean : AIdataStructure; 
 }
 
 
