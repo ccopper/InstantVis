@@ -505,6 +505,7 @@ var generateVisTitle = function(AIdataStructure)
  *
  * @function
  * @parame {AIdataStructure} 
+ * @returns {AIdataStructure} With elements removed
  */
 var removeDatasetsWithNoAssociatedVisualizationsOrValues = function(AIdataStructure)
 {
@@ -527,18 +528,10 @@ var removeDatasetsWithNoAssociatedVisualizationsOrValues = function(AIdataStruct
 		}
 	}
 	
-	for (var i = 0; i < AIdataStructure.length; i++)
-	{
-		AIdataStructure.pop();
-	}
-
-	for (var i = 0; i < AIdataStructureClean.length; i++)
-	{
-		AIdataStructure.push(AIdataStructureClean[i]);
-	}
-
 	console.log("AI: removed " + visualizationsRemoved + " visualization" + 
 			(visualizationsRemoved > 1 ? "s" : ""));
+
+	return AIdataStructureClean;
 }
 
 /**
@@ -595,7 +588,7 @@ function AI(parserData)
 
 	generateVisTitle(AIdataStructure);
 
-	removeDatasetsWithNoAssociatedVisualizationsOrValues(AIdataStructure);
+	AIdataStructure = removeDatasetsWithNoAssociatedVisualizationsOrValues(AIdataStructure);
 	
 	console.log("AI produced this data: " 
 			+ JSON.stringify(AIdataStructure));
