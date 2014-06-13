@@ -711,6 +711,8 @@ function resetVisTitle()
 	var visTitle = getDefaulVisTitle();
 	TCIns.AIObj.Visualizations[TCIns.VisID].VisTitle = visTitle;
 	$("#VisLabel").text(visTitle);
+	
+	TCIns.titleCallBack();
 }
 /**
  *	Event handler to edit the vis title
