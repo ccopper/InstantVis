@@ -1462,7 +1462,7 @@ Scatter.prototype.draw = function(divId)
     }
 
     // Get the first data set and color.
-    var data = getData([0,1],this.dataSet);
+    var data = getData([0,1],this.dataSet, numValuesPerDataSet);
     var color = this.colors[0];
 
     // Create the first data set circles.
@@ -1561,7 +1561,7 @@ Scatter.prototype.draw = function(divId)
     // Create second data set.
     if (multiset) 
     {
-        var data2 = getData([0,2],this.dataSet);
+        var data2 = getData([0,2],this.dataSet, numValuesPerDataSet);
         var color2 = this.colors[1];
 
         svg.selectAll(("circle.set" + 2))
@@ -2202,7 +2202,7 @@ Line.prototype.draw = function (divId)
     for (var i = 1; i < numDataSets; i++) 
     {
         console.log("calling getData for y1... this.dataSet: " + this.dataSet.toString());
-        data = getData([0,i],this.dataSet);
+        data = getData([0,i], this.dataSet, numValues);
         console.log("...back from calling getData for y1");
         dataScaled = [];
 
