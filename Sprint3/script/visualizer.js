@@ -27,6 +27,7 @@ function Treemap(dataSet, labels, title, width, height, colors, margin)
     this.height = height;
     this.colors = colors;
     this.margin = margin;
+    console.log("this.dataSet: " + this.dataSet.toString());
 }
 
 /**
@@ -37,6 +38,7 @@ function Treemap(dataSet, labels, title, width, height, colors, margin)
  */
 Treemap.prototype.draw = function(divId) 
 {
+
     currentVisualization = this;
     // var margin = {top: 50, right: 20, bottom: 20, left: 20};
     var margin = this.margin;
@@ -81,6 +83,8 @@ Treemap.prototype.draw = function(divId)
         }
     }
 
+    console.log("categories: " + categories.toString());
+
     // Sum up category totals and overal data total.
     var categoryTotal = 0;
     for (var i = 0; i < categories.length; i++) 
@@ -96,6 +100,8 @@ Treemap.prototype.draw = function(divId)
         }
         dataTotal += categoryTotal;
     }
+
+    console.log("data: " + data.toString());
 
     // Sort the categories from largest to smallest.
     data.sort( function(a,b) 
@@ -179,6 +185,8 @@ Treemap.prototype.draw = function(divId)
         currentHeight = nextHeight;
         currentTotal = currentTotal - data[i][1];
     }
+
+    console.log("rects: " + rects.toString());
 
     // Draw the sections.
     svg.selectAll("rect")
