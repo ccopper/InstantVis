@@ -518,12 +518,15 @@ var removeDatasetsWithNoAssociatedVisualizationsOrValues = function(AIdataStruct
 		if (AIdataStructure[i].Visualizations.length == 0 ||
 		    AIdataStructure[i].Data.Values.length == 0)
 		{
-			AIdataStructureClean = AIdataStructure.splice(i, 1);
 			visualizationsRemoved = visualizationsRemoved + 1;
+		}
+		else
+		{
+			AIdataStructureClean.push(AIdataStructure[i]);
 		}
 	}
 	
-	AIdataStructure = AIdataStructureClean;
+	AIdataStructure = AIdataStructureClean.Array;
 
 	console.log("AI: removed " + visualizationsRemoved + " visualization" + 
 			(visualizationsRemoved > 1 ? "s" : ""));
