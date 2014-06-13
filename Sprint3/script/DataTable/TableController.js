@@ -173,6 +173,14 @@ function tableColorUpdate()
 {
 	var c1 = visColors[0];
 	var c2 = visColors[1];
+
+	
+	if(TCIns.AIObj.Visualizations[TCIns.VisID].Type == "Pie" || TCIns.AIObj.Visualizations[TCIns.VisID].Type == "Tree")
+	{
+		$("#DTSelMatInd th").css("background-color", "hsla(0,0,0,0)");
+		$("#DTSelMatD1 th").css("background-color", "hsla(0,0,0,0)");
+		return;
+	}
 	
 	$("#DTSelMatD1 th").css("background-color", "hsla(" + c1.hue + "," + c1.saturation + "," + c1.lightness + ",1.0)");
 	
@@ -255,7 +263,10 @@ function updateTableVis(visType)
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y1");
 			$("#D2Lbl").text("Y2");
-
+			
+			$("#LblX1").text("Y1");
+			$("#LblX2").text("Y2");
+			
 			TCIns.needD2 = false;
 			TCIns.needD1 = true;
 		break;
@@ -264,6 +275,14 @@ function updateTableVis(visType)
 		case "Pie":
 			$("#D1Cell").css("border-radius", "0px 0px 0px 5px");
 			$("#DTSelMatD2").hide();
+			
+			$("#IndLbl").text("Cat.");
+			$("#D1Lbl").text("Val.");
+			$("#D2Lbl").text("Y2");
+			
+			$("#LblX1").text("Primary");
+			$("#LblX2").text("Secondary");			
+			
 			TCIns.needD2 = false;
 			TCIns.needD1 = false;
 		break;
@@ -272,7 +291,9 @@ function updateTableVis(visType)
 			$("#IndLbl").text("X");
 			$("#D1Lbl").text("Y");
 			$("#D2Lbl").text("SIZE");
-
+			
+			$("#LblX1").text("Y");			
+			
 			TCIns.needD2 = true;
 			TCIns.needD1 = true;
 		break;
@@ -615,7 +636,7 @@ function updateSelMat(event)
 		$("#VisLabel").text(visTitle);
 	}
 	
-
+	console.log(TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns);
 	
 	TCIns.selUpdCallBack();
 }

@@ -3390,7 +3390,7 @@ function getData(columns, values, numDataPoints, types)
     if (columns.length == 1) 
     {
         console.log("types[0]: " + types[0]);
-        if (types[0] == "String")
+        if (types[columns[0]] == "String")
         {
             oneColumnString = true;
         }
