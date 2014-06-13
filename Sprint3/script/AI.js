@@ -587,7 +587,7 @@ function AI(parserData)
 	console.log("AI produced this data: " 
 			+ JSON.stringify(AIdataStructure));
 
-	return AIdataStructureClean.length > 0 ? AIdataStructureClean : AIdataStructure; 
+	return AIdataStructure;
 }
 
 
