@@ -337,7 +337,7 @@
 #instructions
 {
 	text-align: center;
-	font-family: "Helvetica";
+	font-family: "Arial";
 	font-size: 20px;
 }
 
@@ -345,7 +345,7 @@
 {
 	display: none;
 	text-align: center;
-	font-family: "Helvetica";
+	font-family: "Arial";
 	font-size: 20px;
 }
 
@@ -357,10 +357,15 @@
 	margin-left: auto;
 }
 
+html
+{
+	font-family: "Arial"
+}
+
 #disclaimer
 {
 	text-align: center;
-	font-family:  "Helvetica";
+	font-family:  "Arial";
 	font-size: 15px;
 }
 
@@ -368,7 +373,7 @@
 {
 	height: 17px;
 	text-align: center;
-	font-family: "Helvetica";
+	font-family: "Arial";
 	font-size: 15px;
 	color: red;
 }

@@ -20,7 +20,7 @@ var isDrag = false;
 //Toggle color icon mode
 var useColorIcons = false;
 //Turn this on to test on local machine
-var runLocal = false;
+var runLocal = true;
 //Global reference to the current visualization type
 var currentVis = NaN;
 //Flag to indicate not to trigger resizing during saving process
