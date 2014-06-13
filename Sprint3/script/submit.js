@@ -270,7 +270,7 @@ function colorClickHandler(event,refresh)
 	else
 	{
 		console.error("Color table identifier out of bounds. table: " + colorTableId);
-		`;
+		return;
 	}
 	if(colorIndex > (colors.length - 1) || colorIndex < 0)
 	{
