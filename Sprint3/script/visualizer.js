@@ -2201,7 +2201,9 @@ Line.prototype.draw = function (divId)
     // For each data set.
     for (var i = 1; i < numDataSets; i++) 
     {
+        console.log("calling getData for y1... this.dataSet: " + this.dataSet.toString());
         data = getData([0,i],this.dataSet);
+        console.log("...back from calling getData for y1");
         dataScaled = [];
 
         // Scale the data sets.
@@ -3291,6 +3293,8 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
 function getData(columns, values, numDataPoints)
 {   
     console.log("columns: " + columns.toString());
+    console.log("values: " + values.toString());
+    console.log("numDataPoints: " + numDataPoints);
     var data = []; // The dataset extracted from values.
     var row = [];
     var numRows = values.length;
@@ -3325,7 +3329,7 @@ function getData(columns, values, numDataPoints)
     {
         columns.splice(columns.length-1, 1);
     }
-    console.log("data: " + data.toString());
+    console.log("returning - data: " + data.toString());
     return data;
 }
 
