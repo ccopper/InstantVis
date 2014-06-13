@@ -500,6 +500,36 @@ var generateVisTitle = function(AIdataStructure)
 }
 
 /**
+ * Remove datasets from the {@link AIdataStructure} if they have no associated visualization
+ * or values.
+ *
+ * @function
+ * @parame {AIdataStructure} 
+ */
+var removeDatasetsWithNoAssociatedVisualizationsOrValues = function(AIdataStructure)
+{
+	var visualizationsRemoved = 0;
+	// remove empty visualizations
+
+	var AIdataStructureClean = AIdataStructure.Array;
+
+	for (var i = 0; i < AIdataStructure.length; i++) 
+	{
+		if (AIdataStructure[i].Visualizations.length == 0 ||
+		    AIdataStructure[i].Data.Values.length == 0)
+		{
+			AIdataStructureClean = AIdataStructure.splice(i, 1);
+			visualizationsRemoved = visualizationsRemoved + 1;
+		}
+	}
+	
+	AIdataStructure = AIdataStructureClean;
+
+	console.log("AI: removed " + visualizationsRemoved + " visualization" + 
+			(visualizationsRemoved > 1 ? "s" : ""));
+}
+
+/**
  * Take raw parser data and return an {@link AIdataStructure} object to be used by the visualizer.
  *
  * @global
@@ -550,28 +580,9 @@ function AI(parserData)
 
 	rankDatasets(AIdataStructure);
 
-	var visualizationsRemoved = 0;
-	// remove empty visualizations
-	var AIdataStructureClean = [];
-	for (var i = 0; i < AIdataStructure.length; i++) 
-	{
-		if (AIdataStructure[i].Visualizations.length == 0 ||
-		    AIdataStructure[i].Data.Values.length == 0)
-		{
-			AIdataStructureClean = AIdataStructure.splice(i, 1);
-			visualizationsRemoved = visualizationsRemoved + 1;
-		}
-	}
+	removeDatasetsWithNoAssociatedVisualizationsOrValues(AIdataStructure);
 
 	generateVisTitle(AIdataStructure);
-	
-	var consoleRemovedMessage = "";
-
-	if (visualizationsRemoved > 0) 
-	{ 
-		consoleRemovedMessage = " removed " + visualizationsRemoved + 
-			" visualizations (perhaps all string data was encountered in a table) and ";
-	}
 	
 	console.log("AI " + consoleRemovedMessage + " produced this data " 
 			+ JSON.stringify(AIdataStructure));
