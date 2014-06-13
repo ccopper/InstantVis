@@ -465,7 +465,7 @@ function getDefaulVisTitle()
 		visTitle = "" + TCIns.AIObj.Data.ColumnLabel[visualization.DataColumns[0]];
 	}
 	visTitle = visTitle.trim();	
-	console.log("\"" + visTitle + "\"");
+	
 	if(visTitle == "vs" || visTitle == "and  vs" || visTitle == "")
 	{
 		visTitle = "Unlabeled Visualization";
@@ -636,7 +636,6 @@ function updateSelMat(event)
 		$("#VisLabel").text(visTitle);
 	}
 	
-	console.log(TCIns.AIObj.Visualizations[TCIns.VisID].DataColumns);
 	
 	TCIns.selUpdCallBack();
 }

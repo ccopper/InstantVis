@@ -29,7 +29,6 @@ function Treemap(dataSet, labels, title, width, height, colors, margin)
     this.height = height;
     this.colors = colors;
     this.margin = margin;
-    console.log("this.dataSet: " + this.dataSet.toString());
 }
 
 /**
@@ -85,8 +84,6 @@ Treemap.prototype.draw = function(divId)
         }
     }
 
-    console.log("categories: " + categories.toString());
-
     // Sum up category totals and overal data total.
     var categoryTotal = 0;
     for (var i = 0; i < categories.length; i++) 
@@ -94,19 +91,14 @@ Treemap.prototype.draw = function(divId)
         categoryTotal = 0;
         for (var j = 1; j < categories[i].length; j++) 
         {
-            console.log("parseInt(this.dataSet[categories[i][j]][1]): " + parseFloat(this.dataSet[categories[i][j]][1]));
             categoryTotal = categoryTotal + parseFloat(this.dataSet[categories[i][j]][1]);
         }
-        console.log("categoryTotal: " + categoryTotal);
         if (categoryTotal > 0) 
         {
             data.push([categories[i][0], categoryTotal]);
-            console.log("pushing to data: [" + categories[i][0] + ", " + categoryTotal + "]");
         }
         dataTotal += categoryTotal;
     }
-
-    console.log("data: " + data.toString());
 
     // Sort the categories from largest to smallest.
     data.sort( function(a,b) 
@@ -190,8 +182,6 @@ Treemap.prototype.draw = function(divId)
         currentHeight = nextHeight;
         currentTotal = currentTotal - data[i][1];
     }
-
-    console.log("rects: " + rects.toString());
 
     // Draw the sections.
     svg.selectAll("rect")
@@ -417,6 +407,7 @@ Bubble.prototype.draw = function(divId)
     var numValuesPerDataSet = this.dataSet.length;
     var numXAxisTicks = numValuesPerDataSet;
     var numYAxisTicks = height/15;
+    var columnTypes = this.columnTypes;
 
     // Determine the min and max Y value for the datasets.
     var maxY = 0;
@@ -633,7 +624,19 @@ Bubble.prototype.draw = function(divId)
                 var x = Math.floor(this.getAttribute("cx")*100)/100;
                 var y = Math.floor(this.getAttribute("cy")*100)/100;
                 var r = Math.floor(this.getAttribute("r")*100)/100;
-                var ind = (Math.floor(d[0]*100)/100);
+                var ind;
+                // Determine the text associated with the data point when highlighted.
+                if (columnTypes[0] != "String") 
+                {
+                    console.log("not string");
+                    ind = (Math.floor(d[0]*100)/100);
+                }
+                else 
+                {
+                    console.log("string");
+                    ind = d[0];
+                }
+                console.log("ind: " + ind);
                 var dep = (Math.floor(d[1]*100)/100);
                 var rad = (Math.floor(d[2]*100)/100);
                 var labelText =  ind + ", " + dep + ": " + rad;
@@ -701,8 +704,16 @@ Bubble.prototype.draw = function(divId)
             var x = Math.floor(this.getAttribute("cx")*100)/100;
             var y = Math.floor(this.getAttribute("cy")*100)/100;
             var r = Math.floor(this.getAttribute("r")*100)/100;
-            var ind = (Math.floor(d[0]*100)/100);
-            var dep = (Math.floor(d[1]*100)/100);
+            var ind;
+            // Determine the text associated with the data point when highlighted.
+            if (columnTypes[0] != "String") 
+            {
+                ind = (Math.floor(d[0]*100)/100);
+            }
+            else 
+            {
+                ind = d[0];
+            }            var dep = (Math.floor(d[1]*100)/100);
             var rad = (Math.floor(d[2]*100)/100);
             var labelText =  ind + ", " + dep + ": " + rad;
             var length = labelText.length;
@@ -1178,6 +1189,7 @@ Scatter.prototype.draw = function(divId)
 
     var w = this.width;
     var h = this.height;
+    var columnTypes = this.columnTypes;
     var highlightRadius = 8;
     var defaultRadius = 4;
     var highlightTextHeight = 12;
@@ -1508,7 +1520,15 @@ Scatter.prototype.draw = function(divId)
                 var x = xScale(d[0]);
                 var y = yScale(d[1]);
                 var col = color;
-                var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                // Determine the text associated with the data point when highlighted.
+                if (columnTypes[0] != "String") 
+                {
+                    var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                }
+                else 
+                {
+                    var highlightText = d[0] + ", " + (Math.floor(d[1]*100)/100);
+                }
                 var xRect = x + 2*highlightRadius;
                 var yRect = y - highlightRectHeight/2;
                 var xText = xRect + highlightTextPadding;
@@ -1547,7 +1567,15 @@ Scatter.prototype.draw = function(divId)
             var x = xScale(d[0]);
             var y = yScale(d[1]);
             var col = color;
-            var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+            // Determine the text associated with the data point when highlighted.
+            if (this.columnTypes[0] != "String") 
+            {
+                var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+            }
+            else 
+            {
+                var highlightText = d[0] + ", " + (Math.floor(d[1]*100)/100);
+            }
             var xRect = x + 2*highlightRadius;
             var yRect = y - highlightRectHeight/2;
             var xText = xRect + highlightTextPadding;
@@ -1606,7 +1634,15 @@ Scatter.prototype.draw = function(divId)
                     var x2 = xScale(d[0]);
                     var y2 = yScale2(d[1]);
                     var col2 = color2;
-                    var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                    // Determine the text associated with the data point when highlighted.
+                    if (columnTypes[0] != "String") 
+                    {
+                        var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                    }
+                    else 
+                    {
+                        var highlightText2 = d[0] + ", " + (Math.floor(d[1]*100)/100);
+                    }
                     var xRect2 = x2 + 2*highlightRadius;
                     var yRect2 = y2 - highlightRectHeight/2;
                     var xText2 = xRect2 + highlightTextPadding;
@@ -1644,8 +1680,15 @@ Scatter.prototype.draw = function(divId)
                 var x2 = xScale(d[0]);
                 var y2 = yScale2(d[1]);
                 var col2 = color2;
-                var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
-                var xRect2 = x2 + 2*highlightRadius;
+                // Determine the text associated with the data point when highlighted.
+                if (columnTypes[0] != "String") 
+                {
+                    var highlightText2 = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
+                }
+                else 
+                {
+                    var highlightText2 = d[0] + ", " + (Math.floor(d[1]*100)/100);
+                }                var xRect2 = x2 + 2*highlightRadius;
                 var yRect2 = y2 - highlightRectHeight/2;
                 var xText2 = xRect2 + highlightTextPadding;
                 var yText2 = yRect2 + highlightTextHeight;
@@ -1709,7 +1752,6 @@ Scatter.prototype.draw = function(divId)
      */
     function createTooltipCircle(set, i, x, y, color, radius) 
     {
-        console.log("creating tooltip circle - set (" + set + ") - i (" + i + ")");
         svg.append("circle")
             .attr("id", ("circle-highlight" + set + "-" + i))
             .attr("cx", x)
@@ -1733,7 +1775,6 @@ Scatter.prototype.draw = function(divId)
      */
     function createTooltipRect(set, i, x, y, color, width, height) 
     {
-        console.log("creating tooltip rect - set (" + set + ") - i (" + i + ")");
         svg.append("rect")
             .attr("id", ("tooltip-rect" + set + "-" + i))
             .attr("x", x)
@@ -1795,7 +1836,6 @@ Scatter.prototype.draw = function(divId)
      */
     function removeTooltips(set, i) 
     {
-        console.log("remove tooltips - set (" + set + ") - i (" + i + ")");
         d3.select(("#circle-highlight" + set + "-" + i)).remove();
         d3.select(("#tooltip-rect" + set + "-" + i)).remove();  
         d3.select(("#tooltip-text" + set + "-" + i)).remove();
@@ -1820,7 +1860,6 @@ Scatter.prototype.draw = function(divId)
 function Line(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation, showPoints) 
 {
     this.dataSet = dataSet;
-    console.log("this.dataSet: " + this.dataSet.toString());
     this.labels = labels;
     this.columnTypes = columnTypes;
     this.title = title;
@@ -1849,7 +1888,6 @@ Line.prototype.draw = function (divId)
     var margin = this.margin;
 
     var w = this.width;
-    console.log("initial w: " + w);
     var h = this.height;
     var defaultRadius = 3;
     var highlightRadius = 6;
@@ -2275,9 +2313,7 @@ Line.prototype.draw = function (divId)
     // For each data set.
     for (var i = 1; i < numDataSets; i++) 
     {
-        console.log("calling getData for y1... this.dataSet: " + this.dataSet.toString());
         data = getData([0,i], this.dataSet, numValues);
-        console.log("...back from calling getData for y1");
         dataScaled = [];
 
         // Scale the data sets.
@@ -2398,9 +2434,6 @@ Line.prototype.draw = function (divId)
             .style("stroke", "black")
             .style("fill", this.colors[0]);  
 
-        console.log("width: " + (margin.left/2 - colorIconWidth/2));
-        console.log("w: " + w);
-        console.log("width: " + (w - ((margin.right/2) - (colorIconWidth/2))));
         base.append("rect")
             .attr("id", "colorIcon2")
             .attr("x", (w - ((margin.right/2) + (colorIconWidth/2))))
@@ -2716,15 +2749,12 @@ Bar.prototype.draw = function(divId)
                         .rangePoints([barPadding,width - barPadding - barWidth]);
     }
   
-    console.log("creatng y scale");
     var condensedYMin = d3.min(condensedYValues);
     var yScaleMin = 0;
-    console.log("condensedYMin: " + condensedYMin);
     if (condensedYMin < 0) 
     {
         yScaleMin = condensedYMin;
     } 
-    console.log("yScaleMin: " + yScaleMin);
     var yScale = d3.scale.linear()
                     .domain([yScaleMin, d3.max(condensedYValues)])
                     .range([height, 0]);
@@ -2733,12 +2763,10 @@ Bar.prototype.draw = function(divId)
     {
         var condensedY2Min = d3.min(condensedY2Values);
         var y2ScaleMin = 0;
-        console.log("condensedY2Min: " + condensedY2Min);
         if (condensedY2Min < 0) 
         {
             y2ScaleMin = condensedY2Min;
         } 
-        console.log("y2ScaleMin: " + y2ScaleMin);
         var yScale2 = d3.scale.linear()
                         .domain([y2ScaleMin, d3.max(condensedY2Values)])
                         .range([height, 0]);
@@ -2837,8 +2865,6 @@ Bar.prototype.draw = function(divId)
         })
         .attr("y", function(d) 
         {
-            console.log("y1 rect y:" + d[1]);
-            console.log("y1 rect scale(y): " + yScale(d[1]));
             return (yScale(d[1]));
         })
         .attr("width", barWidth)
@@ -2848,7 +2874,6 @@ Bar.prototype.draw = function(divId)
         })
         .attr("fill", function(d) 
         {
-            console.log("fillColor: " + fillColor);
             return fillColor;
         })
         .style("stroke", "black")
@@ -3294,33 +3319,26 @@ Bar.prototype.draw = function(divId)
  */
 function getVisualization(dataPackage, type, colors, width, height, numDataPoints, margin, xAxisLabelOrientation)
 {
-    console.log("numDataPoints: " + numDataPoints);
-    //var height = 300;
     var pieWidth = height*1.5;
-    //var width = 650;
     for(var i = 0; i < dataPackage.Visualizations.length; i++)
     {
         var visType = dataPackage.Visualizations[i].Type;
         var columnSet = dataPackage.Visualizations[i].DataColumns;
         var visTitle = dataPackage.Visualizations[i].VisTitle;
-        console.log("columnSet: " + columnSet.toString());
         var columnTypes = dataPackage.Data.ColumnType;
         var values = dataPackage.Data.Values;
         var labels = dataPackage.Data.ColumnLabel;
         var caption = dataPackage.Data.Caption;
         if(!margin)
         {
-            console.log("Using default margins.")
             margin = {top: 50, right: 55, bottom: 55, left: 55};
         }
         if(!xAxisLabelOrientation)
         {
-            console.log("Using default text orientation.")
             xAxisLabelOrientation = "Vertical";    
         }
         if(!colors)
         {
-            console.log("Using default colors.");
             colors = [{hue: 250, saturation: 50, lightness: 50}, {hue: 250, saturation: 50, lightness: 50}];  
         }
         
@@ -3371,14 +3389,12 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
  * @param columns           The list of columns to extract from the given values.
  * @param values            The 2D array of values comprising the data set.
  * @param numDataPoints     The number of data points in each column of values, starting with the first, to return.
+ * @param types             The list of types associated with each column in the data set.
  * @returns                 2D array of data values.
  */
 function getData(columns, values, numDataPoints, types)
 {   
-    console.log("columns: " + columns.toString());
-    console.log("values: " + values.toString());
-    console.log("numDataPoints: " + numDataPoints);
-    var data = []; // The dataset extracted from values.
+    var data = [];
     var row = [];
     var numRows = values.length;
     var numValuesToGet = numDataPoints;
@@ -3389,7 +3405,6 @@ function getData(columns, values, numDataPoints, types)
     var oneColumnString = false;
     if (columns.length == 1) 
     {
-        console.log("types[0]: " + types[0]);
         if (types[columns[0]] == "String")
         {
             oneColumnString = true;
@@ -3412,13 +3427,13 @@ function getData(columns, values, numDataPoints, types)
                 row[k] = values[j][columns[k]];
             }
             // Add the row to the extracted dataset.
-            console.log("pushing row to data: " + row.toString());
             data.push(row);
         }
     }
     else
+    // If the request is for one column of string data, output two columns, one of the strings and one of just 1s.
+    // This makes it work with pie and treemap drawing functions.
     {
-        console.log("One column strings");
         for (var j = 0; j < numValuesToGet; j++)
         {
             data.push([values[j][0], 1]);
@@ -3428,7 +3443,6 @@ function getData(columns, values, numDataPoints, types)
     {
         columns.splice(columns.length-1, 1);
     }
-    console.log("returning - data: " + data.toString());
     return data;
 }
 
@@ -3482,7 +3496,6 @@ function getColors(colors)
     {
         newColors.push("hsl(" + colors[i].hue + ", " + colors[i].saturation + ", " + colors[i].lightness + ")");
     }
-    console.log("newColors: " + newColors.toString());
     return newColors;
 }
 
@@ -3511,7 +3524,6 @@ function getMixedColors(numColorsOut, colors)
             newColors.push("hsl(" + hue + ", " + sat + ", " + (35+(j*increment)) + "%)");
         }
     }
-    console.log("newColors: " + newColors.toString());
     return newColors;
 }
 
