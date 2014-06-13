@@ -3260,7 +3260,7 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
                     break;  
 
                 case "Pie":
-                    v = new Pie(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), visTitle, pieWidth, height, colors, margin);
+                    v = new Pie(getData(columnSet, values, numDataPoints), getLabels(columnSet, labels), visTitle, width, height, colors, margin);
                     break;
 
                 case "Tree":
