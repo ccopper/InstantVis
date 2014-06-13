@@ -3402,10 +3402,6 @@ function getData(columns, values, numDataPoints, types)
             console.log("pushing row to data: " + row.toString());
             data.push(row);
         }
-        if (oneColumn) 
-        {
-            columns.splice(columns.length-1, 1);
-        }
     }
     else
     {
@@ -3414,6 +3410,10 @@ function getData(columns, values, numDataPoints, types)
         {
             data.push([values[j][0], 1]);
         }
+    }
+    if (oneColumn) 
+    {
+        columns.splice(columns.length-1, 1);
     }
     console.log("returning - data: " + data.toString());
     return data;
