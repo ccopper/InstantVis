@@ -584,7 +584,7 @@ function AI(parserData)
 
 	generateVisTitle(AIdataStructure);
 	
-	console.log("AI " + consoleRemovedMessage + " produced this data " 
+	console.log("AI produced this data: " 
 			+ JSON.stringify(AIdataStructure));
 
 	return AIdataStructureClean.length > 0 ? AIdataStructureClean : AIdataStructure; 
