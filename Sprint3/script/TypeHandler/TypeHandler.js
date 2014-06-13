@@ -79,7 +79,7 @@ TypeHandler.prototype.processTable = function(table)
 			var hType = this.validTypes(header);
 			var cTypes = this.validTypes(columnData);
 			
-			if(hType[0] != cTypes[0])
+			if(hType[0] != cTypes[0] && hType[0] == "String")
 			{
 
 				table.Data.ColumnLabel = origHead;

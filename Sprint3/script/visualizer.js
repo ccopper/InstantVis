@@ -217,6 +217,7 @@ Treemap.prototype.draw = function(divId)
             { 
                 return d[4]; 
             })
+        .style("stroke", "black")
         .on("mouseover", function(d, i) 
         {
             var newX = (parseFloat(this.getAttribute("x")) + parseFloat(this.getAttribute("width"))/2);
@@ -310,8 +311,6 @@ Treemap.prototype.draw = function(divId)
             d3.select(this).attr("fill", d[0])
             if (!toggle[i]) 
             {
-                d3.select(this)
-                    .style("stroke", "none")
                 d3.selectAll(("#treemap-text-tooltip2-" + i)).remove();
                 d3.selectAll(("#treemap-text-tooltip3-" + i)).remove();
             }
@@ -945,6 +944,7 @@ Pie.prototype.draw = function(divId)
             return mixedColorSet[i];
         })
         .attr("d", arc)
+        .style("stroke", "black")
         .on("mouseover", function(d, i) 
         {
             if (!toggle[i]) 
@@ -1068,7 +1068,6 @@ Pie.prototype.draw = function(divId)
             this.setAttribute("fill", mixedColorSet[i]);
             if (!toggle[i]) 
             {
-                d3.select(this).style("stroke", "none");
                 d3.select(("#tooltip-text-" + i)).remove();
                 d3.select(("#tooltip-text2-" + i)).remove();
                 d3.select(("#tooltip-text3-" + i)).remove();
@@ -1085,7 +1084,13 @@ Pie.prototype.draw = function(divId)
             .attr("y", titleLabelPaddingTop + titleLabelHeight/2)
             .text(title); 
 
-        // Bold the given legend text.
+        /**
+         * Bold the legend text with the given name and id.
+         *
+         * @function
+         * @param labelName         The label name to bold.
+         * @param i                 The id number of the text.
+         */
         function mouseover(labelName, i) 
         {
             if (!toggle[i]) 
@@ -1101,7 +1106,13 @@ Pie.prototype.draw = function(divId)
             }
         }
 
-        // Unbold the given legend text.
+        /**
+         * Unbold the legend text with the given name and id.
+         *
+         * @function
+         * @param labelName         The label name to unbold.
+         * @param i                 The id number of the text.
+         */        
         function mouseout(labelName, i) 
         {
             if (!toggle[i]) 
@@ -1677,6 +1688,17 @@ Scatter.prototype.draw = function(divId)
             .style("fill", this.colors[1]);
     }
 
+    /**
+     * Draw an unfilled circle for a tooltip using the given parameters.
+     *
+     * @function
+     * @param set       The number of the data set containing the tooltip.
+     * @param i         The id number of the tooltip.
+     * @param x         The x position at which to draw the tooltip.
+     * @param y         The y position at which to draw the tooltip.
+     * @param color     The color with which to draw the tooltip.
+     * @param radius    The radius to use when drawing the tooltip.
+     */
     function createTooltipCircle(set, i, x, y, color, radius) 
     {
         console.log("creating tooltip circle - set (" + set + ") - i (" + i + ")");
@@ -1689,6 +1711,18 @@ Scatter.prototype.draw = function(divId)
             .attr("r", radius);
     }
 
+    /**
+     * Draw a rectangle for a tooltip using the given parameters.
+     *
+     * @function
+     * @param set       The number of the data set containing the tooltip.
+     * @param i         The id number of the tooltip.
+     * @param x         The x position at which to draw the tooltip.
+     * @param y         The y position at which to draw the tooltip.
+     * @param color     The color with which to draw the tooltip.
+     * @param width     The width to use when drawing the tooltip.
+     * @param width     The height to use when drawing the tooltip.
+     */
     function createTooltipRect(set, i, x, y, color, width, height) 
     {
         console.log("creating tooltip rect - set (" + set + ") - i (" + i + ")");
@@ -1702,6 +1736,16 @@ Scatter.prototype.draw = function(divId)
             .attr("height", height);
     }
 
+    /**
+     * Draw text for a tooltip using the given parameters.
+     *
+     * @function
+     * @param set       The number of the data set containing the tooltip.
+     * @param i         The id number of the tooltip.
+     * @param x         The x position at which to draw the tooltip.
+     * @param y         The y position at which to draw the tooltip.
+     * @param text      The text draw for the tooltip.
+     */
     function createTooltipText(set, i, x, y, text) 
     {
         svg.append("text")
@@ -1717,6 +1761,15 @@ Scatter.prototype.draw = function(divId)
             .text(text); 
     }
 
+    /**
+     * Draw a line for a tooltip using the given parameters.
+     *
+     * @function
+     * @param set       The number of the data set containing the tooltip.
+     * @param i         The id number of the tooltip.
+     * @param color     The color with which to draw the tooltip.
+     * @param lineData  The 2d array of line data to use when drawing the line.
+     */
     function createTooltipLine(set, i, color, lineData)
     {
         svg.append("path")
@@ -1725,6 +1778,13 @@ Scatter.prototype.draw = function(divId)
             .attr("d", line(lineData));
     }
 
+    /**
+     * Remove all circle, rect, text, and line tooltip components for the given set and id.
+     *
+     * @function
+     * @param set       The number of the data set containing the tooltip.
+     * @param i         The id number of the tooltip.
+     */
     function removeTooltips(set, i) 
     {
         console.log("remove tooltips - set (" + set + ") - i (" + i + ")");
@@ -2003,7 +2063,11 @@ Line.prototype.draw = function (divId)
         .attr("d", unscaledLine(lineData));
 
 
-    // Actions that occur when the mouse moves within the graph.
+    /**
+     * Moves the vertical guideline and checks for data point highlighting, displaying tooltips as necessary.
+     *
+     * @function
+     */
     function mousemove() 
     {        
         var mouseX = d3.mouse(this)[0];
