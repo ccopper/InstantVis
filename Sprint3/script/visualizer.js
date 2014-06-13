@@ -3260,8 +3260,10 @@ function getData(columns, values)
     var data = []; // The dataset extracted from values.
     var row = [];
     var numRows = values.length;
+    var oneColumn = false;
     if (columns.length == 1) 
     {
+        oneColumn = true;
         columns.push(columns[0]);
     }
     var numColumns = columns.length;
@@ -3279,6 +3281,10 @@ function getData(columns, values)
         }
         // Add the row to the extracted dataset.
         data.push(row);
+    }
+    if (oneColumn) 
+    {
+        columns.splice(columns.length-1, 1);
     }
     return data;
 }
