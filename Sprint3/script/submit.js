@@ -23,6 +23,8 @@ var useColorIcons = false;
 var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
+//Flag to indicate not to trigger resizing during saving process
+var saving = false;
 //Global reference to active colors
 var x1ColorIndex = 0;
 var x2ColorIndex = 0;
@@ -472,6 +474,10 @@ function changeTextOrientation(event)
 */
 function resizeVisWrapper()
 {
+	if(saving)
+	{
+		return;
+	}
 	//Let the graph auto size
 	var actWidth = $("#visSVG").outerWidth();
 	if(actWidth > (document.body.clientWidth * 0.6))
@@ -682,7 +688,10 @@ function visTypeClickHandler(event)
 	
 	updateTableVis(visType);
 	//Since we have initilized a new graph resize the vis/table
-	resizeVisWrapper();
+	if($("#tableContainer").is(':visible'))
+	{
+		resizeVisWrapper();
+	}
 }
 
 /**
@@ -899,19 +908,13 @@ function getURLParams()
 */
 function exportVisualization()
 {
+	saving = true;
 	var html = d3.select("svg")
 		.attr("version", 1.1)
         .attr("xmlns", "http://www.w3.org/2000/svg")
         .node().parentNode.innerHTML;
 
     var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
-  	//var img = '<img src="'+imgsrc+'">'; 
-  	//d3.select("#visExport").html(img);
-  	// var w = window.open()
-  	// w.document.write($("#visExport").html());
-  	// w.document.close()
-
- 
 	var image = new Image;
 	image.src = imgsrc;
 	image.onload = function() {
@@ -929,6 +932,7 @@ function exportVisualization()
 		a.href = canvasdata;
 		a.click();
 	  };
+	 saving = false;
 }
 
 /**
