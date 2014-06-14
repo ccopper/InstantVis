@@ -32,7 +32,7 @@ var isDrag = false;
 //Toggle color icon mode
 var useColorIcons = false;
 //Turn this on to test on local machine
-var runLocal = true;
+var runLocal = false;
 //Global reference to the current visualization type
 var currentVis = NaN;
 //Array of visualizations which do not require two color tables 
@@ -80,11 +80,11 @@ var colors =[
 				{hue:292,saturation:"35%",lightness:"47%"},
 				{hue:30,saturation:"100%",lightness:"50%"},
 				{hue:60,saturation:"100%",lightness:"60%"},
-				{hue:152,saturation:"199%",lightness:"44%"},
-				{hue:229,saturation:"82%",lightness:"19%"}
+				{hue:229,saturation:"82%",lightness:"50%"},
+				{hue:46,saturation:"100%",lightness:"50%"}
 			];
 //Global reference to active colors
-var visColorId = [5,10];
+var visColorId = [colors.length-2, colors.length-1];
 var visColors = [colors[visColorId[0]], colors[visColorId[1]]];
 
 $(document).ready(readyFunction);
