@@ -482,6 +482,8 @@ function getDefaulVisTitle()
  */
 function deleteColumn(event)
 {
+	if(TCIns.isEditing)
+	{ return; }
 	var colNum = $(this).data("colNum");
 
 	for(var row in TCIns.AIObj.Data.Values)
@@ -503,6 +505,9 @@ function deleteColumn(event)
  */
 function deleteRow(event)
 {
+	if(TCIns.isEditing)
+	{ return; }
+	
 	var rowNum = $(this).data("rowNum");
 	
 	TCIns.AIObj.Data.Values.splice(rowNum,1);
