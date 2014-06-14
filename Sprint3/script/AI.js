@@ -233,9 +233,6 @@ var selectTreemapVars = function(currentDataset)
 		console.log("AI: unable to find good variables for treemap.");
 	}
 
-	console.log("AI: treemap var selector: string col " + (stringFound == true ? bestString : "(no string selected) ") +
-			", numeric col " + bestNumeric);
-
 	return treemapVars;
 }
 		
