@@ -1568,7 +1568,7 @@ Scatter.prototype.draw = function(divId)
             var y = yScale(d[1]);
             var col = color;
             // Determine the text associated with the data point when highlighted.
-            if (this.columnTypes[0] != "String") 
+            if (columnTypes[0] != "String") 
             {
                 var highlightText = (Math.floor(d[0]*100)/100) + ", " + (Math.floor(d[1]*100)/100);
             }
