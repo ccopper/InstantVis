@@ -628,15 +628,12 @@ Bubble.prototype.draw = function(divId)
                 // Determine the text associated with the data point when highlighted.
                 if (columnTypes[0] != "String") 
                 {
-                    console.log("not string");
                     ind = (Math.floor(d[0]*100)/100);
                 }
                 else 
                 {
-                    console.log("string");
                     ind = d[0];
                 }
-                console.log("ind: " + ind);
                 var dep = (Math.floor(d[1]*100)/100);
                 var rad = (Math.floor(d[2]*100)/100);
                 var labelText =  ind + ", " + dep + ": " + rad;
