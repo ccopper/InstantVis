@@ -693,7 +693,6 @@ function editCell(event)
  */
 function saveCell(event)
 {
-	TCIns.isEditing = false;
 	
 	var cellRow = $(this).data("cellRow");
 	var cellCol = $(this).data("cellCol");
@@ -705,14 +704,16 @@ function saveCell(event)
 	{
 		
 		$("#dWarn").css("top", event.pageY).css("left", event.pageX).show().fadeOut(2000);
-			
+		$("#cellEditor").val(TCIns.AIObj.Data.Values[cellRow][cellCol]);
 			
 		return;
 	} else if(TCIns.AIObj.Data.ColumnType[cellCol] != "String" && !isNaN(parseFloat(val)))
 	{
 		val = parseFloat(val);
 	}
-
+	
+	TCIns.isEditing = false;
+	
 	TCIns.AIObj.Data.Values[cellRow][cellCol] = val;	
 	
 	$(cellPtr).empty();
