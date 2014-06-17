@@ -2,6 +2,10 @@
  *	Instant Vis API
  *
  *	@module InstantVisAPI
+ *  @author Andrew Reisdorph
+ *	@author Chris Copper
+ *	@author Jeremiah Jekich
+ *	@author Phil Eittreim
  */
 
  /**

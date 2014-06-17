@@ -1,6 +1,10 @@
 /** 
  * Web page event and controller logic
  *	@module Submit
+ *  @author Andrew Reisdorph
+ *	@author Chris Copper
+ *	@author Jeremiah Jekich
+ *	@author Phil Eittreim
  */
 
 //Global reference to table data

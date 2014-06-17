@@ -1,6 +1,10 @@
 /**
  * @file Take instructions and data from the Controller and draw a visualization.
  * @module Visualizer
+ *  @author Andrew Reisdorph
+ *	@author Chris Copper
+ *	@author Jeremiah Jekich
+ *	@author Phil Eittreim
  */
 
 var currentVisualization = NaN;

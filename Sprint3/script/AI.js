@@ -1,6 +1,10 @@
 /** 
  * @file Take raw data from the parser and analyze it, then pass the new data to the visualizer.
  * @module AI
+ *	@author Andrew Reisdorph
+ *	@author Chris Copper
+ *	@author Jeremiah Jekich
+ *	@author Phil Eittreim
  */
 
 

@@ -2,6 +2,10 @@
  *	Table Controller JavaScript
  *
  *	@module TableController
+ *  @author Andrew Reisdorph
+ *	@author Chris Copper
+ *	@author Jeremiah Jekich
+ *	@author Phil Eittreim
  */
 /**
  *	Contains properties of the currently drawn table

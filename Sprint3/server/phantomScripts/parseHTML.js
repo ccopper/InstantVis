@@ -3,6 +3,10 @@
 *	
 *
 *	@module parseHTML
+*	@author Andrew Reisdorph
+*	@author Chris Copper
+*	@author Jeremiah Jekich
+*	@author Phil Eittreim
 */
 
 /*=========================================================
@@ -90,19 +94,18 @@ page.open(URL, function(status)
 	}
 	
 	//Inject jquery and the table parsing script
-	page.includeJs("http://localhost/repo/Sprint3/server/phantomScripts/jquery-2.1.1.min.js", function()
+	page.injectJs("phantomScripts/jquery-2.1.1.min.js");
+	
+	page.injectJs("phantomScripts/tableScraper.js");
+
+	var table = page.evaluate(function()
 	{
-		page.includeJs("http://localhost/repo/Sprint3/server/phantomScripts/tableScraper.js", function()
-		{
-			var table = page.evaluate(function()
-			{
-				return tableScraper();
-			});
+		return tableScraper();
+	});
 			
-			outputData.Status = 1;
-			outputData.Data = table.Data;
-			writeQuit(outputData);		
-		});
-	});	
+	outputData.Status = 1;
+	outputData.Data = table.Data;
+	writeQuit(outputData);		
+	
 });	
 

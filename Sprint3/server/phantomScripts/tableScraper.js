@@ -3,6 +3,10 @@
  * @example
  * Call tableScraper() from within the HTML document in question.
  * @module tableScraper
+ *	@author Andrew Reisdorph
+ *	@author Chris Copper
+ *	@author Jeremiah Jekich
+ *	@author Phil Eittreim
  */
 
 

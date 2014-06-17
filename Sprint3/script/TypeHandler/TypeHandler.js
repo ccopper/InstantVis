@@ -3,6 +3,10 @@
  *	Predicts type and if necessary converts data.
  *
  *	@module TypeHandler
+ *  @author Andrew Reisdorph
+ *	@author Chris Copper
+ *	@author Jeremiah Jekich
+ *	@author Phil Eittreim
  */
  
 /**
