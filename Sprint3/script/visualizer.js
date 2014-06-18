@@ -1837,7 +1837,7 @@ Scatter.prototype.draw = function(divId)
 /**
  * Create a Line graph object.
  *
- * @contsructor
+ * @constructor
  * @param {Array[Array]} dataSet            Set of data to visualize.
  * @param {Array} labels                    Set of labels associated with the data.
  * @param {String} title                    Title of visualization.
