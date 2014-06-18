@@ -13,14 +13,14 @@ var globalPadding = 25;
 /**
  * Create a Treemap object.
  *
- * @function
- * @param dataSet   Set of data to visualize.
- * @param labels    Set of labels associated with the data.
- * @param title     Title of visualization.
- * @param width     Width of the visualization.
- * @param height    Height of the visualization.
- * @param colors    Colors to use in the visualization.
- * @param margin    Margin specifications for the visualization.
+ * @constructor
+ * @param {Array[Array]} dataSet    Set of data to visualize.
+ * @param {Array} labels            Set of labels associated with the data.
+ * @param {String} title            Title of visualization.
+ * @param {float} width             Width of the visualization.
+ * @param {float} height            Height of the visualization.
+ * @param {Array} colors            Colors to use in the visualization.
+ * @param {MarginObject} margin     Margin specifications for the visualization.
  */
 function Treemap(dataSet, labels, title, width, height, colors, margin) 
 {
@@ -38,8 +38,7 @@ function Treemap(dataSet, labels, title, width, height, colors, margin)
 /**
  * Draw the Treemap.
  *
- * @function
- * @param divId   The id of the div into which the visualization should be drawn.
+ * @param {String} divId   The id of the div into which the visualization should be drawn.
  */
 Treemap.prototype.draw = function(divId) 
 {
@@ -347,15 +346,15 @@ Treemap.prototype.draw = function(divId)
 /**
  * Create a Bubble chart object.
  *
- * @function
- * @param dataSet               Set of data to visualize.
- * @param labels                Set of labels associated with the data.
- * @param title                 Title of visualization.
- * @param width                 Width of the visualization.
- * @param height                Height of the visualization.
- * @param colors                Colors to use in the visualization.
- * @param margin                Margin specifications for the visualization.
- * @param xAxisLabelOrientation Orientation at which to position the x axis labels.
+ * @constructor
+ * @param {Array[Array]} dataSet            Set of data to visualize.
+ * @param {Array} labels                    Set of labels associated with the data.
+ * @param {String} title                    Title of visualization.
+ * @param {float} width                     Width of the visualization.
+ * @param {float} height                    Height of the visualization.
+ * @param {Array} colors                    Colors to use in the visualization.
+ * @param {MarginObject} margin             Margin specifications for the visualization.
+ * @param {String} xAxisLabelOrientation    Orientation at which to position the x axis labels.
  */
 function Bubble(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation) 
 {
@@ -375,8 +374,7 @@ function Bubble(dataSet, labels, columnTypes, title, width, height, colors, marg
 /**
  * Draw the Bubble chart.
  *
- * @function
- * @param divId   The id of the div into which the visualization should be drawn.
+ * @param {String} divId   The id of the div into which the visualization should be drawn.
  */
 Bubble.prototype.draw = function(divId) 
 {
@@ -773,14 +771,14 @@ Bubble.prototype.draw = function(divId)
 /**
  * Create a Pie chart object.
  *
- * @function
- * @param dataSet               Set of data to visualize.
- * @param labels                Set of labels associated with the data.
- * @param title                 Title of visualization.
- * @param width                 Width of the visualization.
- * @param height                Height of the visualization.
- * @param colors                Colors to use in the visualization.
- * @param margin                Margin specifications for the visualization.
+ * @constructor
+ * @param {Array[Array]} dataSet    Set of data to visualize.
+ * @param {Array} labels            Set of labels associated with the data.
+ * @param {String} title            Title of visualization.
+ * @param {float} width             Width of the visualization.
+ * @param {float} height            Height of the visualization.
+ * @param {Array} colors            Colors to use in the visualization.
+ * @param {MarginObject} margin     Margin specifications for the visualization.
  */
 function Pie(dataSet, labels, title, width, height, colors, margin) 
 {
@@ -798,8 +796,7 @@ function Pie(dataSet, labels, title, width, height, colors, margin)
 /**
  * Draw the Pie chart.
  *
- * @function
- * @param divId   The id of the div into which the visualization should be drawn.
+ * @param {String} divId   The id of the div into which the visualization should be drawn.
  */
 Pie.prototype.draw = function(divId)
 {
@@ -1105,9 +1102,8 @@ Pie.prototype.draw = function(divId)
         /**
          * Bold the legend text with the given name and id.
          *
-         * @function
-         * @param labelName         The label name to bold.
-         * @param i                 The id number of the text.
+         * @param {String} labelName    The label name to bold.
+         * @param {int} i               The id number of the text.
          */
         function mouseover(labelName, i) 
         {
@@ -1127,9 +1123,8 @@ Pie.prototype.draw = function(divId)
         /**
          * Unbold the legend text with the given name and id.
          *
-         * @function
-         * @param labelName         The label name to unbold.
-         * @param i                 The id number of the text.
+         * @param {String} labelName    The label name to unbold.
+         * @param {int} i               The id number of the text.
          */        
         function mouseout(labelName, i) 
         {
@@ -1150,15 +1145,15 @@ Pie.prototype.draw = function(divId)
 /**
  * Create a Scatter plot object.
  *
- * @function
- * @param dataSet               Set of data to visualize.
- * @param labels                Set of labels associated with the data.
- * @param title                 Title of visualization.
- * @param width                 Width of the visualization.
- * @param height                Height of the visualization.
- * @param colors                Colors to use in the visualization.
- * @param margin                Margin specifications for the visualization.
- * @param xAxisLabelOrientation Orientation at which to position the x axis labels.
+ * @constructor
+ * @param {Array[Array]} dataSet            Set of data to visualize.
+ * @param {Array} labels                    Set of labels associated with the data.
+ * @param {String} title                    Title of visualization.
+ * @param {float} width                     Width of the visualization.
+ * @param {float} height                    Height of the visualization.
+ * @param {Array} colors                    Colors to use in the visualization.
+ * @param {MarginObject} margin             Margin specifications for the visualization.
+ * @param {String} xAxisLabelOrientation    Orientation at which to position the x axis labels.
  */
 function Scatter(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation) 
 {
@@ -1178,8 +1173,7 @@ function Scatter(dataSet, labels, columnTypes, title, width, height, colors, mar
 /**
  * Draw the Scatter plot.
  *
- * @function
- * @param divId   The id of the div into which the visualization should be drawn.
+ * @param {String} divId   The id of the div into which the visualization should be drawn.
  */
 Scatter.prototype.draw = function(divId) 
 {
@@ -1743,13 +1737,12 @@ Scatter.prototype.draw = function(divId)
     /**
      * Draw an unfilled circle for a tooltip using the given parameters.
      *
-     * @function
-     * @param set       The number of the data set containing the tooltip.
-     * @param i         The id number of the tooltip.
-     * @param x         The x position at which to draw the tooltip.
-     * @param y         The y position at which to draw the tooltip.
-     * @param color     The color with which to draw the tooltip.
-     * @param radius    The radius to use when drawing the tooltip.
+     * @param {int} set         The number of the data set containing the tooltip.
+     * @param {int} i           The id number of the tooltip.
+     * @param {float} x         The x position at which to draw the tooltip.
+     * @param {float} y         The y position at which to draw the tooltip.
+     * @param {Array} color     The color with which to draw the tooltip.
+     * @param {float} radius    The radius to use when drawing the tooltip.
      */
     function createTooltipCircle(set, i, x, y, color, radius) 
     {
@@ -1765,14 +1758,13 @@ Scatter.prototype.draw = function(divId)
     /**
      * Draw a rectangle for a tooltip using the given parameters.
      *
-     * @function
-     * @param set       The number of the data set containing the tooltip.
-     * @param i         The id number of the tooltip.
-     * @param x         The x position at which to draw the tooltip.
-     * @param y         The y position at which to draw the tooltip.
-     * @param color     The color with which to draw the tooltip.
-     * @param width     The width to use when drawing the tooltip.
-     * @param width     The height to use when drawing the tooltip.
+     * @param {int} set         The number of the data set containing the tooltip.
+     * @param {int} i           The id number of the tooltip.
+     * @param {float} x         The x position at which to draw the tooltip.
+     * @param {float} y         The y position at which to draw the tooltip.
+     * @param {Array} color     The color with which to draw the tooltip.
+     * @param {float} width     The width to use when drawing the tooltip.
+     * @param {float} height    The height to use when drawing the tooltip.
      */
     function createTooltipRect(set, i, x, y, color, width, height) 
     {
@@ -1789,12 +1781,11 @@ Scatter.prototype.draw = function(divId)
     /**
      * Draw text for a tooltip using the given parameters.
      *
-     * @function
-     * @param set       The number of the data set containing the tooltip.
-     * @param i         The id number of the tooltip.
-     * @param x         The x position at which to draw the tooltip.
-     * @param y         The y position at which to draw the tooltip.
-     * @param text      The text draw for the tooltip.
+     * @param {int} set         The number of the data set containing the tooltip.
+     * @param {int} i           The id number of the tooltip.
+     * @param {float} x         The x position at which to draw the tooltip.
+     * @param {float} y         The y position at which to draw the tooltip.
+     * @param {String} text     The text draw for the tooltip.
      */
     function createTooltipText(set, i, x, y, text) 
     {
@@ -1814,11 +1805,10 @@ Scatter.prototype.draw = function(divId)
     /**
      * Draw a line for a tooltip using the given parameters.
      *
-     * @function
-     * @param set       The number of the data set containing the tooltip.
-     * @param i         The id number of the tooltip.
-     * @param color     The color with which to draw the tooltip.
-     * @param lineData  The 2d array of line data to use when drawing the line.
+     * @param {int} set                 The number of the data set containing the tooltip.
+     * @param {int} i                   The id number of the tooltip.
+     * @param {String} color            The color with which to draw the tooltip.
+     * @param {Array[Array]} lineData   The 2d array of line data to use when drawing the line.
      */
     function createTooltipLine(set, i, color, lineData)
     {
@@ -1831,9 +1821,8 @@ Scatter.prototype.draw = function(divId)
     /**
      * Remove all circle, rect, text, and line tooltip components for the given set and id.
      *
-     * @function
-     * @param set       The number of the data set containing the tooltip.
-     * @param i         The id number of the tooltip.
+     * @param {int} set       The number of the data set containing the tooltip.
+     * @param {int} i         The id number of the tooltip.
      */
     function removeTooltips(set, i) 
     {
@@ -1848,15 +1837,15 @@ Scatter.prototype.draw = function(divId)
 /**
  * Create a Line graph object.
  *
- * @function
- * @param dataSet               Set of data to visualize.
- * @param labels                Set of labels associated with the data.
- * @param title                 Title of visualization.
- * @param width                 Width of the visualization.
- * @param height                Height of the visualization.
- * @param colors                Colors to use in the visualization.
- * @param margin                Margin specifications for the visualization.
- * @param xAxisLabelOrientation Orientation at which to position the x axis labels.
+ * @contsructor
+ * @param {Array[Array]} dataSet            Set of data to visualize.
+ * @param {Array} labels                    Set of labels associated with the data.
+ * @param {String} title                    Title of visualization.
+ * @param {int} width                       Width of the visualization.
+ * @param {int} height                      Height of the visualization.
+ * @param {Array} colors                    Colors to use in the visualization.
+ * @param {MarginObject} margin             Margin specifications for the visualization.
+ * @param {String} xAxisLabelOrientation    Orientation at which to position the x axis labels.
  */
 function Line(dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation, showPoints) 
 {
@@ -1877,8 +1866,7 @@ function Line(dataSet, labels, columnTypes, title, width, height, colors, margin
 /**
  * Draw the Line graph.
  *
- * @function
- * @param divId   The id of the div into which the visualization should be drawn.
+ * @param {String} divId   The id of the div into which the visualization should be drawn.
  */
 Line.prototype.draw = function (divId) 
 {
@@ -2114,8 +2102,6 @@ Line.prototype.draw = function (divId)
 
     /**
      * Moves the vertical guideline and checks for data point highlighting, displaying tooltips as necessary.
-     *
-     * @function
      */
     function mousemove() 
     {        
@@ -2542,15 +2528,15 @@ Line.prototype.draw = function (divId)
 /**
  * Create a Bar chart object.
  *
- * @function
- * @param dataSet               Set of data to visualize.
- * @param labels                Set of labels associated with the data.
- * @param title                 Title of visualization.
- * @param width                 Width of the visualization.
- * @param height                Height of the visualization.
- * @param colors                Colors to use in the visualization.
- * @param margin                Margin specifications for the visualization.
- * @param xAxisLabelOrientation Orientation at which to position the x axis labels.
+ * @constructor
+ * @param {Array[Array]} dataSet            Set of data to visualize.
+ * @param {Array} labels                    Set of labels associated with the data.
+ * @param {String} title                    Title of visualization.
+ * @param {int} width                       Width of the visualization.
+ * @param {int} height                      Height of the visualization.
+ * @param {Array} colors                    Colors to use in the visualization.
+ * @param {MarginObject} margin             Margin specifications for the visualization.
+ * @param {String} xAxisLabelOrientation    Orientation at which to position the x axis labels.
  */
 function Bar (dataSet, labels, columnTypes, title, width, height, colors, margin, xAxisLabelOrientation) 
 {
@@ -2570,8 +2556,7 @@ function Bar (dataSet, labels, columnTypes, title, width, height, colors, margin
 /**
  * Draw the Bar chart.
  *
- * @function
- * @param divId   The id of the div into which the visualization should be drawn.
+ * @param {String} divId   The id of the div into which the visualization should be drawn.
  */
 Bar.prototype.draw = function(divId) 
 {
@@ -3308,15 +3293,15 @@ Bar.prototype.draw = function(divId)
  * Given visualization and data information from the Controller, return a visualization object of the given type.
  *
  * @function
- * @param dataPackage               The data object containing all of the visualizaion objects and data.
- * @param type                      The visualization type.
- * @param colors                    The colors to use when drawing the visualization.
- * @param width                     The width to use for the visualization.
- * @param height                    The height to use for the visualization.
- * @param numDataPoints             The number of data points, starting with the first, in the data set to visualize.
- * @param margin                    The margin sizes to use for the visualization.
- * @param xAxisLabelOrientation     The orientation in which to draw the x axis labels.
- * @returns                         Visualization object.
+ * @param {DataObject} dataPackage          The data object containing all of the visualizaion objects and data.
+ * @param {String} type                     The visualization type.
+ * @param {Array} colors                    The colors to use when drawing the visualization.
+ * @param {int} width                       The width to use for the visualization.
+ * @param {int} height                      The height to use for the visualization.
+ * @param {int} numDataPoints               The number of data points, starting with the first, in the data set to visualize.
+ * @param {MarginObject} margin             The margin sizes to use for the visualization.
+ * @param {String} xAxisLabelOrientation    The orientation in which to draw the x axis labels.
+ * @returns {VisualizationObject}           Visualization object.
  */
 function getVisualization(dataPackage, type, colors, width, height, numDataPoints, margin, xAxisLabelOrientation)
 {
@@ -3384,14 +3369,16 @@ function getVisualization(dataPackage, type, colors, width, height, numDataPoint
 
 /**
  * Pull out and return from a 2-dimensional array of values some number of columns from that array.
- * If only one column is requested, return that column, as well as another copy of that column.
+ * If only one column is requested, return that column, as well as another copy of that column,
+ * unless the single column contains Strings, in which case return that column, as well as a column
+ * of all ones.
  *
  * @function
- * @param columns           The list of columns to extract from the given values.
- * @param values            The 2D array of values comprising the data set.
- * @param numDataPoints     The number of data points in each column of values, starting with the first, to return.
- * @param types             The list of types associated with each column in the data set.
- * @returns                 2D array of data values.
+ * @param {Array} columns           The list of columns to extract from the given values.
+ * @param {Array[Array]} values     The 2D array of values comprising the data set.
+ * @param {int} numDataPoints       The number of data points in each column of values, starting with the first, to return.
+ * @param {Array} types             The list of types associated with each column in the data set.
+ * @returns {Array[Array]}          2D array of data values.
  */
 function getData(columns, values, numDataPoints, types)
 {   
@@ -3451,9 +3438,9 @@ function getData(columns, values, numDataPoints, types)
  * Return a list of labels associated with the given columns.
  *
  * @function
- * @param columns   The list of columns for which to obtain the labels.
- * @param labels    The list of labels corresponding to each column.
- * @returns         List of column labels.
+ * @param {Array} columns   The list of columns for which to obtain the labels.
+ * @param {Array} labels    The list of labels corresponding to each column.
+ * @returns {Array}         List of column labels.
  */
 function getLabels(columns, labels)
 {
@@ -3469,9 +3456,9 @@ function getLabels(columns, labels)
  * Return a list of types associated with the given columns.
  *
  * @function
- * @param columns   The list of columns for which to obtain the types.
- * @param types     The list of types corresponding to each column.
- * @returns         List of visualization types.
+ * @param {Array} columns   The list of columns for which to obtain the types.
+ * @param {Array} types     The list of types corresponding to each column.
+ * @returns {Array}         List of visualization types.
  */
 function getColumnTypes(columns, types)
 {
@@ -3487,8 +3474,8 @@ function getColumnTypes(columns, types)
  * Convert a list of color objects into a list of hsl colors in string format and return.
  *
  * @function
- * @param colors   The list of color objects.
- * @returns        List of hsl colors in string format.
+ * @param {Array} colors    The list of color objects.
+ * @returns {Array}         List of hsl colors in string format.
  */
 function getColors(colors) 
 {
@@ -3506,13 +3493,12 @@ function getColors(colors)
  * given colors, where each given color's gradient is evenly represented.
  *
  * @function
- * @param numColorsOut  The number of colors to return.
- * @param colors        The list of color objects from which to generate the list of new colors.
- * @returns             List of hsl colors in string format.
+ * @param {int} numColorsOut    The number of colors to return.
+ * @param {Array} colors        The list of color objects from which to generate the list of new colors.
+ * @returns {Array}             List of hsl colors in string format.
  */
 function getMixedColors(numColorsOut, colors) 
 {
-    // var numColors = colors.length;
     var numColorsIn = colors.length;
     var newColors = [];
     for (var i = 0; i < numColorsIn; i++) 
@@ -3532,7 +3518,7 @@ function getMixedColors(numColorsOut, colors)
  * Move the element to the front of the parent element.
  *
  * @function
- * @returns     D3 selection of the object that was moved to the front of the parent element.   
+ * @returns {D3 Selection}  D3 selection of the object that was moved to the front of the parent element.   
  */
 d3.selection.prototype.moveToFront = function() 
 {
@@ -3546,8 +3532,8 @@ d3.selection.prototype.moveToFront = function()
  * Style the given object as an x axis.
  *
  * @function
- * @param object            The object to style.
- * @param labelOrientation  The orientation at which to draw the labels of the object.
+ * @param {Element} object              The object to style.
+ * @param {String} labelOrientation     The orientation at which to draw the labels of the object.
  */
 function styleXAxis(object, labelOrientation) 
 {
@@ -3597,8 +3583,8 @@ function styleXAxis(object, labelOrientation)
  * Style the given object as a y axis.
  *
  * @function
- * @param object        The object to style.
- * @param textAnchor    The anchor point at which to draw the labels of the object.
+ * @param {Element} object      The object to style.
+ * @param {String} textAnchor   The anchor point at which to draw the labels of the object.
  */
 function styleYAxis(object, textAnchor) 
 {
@@ -3625,8 +3611,8 @@ function styleYAxis(object, textAnchor)
  * Randomly shuffle the given array.
  *
  * @function
- * @param array     The array to shuffle.
- * @returns         Randomly shuffled array.   
+ * @param {Array} array   The array to shuffle.
+ * @returns {Array}       Randomly shuffled array.   
  */
 function shuffleArray(array) 
 {
